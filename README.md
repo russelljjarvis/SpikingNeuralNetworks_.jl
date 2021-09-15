@@ -1,2 +1,3 @@
 # SpikeNetOpt.jl
-Spike Net Optimizer
+A julia Spiking Neural Network Optimizer
+Using Spike Distance, Genetic Algorithms, stochastic gradient descent.
