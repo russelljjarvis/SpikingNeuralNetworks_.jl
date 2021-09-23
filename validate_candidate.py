@@ -40,7 +40,7 @@ jl.using("JLD")
 exec_string = """
 if isfile("GAsolution.jld")
     spkd_ground = load("GAsolution.jld","spkd_ground")
-    spkd1 = load("GAsolution.jld","spkd1")
+    spkd_found = load("GAsolution.jld","spkd_found")
     Ne = load("GAsolution.jld","Ne")
     Ni = load("GAsolution.jld","Ni")
     sim_length = load("GAsolution.jld","sim_length")
@@ -48,13 +48,13 @@ end
 """
 Main.eval(exec_string)
 
-spkd1 = Main.spkd1
+spkd_found = Main.spkd_found
 spkd_ground = Main.spkd_ground
 Ni = Main.Ni
 Ne = Main.Ne
 sim_length = Main.sim_length
 
-# spkd1 = Main.spkd1
+# spkd_found = Main.spkd_found
 # spkd_ground = Main.spkd_ground
 
 
@@ -95,9 +95,17 @@ class LV_test_class(sciunit.TestM2M, tests.isi_variation_test):
     score_type = scores.effect_size
     params = {"variation_measure": "lv"}
 
+class isi_ttest_class(sciunit.TestM2M, tests.isi_variation_test):
+    score_type = scores.students_t
+    params = {"variation_measure": "isi"}
+
+    def compute_score(self, prediction1, prediction2):
+        score = self.score_type.compute(prediction1, prediction2, **self.params)
+        return score
+
 
 m1 = polychrony_data(sim_length, Ne, Ni, spkd_ground)  # ,name='ground truth')
-m2 = polychrony_data(sim_length, Ne, Ni, spkd1)  # ,name='optimized candidate')
+m2 = polychrony_data(sim_length, Ne, Ni, spkd_found)  # ,name='optimized candidate')
 FR_test = FR_test_class()
 LV_test = LV_test_class()
 isi_ttest = isi_ttest_class()
@@ -105,7 +113,7 @@ isi_ttest = isi_ttest_class()
 # plot results
 fig, ax = plt.subplots(ncols=2, sharey=True, gridspec_kw={"wspace": 0}, figsize=(20, 8))
 # FR_test.generate_prediction(C);
-FR_test.generate_prediction(m1)
+#FR_test.generate_prediction(m1)
 FR_test.visualize_samples(
     m1, m2, ax=ax[0], var_name="Firing Rate (Hz)", bins=30, density=False
 )
@@ -168,12 +176,4 @@ class isi_mwu_class(sciunit.TestM2M, tests.isi_variation_test):
 
 isi_mwu = isi_mwu_class()
 
-
-class isi_ttest_class(sciunit.TestM2M, tests.isi_variation_test):
-    score_type = scores.students_t
-    params = {"variation_measure": "isi"}
-
-    def compute_score(self, prediction1, prediction2):
-        score = self.score_type.compute(prediction1, prediction2, **self.params)
-        return score
 """
