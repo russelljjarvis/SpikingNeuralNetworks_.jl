@@ -1,22 +1,15 @@
 using UnicodePlots
 import Pkg
 using Flux
-include("../src/SpikingNeuralNetworks.jl")
+using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using SpikeSynchrony
-ENV["PYTHON_JL_RUNTIME_PYTHON"] = Sys.which("python")
 using Statistics
-using Pkg
 using JLD
-using Evolutionary#, Test, Random
 using Distributed
 using SharedArrays
-include("../src/plot.jl")
 using Plots
 using UnicodePlots
-using FoldsCUDA, CUDA, FLoops
-using GPUArrays: @allowscalar
-
 SNN.@load_units
 
 
@@ -147,7 +140,7 @@ function raster_difference(spkd0,spkd1)
         end
     else
         spkd = ones(mini)
-        @floop for (x, i) in zip(spkd, eachindex(spkd))
+        @inbounds for (x, i) in zip(spkd, eachindex(spkd))
 
         #@inbounds for (x, i) in zip(spkd, eachindex(spkd))
             spkd[i] = 1.0
@@ -264,7 +257,7 @@ lower = [0.0 0.0 0.0 0.0]# 0.03 4.0]
 upper = [1.0 1.0 1.0 1.0]# 0.2 20.0]
 lower = vec(lower)
 upper = vec(upper)
-                        
+
 ɛ = 0.125
 options = GA(
     populationSize = 10,
@@ -282,7 +275,7 @@ fitness = minimum(result)
 filename = string("GAsolution.jld")#, py"target_num_spikes")#,py"specimen_id)
 params = result.minimizer
 E1,spkd1 = eval_best(params)
-save(filename,"spkd_ground",spkd_ground,"spkd1",spkd1,"Ne" = Ne,"Ni" = Ni,"sim_length",sim_length)
+save(filename,"spkd_ground",spkd_ground,"spkd1",spkd1,"Ne",Ne,"Ni",Ni,"sim_length",sim_length)
 println("best result")
 loss(result.minimizer)
 println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
@@ -294,5 +287,3 @@ println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
 
 @show(result)
 run(`python-jl validate_candidate.py`)
-
-
