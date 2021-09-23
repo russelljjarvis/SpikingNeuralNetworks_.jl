@@ -1,4 +1,7 @@
 
+
+
+
 using Pkg
 Pkg.add("PyPlot")
 
@@ -6,7 +9,6 @@ Pkg.add("PyPlot")
 
 run(`$(which pip) install -networkunit`)
 Pkg.add("SharedArrays")
-#Pkg.add("MLJ")
 Pkg.add("GPUArrays")
 Pkg.add(url="https://github.com/JuliaFolds/FLoops.jl")
 Pkg.add("FoldsCUDA")
