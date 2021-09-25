@@ -93,7 +93,7 @@ end
 #_,_,_,spkd_ground = raster_synchp(P[1])
 spkd_ground = get_trains(P[1])
 sgg =[ convert(Array{Float32,1},sg) for sg in spkd_ground ]
-sggcu =[ CuArray(convert(Array{Float32,1},sg)) for sg in spkd_ground ]
+#sggcu =[ CuArray(convert(Array{Float32,1},sg)) for sg in spkd_ground ]
 
 #Flux.SGD
 #Flux.gpu
@@ -159,11 +159,11 @@ function loss(params)
     end
 
     spkd_found = get_trains(P1[1])
-    #println("Ground Truth \n")
-    #SNN.raster([E]) |> display
-    #println("Best Candidate \n")
+    println("Ground Truth \n")
+    SNN.raster([E]) |> display
+    println("Best Candidate \n")
 
-    #SNN.raster([E1]) |> display
+    SNN.raster([E1]) |> display
 
     error = raster_difference(spkd_ground,spkd_found)
     #@show(error)
@@ -228,23 +228,34 @@ function initd()
     garray[1,:]
 end
 
-lower = [0.0 0.0 0.0 0.0]# 0.03 4.0]
-upper = [1.0 1.0 1.0 1.0]# 0.2 20.0]
+lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
+upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
 lower = vec(lower)
 upper = vec(upper)
-
-
-ɛ = 7#0.125
+#using Evolutionary, MultivariateStats
+#range = Any[lower,upper]
+MU = 10
+ɛ = MU/2#0.125
 options = GA(
-    populationSize = 20,
-    ɛ = ɛ,
+    populationSize = MU,
+    ɛ = 4,
+    mutationRate = 0.25,
     selection = ranklinear(1.5),#ranklinear(1.5),#ss,
-    crossover = intermediate(1.0),#xovr,
-    mutation = uniform(1.0),#(.015),#domainrange(fill(1.0,ts)),#ms
+    crossover = intermediate(0.5),#xovr,
+    mutation = uniform(0.5),#(.015),#domainrange(fill(1.0,ts)),#ms
 )
+# mutation = domainrange(fill(0.5,4))
+#
+#function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
+#    idx = sortperm(state.fitpop)
+    #record["population"] = population
+#    state.fitpop[idx[1:5]]
+#    record["fitpop"] = state.fitpop[idx[1:5]]
+#end
 
+#Random.seed!(0);
 result = Evolutionary.optimize(loss,lower,upper, initd, options,
-    Evolutionary.Options(iterations=10, successive_f_tol=25, show_trace=true, store_trace=true)
+    Evolutionary.Options(iterations=125, successive_f_tol=75, show_trace=true, store_trace=true,parallelization=:thread)
 )
 fitness = minimum(result)
 
@@ -263,5 +274,22 @@ println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
 
 @show(result)
 @show(result.trace)
+trace = result.trace
+dir(x) = fieldnames(typeof(x))
+dir(trace[1,1,1])
+trace[1,1,1].metadata#["population"]
+filename = string("PopulationScatter.jld")#, py"target_num_spikes")#,py"specimen_id)
+save(filename,"trace",trace)
+#evo_population = [t.metadata[""] for t in trace]
+evo_loss = [t.value for t in trace]
+display(plot(evo_loss))
+
+#first_dim1 = [t.metadata["population"][1][1] for t in trace]
+#first_dim2 = [t.metadata["population"][1][2] for t in trace]
+#first_dim3 = [t.metadata["population"][1][3] for t in trace]
+#first_dim4 = [t.metadata["population"][1][4] for t in trace]
+
+#display(plot(first_dim1))
+#display(plot(first_dim1,first_dim2,first_dim3))
 
 #run(`python-jl validate_candidate.py`)
