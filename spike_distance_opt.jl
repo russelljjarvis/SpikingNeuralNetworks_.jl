@@ -37,22 +37,22 @@ unicodeplots()
 
 global Ne = 200;
 global Ni = 50
-function make_net(Ne,Ni; σee= 1.0,  pee= 0.5,σei = 1.0,  pei= 0.5, a=0.02)
-    E = SNN.IZ(;N = Ne, param = SNN.IZParameter(;a = a, b = 0.2, c = -65, d = 8))
-    I = SNN.IZ(;N = Ni, param = SNN.IZParameter(;a = 0.1, b = 0.2, c = -65, d = 2))
-    EE = SNN.SpikingSynapse(E, E, :v; σ = σee,  p = pee)
-    EI = SNN.SpikingSynapse(E, I, :v; σ = σei,  p = pei)
+function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02)
+    E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = a, b = 0.2, c = -65, d = 8))
+    I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
+    EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = pee)
+    EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = pei)
     IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 0.5)
     II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
     P = [E, I]#, EEA]
     C = [EE, EI, IE, II]#, EEA]
-    return P,C
+    return P, C
 
 end
 function get_trains(p)
     fire = p.records[:fire]
     x, y = Float32[], Float32[]
-    for time = eachindex(fire)
+    for time in eachindex(fire)
         for neuron_id in findall(fire[time])
             push!(x, time)
             push!(y, neuron_id)
@@ -60,13 +60,13 @@ function get_trains(p)
     end
     cellsa = Array{Union{Missing,Any}}(undef, 1, Int(findmax(y)[1]))
     nac = Int(findmax(y)[1])
-    for (inx,cell_id) in enumerate(1:nac)
+    for (inx, cell_id) in enumerate(1:nac)
         cellsa[inx] = []
     end
-    for (inx,cell_id) in enumerate(unique(y))
-        for (index, (time,cell)) in enumerate(collect(zip(x,y)))
+    for (inx, cell_id) in enumerate(unique(y))
+        for (index, (time, cell)) in enumerate(collect(zip(x, y)))
             if Int(cell_id) == cell
-                append!(cellsa[Int(cell_id)],time)
+                append!(cellsa[Int(cell_id)], time)
 
             end
 
@@ -79,27 +79,27 @@ end
 global E
 global spkd_ground
 
-P,C = make_net(Ne,Ni,σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8,a=0.02)
+P, C = make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
 E, I = P #, EEA]
 EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
 #global E_stim = []#Vector
 sim_length = 1000
 @inbounds for t = 1:sim_length
-    E.I = vec([11.5 for i in 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
+    E.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
     SNN.sim!(P, C, 1ms)
 
 end
 #_,_,_,spkd_ground = raster_synchp(P[1])
 spkd_ground = get_trains(P[1])
-sgg =[ convert(Array{Float32,1},sg) for sg in spkd_ground ]
+sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
 #sggcu =[ CuArray(convert(Array{Float32,1},sg)) for sg in spkd_ground ]
 
 #Flux.SGD
 #Flux.gpu
 function rmse(spkd)
     total = 0.0
-    @inbounds for i in 1:size(spkd, 1)
+    @inbounds for i = 1:size(spkd, 1)
         total += (spkd[i] - mean(spkd[i]))^2.0
     end
     return sqrt(total / size(spkd, 1))
@@ -108,19 +108,19 @@ end
 global Ne = 200;
 global Ni = 50
 
-function raster_difference(spkd0,spkd_found)
+function raster_difference(spkd0, spkd_found)
     maxi0 = size(spkd0)[2]
     maxi1 = size(spkd_found)[2]
-    mini = findmin([maxi0,maxi1])[1]
+    mini = findmin([maxi0, maxi1])[1]
     spkd = ones(mini)#SharedArrays.SharedArray{Float32}(mini)
-    maxi = findmax([maxi0,maxi1])[1]
+    maxi = findmax([maxi0, maxi1])[1]
 
-    if maxi>0
-        if maxi0!=maxi1
+    if maxi > 0
+        if maxi0 != maxi1
             return sum(ones(maxi))
 
         end
-        if isempty(spkd_found[1,:])
+        if isempty(spkd_found[1, :])
             return sum(ones(maxi))
         end
     end
@@ -130,18 +130,23 @@ function raster_difference(spkd0,spkd_found)
 
             maxt1 = findmax(spkd0[i])[1]
             maxt2 = findmax(spkd_found[i])[1]
-            maxt = findmax([maxt1,maxt2])[1]
+            maxt = findmax([maxt1, maxt2])[1]
 
-            if maxt1>0.0 &&  maxt2>0.0
-                t, S = SpikeSynchrony.SPIKE_distance_profile(unique(sort(spkd0[i])),unique(sort(spkd_found[i]));t0=0.0,tf = maxt)
-                b = SpikeSynchrony.trapezoid_integral(t, S)/(t[end]-t[1]) # == SPIKE_distance(y1, y2)
-                spkd[i] =  SpikeSynchrony.trapezoid_integral(t, S)/(t[end]-t[1]) # == SPIKE_distance(y1, y2)
+            if maxt1 > 0.0 && maxt2 > 0.0
+                t, S = SpikeSynchrony.SPIKE_distance_profile(
+                    unique(sort(spkd0[i])),
+                    unique(sort(spkd_found[i]));
+                    t0 = 0.0,
+                    tf = maxt,
+                )
+                b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
 
             end
         end
     end
     #scatter([i for i in 1:mini],spkd)|>display
-    error = rmse(spkd)+sum(spkd)
+    error = rmse(spkd) + sum(spkd)
 end
 
 function loss(params)
@@ -149,12 +154,12 @@ function loss(params)
     pee = params[2]
     σei = params[3]
     pei = params[4]
-    P1 , C1 = make_net(Ne,Ni,σee = σee,  pee=pee,σei =σei,  pei= pei)#,a=a)
+    P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
     sim_length = 1000
-    @inbounds for t in 1:sim_length*ms
-        E1.I = vec([11.5 for i in 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
+    @inbounds for t = 1:sim_length*ms
+        E1.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
         SNN.sim!(P1, C1, 1ms)
     end
 
@@ -165,7 +170,7 @@ function loss(params)
 
     SNN.raster([E1]) |> display
 
-    error = raster_difference(spkd_ground,spkd_found)
+    error = raster_difference(spkd_ground, spkd_found)
     #@show(error)
     error
 
@@ -177,12 +182,12 @@ function eval_best(params)
     pee = params[2]
     σei = params[3]
     pei = params[4]
-    P1 , C1 = make_net(Ne,Ni,σee = σee,  pee=pee,σei =σei,  pei= pei)#,a=a)
+    P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
     sim_length = 1000
-    @inbounds for t in 1:sim_length
-        E1.I = vec([11.5 for i in 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
+    @inbounds for t = 1:sim_length
+        E1.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
         SNN.sim!(P1, C1, 1ms)
     end
 
@@ -193,26 +198,26 @@ function eval_best(params)
 
     SNN.raster([E1]) |> display
     #error = raster_difference(spkd_ground,spkd_found)
-    E1,spkd_found
+    E1, spkd_found
 
 end
 
 
-function init_b(lower,upper)
+function init_b(lower, upper)
     gene = []
 
-    for (i,(l,u)) in enumerate(zip(lower,upper))
+    for (i, (l, u)) in enumerate(zip(lower, upper))
         p1 = rand(l:u, 1)
-        append!(gene,p1)
+        append!(gene, p1)
     end
     gene
 end
 
 function initf(n)
     genesb = []
-    for i in 1:n
-        genes = init_b(lower,upper)
-        append!(genesb,[genes])
+    for i = 1:n
+        genes = init_b(lower, upper)
+        append!(genesb, [genes])
     end
     genesb
 end
@@ -222,10 +227,10 @@ end
 function initd()
     population = initf(10)
     garray = zeros((length(population)[1], length(population[1])))
-    for (i,p) in enumerate(population)
-        garray[i,:] = p
+    for (i, p) in enumerate(population)
+        garray[i, :] = p
     end
-    garray[1,:]
+    garray[1, :]
 end
 
 lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
@@ -235,7 +240,7 @@ upper = vec(upper)
 #using Evolutionary, MultivariateStats
 #range = Any[lower,upper]
 MU = 10
-ɛ = MU/2#0.125
+ɛ = MU / 2#0.125
 options = GA(
     populationSize = MU,
     ɛ = 4,
@@ -248,21 +253,44 @@ options = GA(
 #
 #function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
 #    idx = sortperm(state.fitpop)
-    #record["population"] = population
+#record["population"] = population
 #    state.fitpop[idx[1:5]]
 #    record["fitpop"] = state.fitpop[idx[1:5]]
 #end
 
 #Random.seed!(0);
-result = Evolutionary.optimize(loss,lower,upper, initd, options,
-    Evolutionary.Options(iterations=125, successive_f_tol=75, show_trace=true, store_trace=true,parallelization=:thread)
+result = Evolutionary.optimize(
+    loss,
+    lower,
+    upper,
+    initd,
+    options,
+    Evolutionary.Options(
+        iterations = 125,
+        successive_f_tol = 75,
+        show_trace = true,
+        store_trace = true,
+        parallelization = :thread,
+    ),
 )
 fitness = minimum(result)
 
 filename = string("GAsolution.jld")#, py"target_num_spikes")#,py"specimen_id)
 params = result.minimizer
-E1,spkd_found = eval_best(params)
-save(filename,"spkd_ground",spkd_ground,"spkd_found",spkd_found,"Ne",Ne,"Ni",Ni,"sim_length",sim_length)
+E1, spkd_found = eval_best(params)
+save(
+    filename,
+    "spkd_ground",
+    spkd_ground,
+    "spkd_found",
+    spkd_found,
+    "Ne",
+    Ne,
+    "Ni",
+    Ni,
+    "sim_length",
+    sim_length,
+)
 println("best result")
 loss(result.minimizer)
 println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
@@ -276,10 +304,10 @@ println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
 @show(result.trace)
 trace = result.trace
 dir(x) = fieldnames(typeof(x))
-dir(trace[1,1,1])
-trace[1,1,1].metadata#["population"]
+dir(trace[1, 1, 1])
+trace[1, 1, 1].metadata#["population"]
 filename = string("PopulationScatter.jld")#, py"target_num_spikes")#,py"specimen_id)
-save(filename,"trace",trace)
+save(filename, "trace", trace)
 #evo_population = [t.metadata[""] for t in trace]
 evo_loss = [t.value for t in trace]
 display(plot(evo_loss))
@@ -292,4 +320,4 @@ display(plot(evo_loss))
 #display(plot(first_dim1))
 #display(plot(first_dim1,first_dim2,first_dim3))
 
-#run(`python-jl validate_candidate.py`)
+run(`python-jl validate_candidate.py`)

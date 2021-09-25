@@ -30,6 +30,7 @@ from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.plots.plot_rasterplot import rasterplot
 
 from networkunit import models, tests, scores, plots, capabilities
+from networkunit.plots import sample_histogram
 import neo
 import numpy as np
 import quantities as qt
@@ -95,6 +96,7 @@ class LV_test_class(sciunit.TestM2M, tests.isi_variation_test):
     score_type = scores.effect_size
     params = {"variation_measure": "lv"}
 
+
 class isi_ttest_class(sciunit.TestM2M, tests.isi_variation_test):
     score_type = scores.students_t
     params = {"variation_measure": "isi"}
@@ -110,29 +112,57 @@ FR_test = FR_test_class()
 LV_test = LV_test_class()
 isi_ttest = isi_ttest_class()
 
-# plot results
-fig, ax = plt.subplots(ncols=2, sharey=True, gridspec_kw={"wspace": 0}, figsize=(20, 8))
-# FR_test.generate_prediction(C);
-#FR_test.generate_prediction(m1)
-FR_test.visualize_samples(
-    m1, m2, ax=ax[0], var_name="Firing Rate (Hz)", bins=30, density=False
-)
-LV_test.visualize_samples(
-    m1, m2, ax=ax[1], var_name="Local Variation", bins=30, density=False
-)
-fig.savefig("firing_rates.png")
-fig, ax = plt.subplots(ncols=1, gridspec_kw={"wspace": 0}, figsize=(20, 8))
-LV_test.visualize_samples(m1, m2, ax=ax, var_name="LV", bins=30, density=False)
-fig.savefig("isi_tests.png")
+
+class fr_ttest_class(sciunit.TestM2M, tests.firing_rate_test):
+    score_type = scores.students_t
+    params = {"equal_var": False}  # True: Student's t-test; False: Welch's t-test
+
+    def compute_score(self, prediction1, prediction2):
+        score = self.score_type.compute(prediction1, prediction2, **self.params)
+        return score
 
 
-"""
-Not using this code
 class fr_effect_class(sciunit.TestM2M, tests.firing_rate_test):
     score_type = scores.effect_size
 
 
 fr_effect = fr_effect_class()
+
+
+fr_ttest = fr_ttest_class(equal_var=False)
+pred0 = fr_ttest.generate_prediction(m1)
+pred1 = fr_ttest.generate_prediction(m2)
+score = fr_ttest.compute_score(pred0, pred1)
+print(score)
+# plot results
+fig, ax = plt.subplots(ncols=2, sharey=True, gridspec_kw={"wspace": 0}, figsize=(20, 8))
+# FR_test.generate_prediction(C);
+# FR_test.generate_prediction(m1)
+FR_test.visualize_samples(
+    m1, m2, ax=ax[0], var_name="Firing Rate (Hz)", bins=45, density=True, c="b"
+)
+LV_test.visualize_samples(
+    m1, m2, ax=ax[1], var_name="Local Variation", bins=45, density=True, c="r"
+)
+fig.savefig("firing_rates.png")
+fig, ax = plt.subplots(ncols=1, gridspec_kw={"wspace": 0}, figsize=(20, 8))
+LV_test.visualize_samples(m1, m2, ax=ax, var_name="LV", bins=30, density=False)
+fig.savefig("isi_tests.png")
+# ax1 =
+m1.show_rasterplot()
+fig, ax = plt.subplots(ncols=1, gridspec_kw={"wspace": 0}, figsize=(20, 8))
+
+ax = sample_histogram(m1.spiketrains[1], m2.spiketrains[1], ax=ax)
+fig.savefig("histogram.png")
+
+# print(dir(ax1))
+# ax2 =
+# m2.show_rasterplot()
+# fig.savefig("raster.png")
+# fig2.savefig("raster2.png")
+
+"""
+Not using this code
 
 
 class fr_mwu_class(sciunit.TestM2M, tests.firing_rate_test):
