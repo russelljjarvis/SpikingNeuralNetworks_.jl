@@ -14,7 +14,6 @@ Student's t-test
 	datasize: 200 	 200
 	t = 11.811 	 p value = 1.82e-25
 ```
-![firing_rates.png](img/firing_rates.png)
 
 
 # DONE
@@ -33,5 +32,3 @@ Student's t-test
 - [ ] NeuroEvolution @russelljjarvis
 - [ ] Stochastic Gradient Defence
 
-![gd.png](img/gd.png)
-![opt.png](img/opt.png)
