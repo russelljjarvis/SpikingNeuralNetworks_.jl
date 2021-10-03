@@ -22,6 +22,7 @@ Student's t-test
 - [x] Implemented multi-threading
 - [x] Used pythons NetworkUnit to validate results
 - [x] NetworkUnit t-tests of results
+- [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
 
 ## TODO
 - [ ] Animation of Genetic Algorithm Convergence.
