@@ -2,60 +2,33 @@
 
 using Markdown
 using InteractiveUtils
+using JLD
+using Plots, Random
+theme(:lime)
+directed = pwd()
 
-# ╔═╡ 2d679c48-8af5-11eb-32fc-c9a76a667e61
-begin
-	using Plots, Random
-	theme(:lime)
+trace = load("PopulationScatter.jld", "trace")
+evo_population = [t.metadata["population"] for t in trace]
+evo_loss = [t.value for t in trace]
+evo_iteration = [t.iteration for t in trace]
+points = last(evo_population)
+
+for (points, j, k) in zip(evo_population, evo_loss, evo_iteration)
+    X = points[2, :]
+    Y = points[3, :]
+    Z = points[4, :]
+    #println(k)
+    #println(j)
+    scatter(X, Y, Z) |> display
 end
-
-md"![](firing_rates.png)"
-n = 100
-nframes = 100
-
-begin
-	#o = HeatMap(-5:.2:5, 0:.2:10)
-
-	anim = @animate for i in 1:nframes
-		x = randn(5i)
-		y = randexp(5i)
-		fit!(o, zip(x,y))
-		plot(o)
-	end
-	gif(anim, "temp.gif", fps=10)
+anim = @animate for (points, j, k) in zip(evo_population, evo_loss, evo_iteration)
+    X = points[1, :]
+    Y = points[2, :]
+    Z = points[3, :]
+    scatter(X, Y, Z)
+    #display(scatter(X, Y, Z))
 end
+gif(anim, joinpath(directed, "evo.gif"), fps = 1)
 
 
-using Distributed
-using ProgressMeter
-
-@showprogress 1 "Computing..." for i in 1:50
-    sleep(0.1)
-end
-
-@showprogress pmap(1:10) do x
-    sleep(0.1)
-    x^2
-end
-
-@showprogress reduce(1:10) do x, y
-    sleep(0.1)
-    x + y
-end
-
-function animatepopopt(dir::String)
-  Plots.scalefontsizes()
-  sctrpoplim = (args...;kwargs...) -> scatter(args...;kwargs...,xlims=(1, 100), ylims=(0,1), clims=(4, 9))
-  sctroptlim = (args...;kwargs...) -> scatter(args...;kwargs...,xlims=(-6, 0), ylims=(0,1))
-
-  scp = ScatterPop(sctrpoplim, dir);
-  sco = ScatterOpt(sctroptlim, dir);
-  l = @layout [a b]
-  mpl = MultiPlot((ps...) -> plot(ps...; layout=(2,1), size=(600,800)), scp, sco; init=false)
-
-  anim = @animate for i in eachindex(scp.data)
-    pl = NaiveGAflux.plotgen(mpl, i)
-    pl.subplots[1].attr[:title] = "Generation $i"
-  end
-  gif(anim, joinpath(dir, "evo.gif"), fps = 2)
-end
+#md"![](firing_rates.png)"

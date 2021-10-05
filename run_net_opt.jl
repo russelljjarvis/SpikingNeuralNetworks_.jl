@@ -1,9 +1,21 @@
 using Distributed
 
-if nprocs()==1
-	addprocs(8)
-end
-@everywhere include("spike_distance_opt.jl")
+#if nprocs()==1
+#	addprocs(8)
+#end
+#@everywhere include("spike_distance_opt.jl")
+include("spike_distance_opt.jl")
+MU = 20
+ɛ = MU / 2#0.125
+options = GA(
+    parallelization = :multi
+    populationSize = MU,
+    ɛ = 5,
+    mutationRate = 0.125,
+    selection = ranklinear(1.5),#ranklinear(1.5),#ss,
+    crossover = intermediate(0.5),#xovr,
+    mutation = uniform(0.5),#(.015),#domainrange(fill(1.0,ts)),#ms
+)
 
 #Random.seed!(0);
 result = Evolutionary.optimize(
@@ -13,8 +25,8 @@ result = Evolutionary.optimize(
     initd,
     options,
     Evolutionary.Options(
-        iterations = 125,
-        successive_f_tol = 75,
+        iterations = 40,
+        successive_f_tol = 1,
         show_trace = true,
         store_trace = true,
     ),
@@ -56,9 +68,11 @@ trace[1, 1, 1].metadata#["population"]
 filename = string("PopulationScatter.jld")#, py"target_num_spikes")#,py"specimen_id)
 save(filename, "trace", trace)
 #evo_population = [t.metadata[""] for t in trace]
-evo_loss = [t.value for t in trace]
-display(plot(evo_loss))
 E1, spkd_found = eval_best(params)
+
+evo_loss = [t.value for t in trace]
+
+display(plot(evo_loss))
 
 #first_dim1 = [t.metadata["population"][1][1] for t in trace]
 #first_dim2 = [t.metadata["population"][1][2] for t in trace]

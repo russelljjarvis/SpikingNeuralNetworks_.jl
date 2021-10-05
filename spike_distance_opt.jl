@@ -239,16 +239,6 @@ lower = vec(lower)
 upper = vec(upper)
 #using Evolutionary, MultivariateStats
 #range = Any[lower,upper]
-MU = 20
-ɛ = MU / 2#0.125
-options = GA(
-    populationSize = MU,
-    ɛ = 2,
-    mutationRate = 0.25,
-    selection = ranklinear(1.5),#ranklinear(1.5),#ss,
-    crossover = intermediate(0.5),#xovr,
-    mutation = uniform(0.5),#(.015),#domainrange(fill(1.0,ts)),#ms
-)
 # mutation = domainrange(fill(0.5,4))
 #
 #function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
@@ -267,14 +257,13 @@ function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population
     #record["σ"] = state.
 end
 
-
-function Evolutionary.value!(::Val{:thread}, fitness, objfun, population::AbstractVector{IT}) where {IT}
+function Evolutionary.value!(::Val{:multi}, fitness, objfun, population::AbstractVector{IT}) where {IT}
     fitness = SharedArrays.SharedArray{Float32}(fitness)
-    @sync @distributed for i in 1:length(population)
+    @time @sync @distributed for i in 1:length(population)
         fitness[i] = value(objfun, population[i])
-        println("I'm worker $(myid()), working on i=$i")
+        #println("I'm worker $(myid()), working on i=$i")
     end
-    fitness
-    #fitness = Array(fitness)
+    #fitness
+    fitness = Array(fitness)
     #@show(fitness)
 end
