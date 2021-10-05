@@ -6,7 +6,6 @@ SNN = SpikingNeuralNetworks
 using SpikeSynchrony
 using Statistics
 using JLD
-using Distributed
 using SharedArrays
 using Plots
 using UnicodePlots
@@ -34,6 +33,7 @@ unicodeplots()
 ###
 # Network 1.
 ###
+
 
 global Ne = 200;
 global Ni = 50
@@ -239,11 +239,11 @@ lower = vec(lower)
 upper = vec(upper)
 #using Evolutionary, MultivariateStats
 #range = Any[lower,upper]
-MU = 10
+MU = 20
 ɛ = MU / 2#0.125
 options = GA(
     populationSize = MU,
-    ɛ = 4,
+    ɛ = 2,
     mutationRate = 0.25,
     selection = ranklinear(1.5),#ranklinear(1.5),#ss,
     crossover = intermediate(0.5),#xovr,
@@ -258,66 +258,23 @@ options = GA(
 #    record["fitpop"] = state.fitpop[idx[1:5]]
 #end
 
-#Random.seed!(0);
-result = Evolutionary.optimize(
-    loss,
-    lower,
-    upper,
-    initd,
-    options,
-    Evolutionary.Options(
-        iterations = 125,
-        successive_f_tol = 75,
-        show_trace = true,
-        store_trace = true,
-        parallelization = :thread,
-    ),
-)
-fitness = minimum(result)
+#using Evolutionary
 
-filename = string("GAsolution.jld")#, py"target_num_spikes")#,py"specimen_id)
-params = result.minimizer
-E1, spkd_found = eval_best(params)
-save(
-    filename,
-    "spkd_ground",
-    spkd_ground,
-    "spkd_found",
-    spkd_found,
-    "Ne",
-    Ne,
-    "Ni",
-    Ni,
-    "sim_length",
-    sim_length,
-)
-println("best result")
-loss(result.minimizer)
-println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
+function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
+    idx = sortperm(state.fitpop)
+    record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]
+    record["pop"] = population[:]
+    #record["σ"] = state.
+end
 
-#println("σee = 0.45,  pee= 0.8,σei = 0.4,  pei= 0.9)")
-@show(result.minimizer)
 
-@show(fitness)
-
-@show(result)
-@show(result.trace)
-trace = result.trace
-dir(x) = fieldnames(typeof(x))
-dir(trace[1, 1, 1])
-trace[1, 1, 1].metadata#["population"]
-filename = string("PopulationScatter.jld")#, py"target_num_spikes")#,py"specimen_id)
-save(filename, "trace", trace)
-#evo_population = [t.metadata[""] for t in trace]
-evo_loss = [t.value for t in trace]
-display(plot(evo_loss))
-
-#first_dim1 = [t.metadata["population"][1][1] for t in trace]
-#first_dim2 = [t.metadata["population"][1][2] for t in trace]
-#first_dim3 = [t.metadata["population"][1][3] for t in trace]
-#first_dim4 = [t.metadata["population"][1][4] for t in trace]
-
-#display(plot(first_dim1))
-#display(plot(first_dim1,first_dim2,first_dim3))
-
-run(`python-jl validate_candidate.py`)
+function Evolutionary.value!(::Val{:thread}, fitness, objfun, population::AbstractVector{IT}) where {IT}
+    fitness = SharedArrays.SharedArray{Float32}(fitness)
+    @sync @distributed for i in 1:length(population)
+        fitness[i] = value(objfun, population[i])
+        println("I'm worker $(myid()), working on i=$i")
+    end
+    fitness
+    #fitness = Array(fitness)
+    #@show(fitness)
+end
