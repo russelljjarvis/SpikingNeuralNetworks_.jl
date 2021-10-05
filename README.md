@@ -14,7 +14,6 @@ Student's t-test
 	datasize: 200 	 200
 	t = 11.811 	 p value = 1.82e-25
 ```
-![firing_rates.png](img/firing_rates.png)
 
 
 # DONE
@@ -23,6 +22,7 @@ Student's t-test
 - [x] Implemented multi-threading
 - [x] Used pythons NetworkUnit to validate results
 - [x] NetworkUnit t-tests of results
+- [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
 
 ## TODO
 - [ ] Animation of Genetic Algorithm Convergence.
@@ -33,5 +33,3 @@ Student's t-test
 - [ ] NeuroEvolution @russelljjarvis
 - [ ] Stochastic Gradient Defence
 
-![gd.png](img/gd.png)
-![opt.png](img/opt.png)
