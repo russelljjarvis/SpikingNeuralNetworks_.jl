@@ -1,4 +1,5 @@
 using UnicodePlots
+using Distributed
 import Pkg
 using Flux
 using SpikingNeuralNetworks
@@ -9,24 +10,18 @@ using JLD
 using SharedArrays
 using Plots
 using UnicodePlots
-using CUDA
+#using CUDA
 using Evolutionary
+#using Random
+using Distributions
+using LightGraphs
+using Metaheuristics
+#Pkg.add("LightGraphs")
+#Pkg.add("GraphPlot")
 
 ##
 # Override to function to include a state.
 ##
-#import Evolutionary.trace
-#function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
-#    record["σ"] = state.σ
-#    record["pop"] = population
-#end
-
-#record["time"] = curr_time
-#record["population"] = population
-
-#function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method, options) = ()
-
-#Evolutionary.trace = trace
 SNN.@load_units
 unicodeplots()
 
@@ -37,17 +32,110 @@ unicodeplots()
 
 global Ne = 200;
 global Ni = 50
-function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02)
-    E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = a, b = 0.2, c = -65, d = 8))
+weights = rand(Uniform(-2,1),25,25)
+
+
+function make_net_SNeuralN()
+    pop = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
+                              synapse = Synapse.Alpha,
+                              threshold = () -> Threshold.Ideal(vth))
+    # create input currents
+    low = ConstantRate(0.14)
+    high = ConstantRate(0.1499)
+    switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
+    n1synapse = QueuedSynapse(Synapse.Alpha())
+    n2synapse = QueuedSynapse(Synapse.Alpha())
+    excite!(n1synapse, filter(x -> x != 0, [low(t) for t = 1:T]))
+    excite!(n2synapse, filter(x -> x != 0, [switch(t) for t = 1:T]))
+    voltage_array_size = size(weights)[1]
+    voltages = Dict([(i, Float64[]) for i in 1:voltage_array_size])
+    cb = () -> begin
+        for id in 1:size(pop)
+            push!(voltages[id], getvoltage(pop[id]))
+        end
+    end
+    input1 = [ (t; dt) -> 0 for i in 1:voltage_array_size/3]
+    input2 = [ n2synapse for i in voltage_array_size/3+1:2*voltage_array_size/3]
+    input3 = [ (t; dt) -> 0 for i in 2*voltage_array_size/3:voltage_array_size]
+    input = vcat(input2, input1, input3)
+    return input,cb,voltages
+end
+    #outputs = simulate!(pop, T; cb = cb, inputs=input)
+
+global Ne = 200;
+global Ni = 50
+global σee = 1.0
+global pee = 0.5
+global σei = 1.0
+global pei = 0.5
+
+function make_net_SNN(xx)#;
+    xx = Int(round(xx))
+    #h = turan_graph(xx, xx)#, seed=1,cutoff=0.3)
+
+    h = circular_ladder_graph(xx)#, xx)#, seed=1,cutoff=0.3)
+    hi = circular_ladder_graph(xx)#, seed=1,cutoff=0.3)
+    E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
-    EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = pee)
-    EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = pei)
-    IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 0.5)
-    II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
+    #EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = 1.0)
+    EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = 1.0)
+    IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 1.0)
+    II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 1.0)
+    # PINningSynapse
+    P = [E, I]#, EEA]
+    C = [EI, IE, II]#, EEA]
+    #EE = SNN.PINningSynapse(E, E, :v; σ=0.5, p=0.8)
+    #for n in 1:(N - 1)
+    #    SNN.connect!(EE, n, n + 1, 50)
+    #end
+    #for (i,j) in enumerate(h.fadjlist) println(i,j) end
+    EE = SNN.SpikingSynapse(E, E, :v; σ=0.5, p=0.8)
+
+    @inbounds for (i,j) in enumerate(h.fadjlist)
+        @inbounds for k in j
+            SNN.connect!(EE,i, k, 10)
+            #SNN.connect!(EI,i, k, Ni)
+            #SNN.connect!(IE,i, k, 50)
+            #SNN.connect!(II,i, k, 50)
+        end
+    end
+
+    @inbounds for (i,j) in enumerate(hi.fadjlist)
+        @inbounds for k in j
+            if i<Ni && k<Ni
+                #SNN.connect!(EE,i, k, 50)
+                SNN.connect!(EI,i, k, 10)
+                SNN.connect!(IE,i, k, 10)
+                SNN.connect!(II,i, k, 10)
+            end
+        end
+    end
+
+    #for (i,j) in enumerate(h.fadjlist)
+    #    for k in j
+    #        SNN.connect!(EI, i, k, 50)
+    #    end
+    #end
     P = [E, I]#, EEA]
     C = [EE, EI, IE, II]#, EEA]
     return P, C
 
+end
+
+
+function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5)
+     Ne = 200;
+     Ni = 50
+
+     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
+     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
+     EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = pee)
+     EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = pei)
+     IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 0.5)
+     II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
+     P = [E, I]#, EEA]
+     C = [EE, EI, IE, II]#, EEA]
+     return P, C
 end
 function get_trains(p)
     fire = p.records[:fire]
@@ -79,34 +167,23 @@ end
 global E
 global spkd_ground
 
-P, C = make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
-E, I = P #, EEA]
-EE, EI, IE, II = C
-SNN.monitor([E, I], [:fire])
-#global E_stim = []#Vector
-sim_length = 1000
-@inbounds for t = 1:sim_length
-    E.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
-    SNN.sim!(P, C, 1ms)
-
-end
-#_,_,_,spkd_ground = raster_synchp(P[1])
-spkd_ground = get_trains(P[1])
-sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
+#P, C = make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
 #sggcu =[ CuArray(convert(Array{Float32,1},sg)) for sg in spkd_ground ]
 
 #Flux.SGD
 #Flux.gpu
+using Flux.Losses
 function rmse(spkd)
-    total = 0.0
-    @inbounds for i = 1:size(spkd, 1)
-        total += (spkd[i] - mean(spkd[i]))^2.0
-    end
-    return sqrt(total / size(spkd, 1))
+    error = Losses(mean(spkd),spkd;agg=mean)
+    #println(spkd)
+    #total = 0.0
+    #@inbounds for i = 1:size(spkd, 1)
+    #    total += (spkd[i] - mean(spkd[i]))^2.0
+    #end
+    #error = sqrt(total / size(spkd, 1))
+    @show(error)
 end
 
-global Ne = 200;
-global Ni = 50
 
 function raster_difference(spkd0, spkd_found)
     maxi0 = size(spkd0)[2]
@@ -139,54 +216,69 @@ function raster_difference(spkd0, spkd_found)
                     t0 = 0.0,
                     tf = maxt,
                 )
-                b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+                #b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
                 spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
 
             end
         end
     end
     #scatter([i for i in 1:mini],spkd)|>display
-    error = rmse(spkd) + sum(spkd)
+    spkd
 end
 
-function loss(params)
-    σee = params[1]
-    pee = params[2]
-    σei = params[3]
-    pei = params[4]
-    P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+function loss(model)
+    #σee = model[1]
+    #pee = model[2]
+    #σei = model[3]
+    #pei = model[4]
+    #P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+    #@show(model)
+    P1, C1 = make_net_SNN(model[1])#,a=a)
+
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
-    sim_length = 1000
+    sim_length = 500
     @inbounds for t = 1:sim_length*ms
         E1.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
         SNN.sim!(P1, C1, 1ms)
     end
 
     spkd_found = get_trains(P1[1])
-    println("Ground Truth \n")
-    SNN.raster([E]) |> display
-    println("Best Candidate \n")
+    #println("Ground Truth \n")
+    #SNN.raster([E]) |> display
+    #println("A Candidate \n")
 
-    SNN.raster([E1]) |> display
+    #SNN.raster([E1]) |> display
 
-    error = raster_difference(spkd_ground, spkd_found)
-    #@show(error)
-    error
+    spkd = raster_difference(spkd_ground, spkd_found)
+    #spkd = (spkd
+    #@show(mean(spkd))
+    #error = Losses.logitcrossentropy(spkd)
+    #(mean(spkd),spkd;agg=mean)
+
+    #error = sum(spkd)#max(spkd)
+    #abs(sum(spkd./max(spkd)))
+    #@show(sum(spkd))
+    #@show(spkd)
+
+    spkd
 
 end
 
 
+
 function eval_best(params)
-    σee = params[1]
-    pee = params[2]
-    σei = params[3]
-    pei = params[4]
-    P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+    xx = Int(round(params[1]))
+    P1, C1 = make_net_SNN(xx)#,a=a)
+    #σee = params[1]
+    #pee = params[2]
+    #σei = params[3]
+    #pei = params[4]
+    #P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
-    sim_length = 1000
-    @inbounds for t = 1:sim_length
+    sim_length = 500
+    @inbounds for t = 1:sim_length*ms
         E1.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
         SNN.sim!(P1, C1, 1ms)
     end
@@ -233,8 +325,11 @@ function initd()
     garray[1, :]
 end
 
-lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
-upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
+lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
+upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
+
+#lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
+#upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
 lower = vec(lower)
 upper = vec(upper)
 #using Evolutionary, MultivariateStats
@@ -256,14 +351,20 @@ function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population
     record["pop"] = population[:]
     #record["σ"] = state.
 end
-
-function Evolutionary.value!(::Val{:multi}, fitness, objfun, population::AbstractVector{IT}) where {IT}
+#=
+function Evolutionary.value!(::Val{:serial}, fitness, objfun, population::AbstractVector{IT}) where {IT}
+    @show(typeof(fitness))
     fitness = SharedArrays.SharedArray{Float32}(fitness)
     @time @sync @distributed for i in 1:length(population)
+
+    #pmap(f, [::AbstractWorkerPool], c...; distributed=true, batch_size=) -> collection
         fitness[i] = value(objfun, population[i])
         #println("I'm worker $(myid()), working on i=$i")
     end
-    #fitness
-    fitness = Array(fitness)
+    @show(typeof(fitness))
+
+    fitness
+    #fitness = Array(fitness)
     #@show(fitness)
 end
+=#
