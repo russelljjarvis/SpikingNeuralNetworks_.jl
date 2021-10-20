@@ -10,24 +10,8 @@ using Distributed
 using SharedArrays
 using Plots
 using UnicodePlots
-using CUDA
-using Evolutionary
+sing Evolutionary
 
-##
-# Override to function to include a state.
-##
-#import Evolutionary.trace
-#function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
-#    record["σ"] = state.σ
-#    record["pop"] = population
-#end
-
-#record["time"] = curr_time
-#record["population"] = population
-
-#function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method, options) = ()
-
-#Evolutionary.trace = trace
 SNN.@load_units
 unicodeplots()
 
@@ -63,8 +47,8 @@ function get_trains(p)
     for (inx, cell_id) in enumerate(1:nac)
         cellsa[inx] = []
     end
-    for (inx, cell_id) in enumerate(unique(y))
-        for (index, (time, cell)) in enumerate(collect(zip(x, y)))
+    @inbounds for cell_id in unique(y)
+        @inbounds for (time, cell)) in collect(zip(x, y))
             if Int(cell_id) == cell
                 append!(cellsa[Int(cell_id)], time)
 
