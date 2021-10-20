@@ -1,5 +1,4 @@
 using UnicodePlots
-using Distributed
 import Pkg
 using Flux
 using SpikingNeuralNetworks
@@ -7,12 +6,11 @@ SNN = SpikingNeuralNetworks
 using SpikeSynchrony
 using Statistics
 using JLD
+using Distributed
 using SharedArrays
 using Plots
 using UnicodePlots
-#using CUDA
 using Evolutionary
-#using Random
 using Distributions
 using LightGraphs
 using Metaheuristics
@@ -32,10 +30,11 @@ unicodeplots()
 
 global Ne = 200;
 global Ni = 50
-weights = rand(Uniform(-2,1),25,25)
+
 
 
 function make_net_SNeuralN()
+    weights = rand(Uniform(-2,1),25,25)
     pop = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
                               synapse = Synapse.Alpha,
                               threshold = () -> Threshold.Ideal(vth))
@@ -94,16 +93,13 @@ function make_net_SNN(xx)#;
     @inbounds for (i,j) in enumerate(h.fadjlist)
         @inbounds for k in j
             SNN.connect!(EE,i, k, 10)
-            #SNN.connect!(EI,i, k, Ni)
-            #SNN.connect!(IE,i, k, 50)
-            #SNN.connect!(II,i, k, 50)
         end
     end
 
     @inbounds for (i,j) in enumerate(hi.fadjlist)
         @inbounds for k in j
             if i<Ni && k<Ni
-                #SNN.connect!(EE,i, k, 50)
+
                 SNN.connect!(EI,i, k, 10)
                 SNN.connect!(IE,i, k, 10)
                 SNN.connect!(II,i, k, 10)
@@ -151,8 +147,8 @@ function get_trains(p)
     for (inx, cell_id) in enumerate(1:nac)
         cellsa[inx] = []
     end
-    for (inx, cell_id) in enumerate(unique(y))
-        for (index, (time, cell)) in enumerate(collect(zip(x, y)))
+    @inbounds for cell_id in unique(y)
+        @inbounds for (time, cell)) in collect(zip(x, y))
             if Int(cell_id) == cell
                 append!(cellsa[Int(cell_id)], time)
 
@@ -172,16 +168,17 @@ global spkd_ground
 
 #Flux.SGD
 #Flux.gpu
-using Flux.Losses
+
 function rmse(spkd)
     error = Losses(mean(spkd),spkd;agg=mean)
-    #println(spkd)
-    #total = 0.0
-    #@inbounds for i = 1:size(spkd, 1)
-    #    total += (spkd[i] - mean(spkd[i]))^2.0
-    #end
-    #error = sqrt(total / size(spkd, 1))
-    @show(error)
+end
+
+function rmse_depr(spkd)
+    total = 0.0
+    @inbounds for i = 1:size(spkd, 1)
+        total += (spkd[i] - mean(spkd[i]))^2.0
+    end
+    return sqrt(total / size(spkd, 1))
 end
 
 
@@ -244,24 +241,15 @@ function loss(model)
     end
 
     spkd_found = get_trains(P1[1])
-    #println("Ground Truth \n")
-    #SNN.raster([E]) |> display
-    #println("A Candidate \n")
+    println("Ground Truth \n")
+    SNN.raster([E]) |> display
+    println("Best Candidate \n")
 
-    #SNN.raster([E1]) |> display
+    SNN.raster([E1]) |> display
 
-    spkd = raster_difference(spkd_ground, spkd_found)
-    #spkd = (spkd
-    #@show(mean(spkd))
-    #error = Losses.logitcrossentropy(spkd)
-    #(mean(spkd),spkd;agg=mean)
-
-    #error = sum(spkd)#max(spkd)
-    #abs(sum(spkd./max(spkd)))
-    #@show(sum(spkd))
-    #@show(spkd)
-
-    spkd
+    error = raster_difference(spkd_ground, spkd_found)
+    @show(error)
+    error
 
 end
 
@@ -325,6 +313,10 @@ function initd()
     garray[1, :]
 end
 
+
+#lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
+#upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
+
 lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
 upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
 
@@ -334,6 +326,7 @@ lower = vec(lower)
 upper = vec(upper)
 #using Evolutionary, MultivariateStats
 #range = Any[lower,upper]
+
 # mutation = domainrange(fill(0.5,4))
 #
 #function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
