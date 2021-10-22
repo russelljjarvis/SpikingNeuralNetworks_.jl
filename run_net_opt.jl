@@ -3,25 +3,8 @@ using ClearStacktrace
 
 #using UnicodePlots
 using Plots
-#unicodeplots()
 unicodeplots()
 
-#using LightGraphs
-#using GraphPlot
-#using Colors
-#using Cairo, Compose
-
-#h = watts_strogatz(50, 6, 0.3)
-#nodelabel = 1:nv(h)
-# Generate n maximally distinguishable colors in LCHab space.
-#nodefillc = distinguishable_colors(nv(h), colorant"blue")
-
-#gplot(h)|>display
-
-# save to pdf
-#draw(PDF("karate.pdf", 16cm, 16cm), gplot(g))
-# save to png
-#draw(PNG("karate.png"),gplot(h, nodefillc=nodefillc, nodelabel=nodelabel, nodelabeldist=1.8, nodelabelangleoffset=π/4))
 #if nprocs()==1
 #	addprocs(8)
 #end
@@ -87,10 +70,10 @@ b = view(bounds, 1, 2)
 information = Information(f_optimum = 0.0)
 options = Options( seed = 1, iterations=10, f_calls_limit =10)
 #N = 50, n_samples=500,
-method = NSGA2(options=options, f_calls_limit =100)#, information = information)
+#method = NSGA2(options=options, f_calls_limit =100)#, information = information)
 #method = ECA(options=options, information = information)
 
-result = optimize(loss, bounds, method)
+result = optimize(loss, bounds)#, method)
 @show(result)
 #Approximate the optimum using the function optimize.
 
@@ -171,8 +154,9 @@ display(plot(evo_loss))
 #display(plot(first_dim1))
 #display(plot(first_dim1,first_dim2,first_dim3))
 
-run(`python-jl validate_candidate.py`)
-
+#run(`python-jl validate_candidate.py`)
+using PyCall
+py"""import validate_candidate"""
 iter = [t.iteration for t in trace]
 data = [ trace[i+1,1,1].metadata["pop"] for i in iter ]
 

@@ -148,7 +148,7 @@ function get_trains(p)
         cellsa[inx] = []
     end
     @inbounds for cell_id in unique(y)
-        @inbounds for (time, cell)) in collect(zip(x, y))
+        @inbounds for (time, cell) in collect(zip(x, y))
             if Int(cell_id) == cell
                 append!(cellsa[Int(cell_id)], time)
 
@@ -248,7 +248,7 @@ function loss(model)
     SNN.raster([E1]) |> display
 
     error = raster_difference(spkd_ground, spkd_found)
-    @show(error)
+    #@show(error)
     error
 
 end
