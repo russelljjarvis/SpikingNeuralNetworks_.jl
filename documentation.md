@@ -13,9 +13,7 @@ authors:
   - name: Rick Gerkin
 
 date: March 2021
+Neuron models that behave like their biological counterparts are essential for computational neuroscience. Reduced neuron models simplify biological mechanisms in the interest of speed and interpretability. Only Reduced Neuron models can fit the scale of whole-brain simulations; therefore, improving these models is important. So far, little care has been taken to ensure that single neuron behaviours closely resemble biological neurons. To improve the veracity of reduced neuron models, I developed an optimizer that uses genetic algorithms to align model behaviours with those observed in experiments (first in Python, now in Julia). 
 
-Neuron models that behave like their biological counterparts are essential for computational neuroscience.
-Reduced neuron models, which abstract away biological mechanisms in the interest of speed and interpretability, have received much attention due to their utility in large scale simulations of the brain, but little care has been taken to ensure that these models exhibit behaviors that closely resemble real neurons.
-In order to improve the verisimilitude of these reduced neuron models, I developed an optimizer that uses genetic algorithms to align model behaviors with those observed in experiments.
-I verified that this optimizer was able to recover model parameters given only observed physiological data; however, I also found that reduced models nonetheless had limited ability to reproduce all observed behaviors, and that this varied by cell type and desired behavior.
-These challenges can partly be surmounted by carefully designing the set of physiological features that guide the optimization. In summary, we found evidence that reduced neuron model optimization had the potential to produce reduced neuron models for only a limited range of neuron types.
+I verified that this optimizer could recover model parameters given only observed physiological data; however, I also found that reduced models nonetheless had limited ability to reproduce all observed behaviours and that this varied by cell type and desired behaviour. These challenges can be surmounted by carefully designing the set of physiological features that guide the optimization. In summary, we found evidence that reduced neuron model optimization had the potential to produce reduced neuron models for only a limited range of neuron types.
+
