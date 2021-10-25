@@ -5,24 +5,18 @@ using OrderedCollections
 using LinearAlgebra
 #using NSGAII
 using SpikeSynchrony
-include("../src/SpikingNeuralNetworks.jl")
-include("../src/unit.jl")
+using SpikingNeuralNetworks
+#include("../src/SpikingNeuralNetworks.jl")
+#include("../src/unit.jl")
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 
 using Evolutionary, Test, Random
-using Plots
+#using Plots
 import DataStructures
 using JLD
 using Evolutionary, Test, Random
-import Unitful: 𝐓,Hz,mV
-#using SignalAnalysis, SignalAnalysis.Units
-#using CuArrays
-#using GPUifyLoops
-#using ConstructionBase
-#using ConstructionBaseExtras
-#using Debugger
-unicodeplots()
+#unicodeplots()
 global ngt_spikes
 global opt_vec
 global extremum
@@ -39,7 +33,7 @@ adparam = SNN.ADEXParameter(;a = 6.050246708405076, b = 7.308480222357973,
     v_thresh=-39.232165554444265,
     delta_T=6.37124632135508,
     v_reset = -59.18792270568965,
-    spike_height = 16.33506432689027)
+    spike_delta = 16.33506432689027)
 
 E = SNN.AD(;N = 1, param=adparam)
 E.I = [795.57128906]
@@ -47,9 +41,35 @@ E.I = [795.57128906]
 # -
 
 SNN.monitor(E, [:v,:I])
+
+
+function SNN.sim!(P, C; dt = 0.25ms, simulation_duration = 1300ms, delay = 300ms,stimulus_duration=1000ms)
+    temp = deepcopy(P[1].I)
+    size = simulation_duration/dt
+    cnt1 = 0
+	if hasproperty(P[1], :spike_raster )
+		P[1].spike_raster::Vector{Int32} = zeros(trunc(Int, size))
+
+	end
+    for t = 0ms:dt:simulation_duration
+        cnt1+=1
+        if cnt1 < delay/dt
+           P[1].I[1] = 0.0
+        end
+        if cnt1 > (delay/dt + stimulus_duration/dt)
+	       P[1].I[1] = 0.0
+        end
+        if (delay/dt) < cnt1 < (stimulus_duration/dt)
+           P[1].I[1] = maximum(temp[1])
+        end
+        SNN.sim!(P, C, dt)
+    end
+end
+#SNN.sim! = sim!
 #SNN.sim!([Etest],[0],dt = 0.25ms, simulation_duration = 2000ms, delay = 500ms,stimulus_duration=2000ms)
-SNN.sim!([E],[0],dt = 1ms, simulation_duration = 2000ms, delay = 500ms,stimulus_duration=2000ms)
-SNN.vecplot(E, :v) |> display
+SNN.sim!([E],[0],dt = 1ms, simulation_duration = 3000ms, delay = 500ms,stimulus_duration=2000ms)
+
+#SNN.vecplot(E, :v) |> display
 
 
 if isfile("ground_truth.jld")
@@ -101,11 +121,13 @@ else
     save(filename, "vmgtv", vmgtv,"vmgtt",vmgtt, "ngt_spikes", ngt_spikes,"gt_spikes",gt_spikes)
 
 end
+println("gets here a")
 
-plot(vmgtt[:],vmgtv[:]) |> display
+#plot(vmgtt[:],vmgtv[:]) |> display
 ALLEN_DURATION = 2000 * ms
 ALLEN_DELAY = 1000 * ms
 ranges_adexp = DataStructures.OrderedDict{String,Tuple{Float32,Float32}}()
+println("gets here b")
 
 ranges_adexp[:"a"] = (2.0, 20)
 ranges_adexp[:"b"] = (2.0, 20)
@@ -381,9 +403,9 @@ function checkmodel(param)
 
     SNN.monitor(E, [:v])
     SNN.sim!([E], []; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
-    vec = SNN.vecplot(E, :v)
-    vec |> display
-    vec
+    #vec = SNN.vecplot(E, :v)
+    #vec |> display
+    #vec
 
 
 end
