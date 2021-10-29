@@ -11,7 +11,9 @@ unicodeplots()
 #@everywhere include("spike_distance_opt.jl")
 include("spike_distance_opt.jl")
 
-P, C = make_net_SNN(26)
+
+global GT = 26
+P, C = make_net_SNN(GT)
 
 E, I = P #, EEA]
 EE, EI, IE, II = C
@@ -48,11 +50,11 @@ sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
 #for method in methods
 
 #f_calls = 0
-f(x) = begin
-    f_calls += 1
-    loss(x)
-end
-f_calls = 0
+#f(x) = begin
+#    f_calls += 1
+#    loss(x)
+#end
+#f_calls = 0
 #E1, spkd_found = eval_best(params)
 #errors = loss(10)
 #D = length(loss(10))
@@ -67,8 +69,88 @@ b = view(bounds, 1, 2)
 #@show(b)
 #@show(a)
 #@show(method)
+
+
+
 information = Information(f_optimum = 0.0)
 options = Options( seed = 1, iterations=10, f_calls_limit =10)
+
+#ff, bounds, pf = MTP(problem)
+D = size(bounds, 2)
+
+# number of function evaluations
+#f_calls = 0
+
+#f(x) = begin
+#    f_calls += 1
+#    loss(x)
+#end
+
+#options = Options( seed = 1, iterations=10, f_calls_limit = 5)
+#nobjectives = length(pf[1].f)
+#npartitions = nobjectives == 2 ? 100 : 12
+nobjectives=1
+methods = [
+        SMS_EMOA(N = 5, n_samples=5, options=options),
+        NSGA2(options=options),
+        MOEAD_DE(gen_ref_dirs(1, 1), options=Options( seed = 1, iterations = 5)),
+        NSGA3(options=options),
+      ]
+
+for method in methods
+    #f_calls = 0
+    result = ( optimize(f, bounds, method) )
+    show(IOBuffer(), "text/html", result)
+    show(IOBuffer(), "text/plain", result.population)
+    show(IOBuffer(), "text/html", result.population)
+    show(IOBuffer(), result.population[1])
+end
+
+# number of function evaluations
+f_calls = 0
+
+f(x) = begin
+    f_calls += 1
+    ff(x)
+end
+
+options = Options( seed = 1, iterations=10000, f_calls_limit = 25000)
+nobjectives = length(pf[1].f)
+npartitions = nobjectives == 2 ? 100 : 12
+
+methods = [
+        SMS_EMOA(N = 50, n_samples=500, options=options),
+        NSGA2(options=options),
+        MOEAD_DE(gen_ref_dirs(nobjectives, npartitions), options=Options( seed = 1, iterations = 500)),
+        NSGA3(options=options),
+      ]
+
+for method in methods
+    f_calls = 0
+    result = ( optimize(f, bounds, method) )
+    show(IOBuffer(), "text/html", result)
+    show(IOBuffer(), "text/plain", result.population)
+    show(IOBuffer(), "text/html", result.population)
+    show(IOBuffer(), result.population[1])
+    @test Metaheuristics.PerformanceIndicators.igd(result.population, pf) <= 0.2
+    @test Metaheuristics.PerformanceIndicators.spacing(result) < 0.2
+    @test Metaheuristics.PerformanceIndicators.covering(pf, result.population) <= 1.0
+    @test Metaheuristics.PerformanceIndicators.covering(result, result) ≈ 0.0
+
+    # number of function evaluations should be reported correctly
+    @test f_calls == result.f_calls
+
+
+    # test obtaining non-dominated solutions
+    pf1 = pareto_front(result)
+    pf2 = pareto_front(result.population)
+
+    @test size(pf1, 1) == size(pf2,1) &&
+          Metaheuristics.PerformanceIndicators.igd(pf1, pf2) ≈ 0.0
+end
+
+
+
 #N = 50, n_samples=500,
 #method = NSGA2(options=options, f_calls_limit =100)#, information = information)
 #method = ECA(options=options, information = information)

@@ -69,7 +69,9 @@ global σei = 1.0
 global pei = 0.5
 
 function make_net_SNN(xx)#;
+
     xx = Int(round(xx))
+    @show(xx)
     #h = turan_graph(xx, xx)#, seed=1,cutoff=0.3)
 
     h = circular_ladder_graph(xx)#, xx)#, seed=1,cutoff=0.3)
@@ -230,6 +232,9 @@ function loss(model)
     #pei = model[4]
     #P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     #@show(model)
+    println("best candidate ",26)
+    println(" ")
+    #println("found ", model[1])
     P1, C1 = make_net_SNN(model[1])#,a=a)
 
     E1, I1 = P1
@@ -241,14 +246,17 @@ function loss(model)
     end
 
     spkd_found = get_trains(P1[1])
-    println("Ground Truth \n")
-    SNN.raster([E]) |> display
-    println("Best Candidate \n")
+    #println("Ground Truth \n")
+    #SNN.raster([E]) |> display
+    #println("Best Candidate \n")
 
-    SNN.raster([E1]) |> display
+    #SNN.raster([E1]) |> display
 
     error = raster_difference(spkd_ground, spkd_found)
+    error = sum(error)
     #@show(error)
+    #println("Broke here")
+
     error
 
 end
@@ -257,7 +265,10 @@ end
 
 function eval_best(params)
     xx = Int(round(params[1]))
+    @show(xx)
     P1, C1 = make_net_SNN(xx)#,a=a)
+    println("found ",xx)
+
     #σee = params[1]
     #pee = params[2]
     #σei = params[3]
