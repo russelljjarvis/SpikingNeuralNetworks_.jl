@@ -188,17 +188,7 @@ end
 
 lower,upper = get_ranges(ranges_adexp)
 
-function raster_synchp(p)
-    fire = p.records[:fire]
-    spikes = Float32[]
-    #neurons = Float32[]#, Float32[]
-    for time = eachindex(fire)
-        for neuron_id in findall(fire[time])
-            push!(spikes,time)
-        end
-    end
-    spikes
-end
+
 function loss(E,ngt_spikes,ground_spikes)
     spikes = raster_synchp(E)
     spikes = [s*ms for s in spikes]
