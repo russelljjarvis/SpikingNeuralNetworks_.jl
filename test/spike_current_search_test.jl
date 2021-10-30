@@ -5,7 +5,7 @@ unicodeplots()
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 include("../current_search.jl")
-
+#=
 @testset "IZHI" begin
 
     RS = SNN.IZ(;N = 1, param = SNN.IZParameter(;a = 0.02, b = 0.2, c = -65, d = 8))
@@ -42,10 +42,11 @@ include("../current_search.jl")
         nspk = size(spikes)[1]
         @test nspk>=1
 
-        #v = SNN.vecplot(p, :v)
-        #v |> display
+        v = SNN.vecplot(p, :v)
+        v |> display
     end
 end
+=#
 @testset "IZHI_spike_search" begin
 
     cell_type = "IZHI"

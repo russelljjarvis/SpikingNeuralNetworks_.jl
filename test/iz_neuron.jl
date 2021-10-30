@@ -52,3 +52,19 @@ v |> display
 #println("fail")
 #
 #end
+cell_type = "ADEXP"
+ngt_spikes=10
+#for p in [P[1]]
+    #@show(p.param)
+current_ = current_search(cell_type,P[1],ngt_spikes)
+P[1].I = [current_*nA]
+@show(current_)
+SNN.monitor(P[1], [:v])
+ALLEN_DURATION = 2000 * ms
+ALLEN_DELAY = 1000 * ms
+
+SNN.sim!([P[1]]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
+
+
+v = SNN.vecplot(P[1], :v)
+v |> display
