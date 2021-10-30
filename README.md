@@ -1,7 +1,10 @@
 # Description
 A Network and single cell spiking neuron optimizer written in Julia.
-### MOtivation
-Previous attempts to do data driven optimization of spiking neurons in Python where slower and more complex than they needed to be. Python SNN simulation, calls non native C code to enjoy a speed up.
+### Motivation
+[Previous attempts](https://github.com/russelljjarvis/BluePyOpt/blob/neuronunit_reduced_cells/examples/neuronunit/OptimizationMulitSpikingIzhikevichModel.ipynb)
+ to do data driven optimization of spiking neurons in Python where slower and more complex than they needed to be. Reduced model spiking neurons models have compact equations, and they should be fast to simulate, but Python often calls external codes and programes (C,C++,NEURON,brian2,NEST,PyNN) to achieve a speed up for network simulations. This strategy of calling external code causes an intolerable run-time cost for single neuron simulations. Code from the Python optimization framework DEAP/BluePyOpt also induces an additional overhead.
+
+Python SNN simulation, calls non native C code to enjoy a speed up.
 
 - The Evolutionary.jl package provides Genetic Algorithms that are used to optimize spiking neural networks
 
