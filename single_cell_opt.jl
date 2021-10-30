@@ -47,8 +47,7 @@ if isfile("ground_truth.jld")
     ground_spikes = gt_spikes
     ngt_spikes = size(gt_spikes)[1]
     vmgtt = load("ground_truth.jld","vmgtt")
-
-    #plot(Plot(vmgtv,vmgtt,w=1))
+    plot(plot(vmgtv,vmgtt,w=1))
 
 else
     py"""

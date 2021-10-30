@@ -11,18 +11,14 @@ function raster_synchp(p)
     spikes
 end
 function test_current(cell_type,param,current,ngt_spikes)
-    #param = param.param
     if cell_type=="IZHI"
-        #dir(x) = fieldnames(typeof(x))
-        param = param.param
-        pp = SNN.IZParameter(;a = 0.02, b = 0.2, c = -65, d = 8)
+        pp = SNN.IZParameter(;a = param[1], b = param[2], c = param[3], d = param[4])
 
         E = SNN.IZ(;N = 1, param = pp)
 
     end
 
     if cell_type=="ADEXP"
-        #=
         adparam = SNN.ADEXParameter(;a = param[1],
             b = param[2],
             cm = param[3],
@@ -35,22 +31,6 @@ function test_current(cell_type,param,current,ngt_spikes)
             spike_delta = param[10])
 
         E = SNN.AD(;N = 1, param=adparam)
-        =#
-        adparam = SNN.ADEXParameter(;a = 6.050246708405076, b = 7.308480222357973,
-            cm = 803.1019662706587,
-            v0= -63.22881649139353,
-            τ_m=19.73777028610565,
-            τ_w=351.0551915202058,
-            θ=-39.232165554444265,
-            delta_T=6.37124632135508,
-            v_reset = -59.18792270568965,
-            spike_delta = 16.33506432689027)
-
-
-
-        E = SNN.AD(;N = 1, param=adparam)
-
-
     end
 
     SNN.monitor(E, [:v])

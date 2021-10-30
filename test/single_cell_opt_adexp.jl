@@ -30,7 +30,7 @@ if PARALLEL
 		addprocs(8)
 
 	end
-	@everywhere include("../opt_single_cell_utils.jl")
+	@everywhere include("../utils.jl")
 
 	function Evolutionary.value!(::Val{:serial}, fitness, objfun, population::AbstractVector{IT}) where {IT}
 	    fitness = SharedArrays.SharedArray{Float32}(fitness)
@@ -41,7 +41,7 @@ if PARALLEL
 	    fitness
 	end
 else
-	include("../opt_single_cell_utils.jl")
+	include("../utils.jl")
 end
 
 
