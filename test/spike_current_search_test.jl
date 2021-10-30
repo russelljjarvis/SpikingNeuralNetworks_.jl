@@ -19,6 +19,8 @@ include("../current_search.jl")
     P = [RS, IB, CH, FS, TC1, TC2, RZ, LTS]
 
     SNN.monitor(P, [:v])
+    SNN.monitor(P, [:fire])
+
     T = 2second
     for t = 0:T
         for p in [RS, IB, CH, FS, LTS]
@@ -29,40 +31,51 @@ include("../current_search.jl")
         RZ.I =  [(0.5T < t < 0.6T) ? 10mV : 0mV]
         SNN.sim!(P, [], 0.1ms)
 
+        #test_result(nspk, ngt_spikes, 1e-1)
+
         #v = vecplot(E, :v)
         #@show(v)
     end
     for p in P
-        v = SNN.vecplot(p, :v)
-        v |> display
+        spikes = raster_synchp(p)
+        spikes = [s*ms for s in spikes]
+        nspk = size(spikes)[1]
+        @test nspk>=1
+
+        #v = SNN.vecplot(p, :v)
+        #v |> display
     end
 end
 @testset "IZHI_spike_search" begin
 
     cell_type = "IZHI"
-    ngt_spikes=rand(1:20)
-    current_ = current_search(cell_type,P[1],ngt_spikes)
-    P[1].I = [current_*nA]
-    SNN.monitor(P[1], [:v])
-    SNN.monitor(P[1], [:fire])
-    spikes = raster_synchp(P[1])
-    spikes = [s*ms for s in spikes]
-    nspk = size(spikes)[1]
-    test_result(nspk, ngt_spikes, 1e-1)
+    ngt_spikes=rand(5:15)
+    RS = SNN.IZ(;N = 1, param = SNN.IZParameter(;a = 0.02, b = 0.2, c = -65, d = 8))
+
+    current_ = current_search(cell_type,RS,ngt_spikes)
+
+    RS.I = [current_*nA]
+    SNN.monitor(RS, [:v])
+    SNN.monitor(RS, [:fire])
+    #test_result(nspk, ngt_spikes, 1e-1)
 
     ALLEN_DURATION = 2000 * ms
     ALLEN_DELAY = 1000 * ms
 
-    SNN.sim!([P[1]]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
+    SNN.sim!([RS]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
+    spikes = raster_synchp(RS)
+    spikes = [s*ms for s in spikes]
+    nspk = size(spikes)[1]
+    @test nspk==ngt_spikes
 
 
-    v = SNN.vecplot(P[1], :v)
-    v |> display
+    #v = SNN.vecplot(RS, :v)
+    #v |> display
 end
 @testset "ADEXP_spike_search" begin
 
     cell_type = "ADEXP"
-    ngt_spikes=rand(1:20)
+    ngt_spikes=rand(4:20)
 
     adparam = SNN.ADEXParameter(;a = 6.050246708405076, b = 7.308480222357973,
         cm = 803.1019662706587,
@@ -80,15 +93,17 @@ end
     current_ = current_search(cell_type,E,ngt_spikes)
     E.I = [current_*nA]
     SNN.monitor(E, [:v])
-    SNN.monitor(P[1], [:fire])
-    spikes = raster_synchp(P[1])
-    spikes = [s*ms for s in spikes]
-    nspk = size(spikes)[1]
-    test_result(nspk, ngt_spikes, 1e-1)
+    SNN.monitor(E, [:fire])
 
     ALLEN_DURATION = 2000 * ms
     ALLEN_DELAY = 1000 * ms
     SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
-    v = SNN.vecplot(E, :v)
-    v |> display
+    spikes = raster_synchp(E)
+    spikes = [s*ms for s in spikes]
+    nspk = size(spikes)[1]
+    #test_result(nspk, ngt_spikes, 1e-1)
+    @test nspk==ngt_spikes
+
+    #v = SNN.vecplot(E, :v)
+    #v |> display
 end
