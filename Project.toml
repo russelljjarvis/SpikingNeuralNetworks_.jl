@@ -1,5 +1,7 @@
 name = "SpikeNetOpt"
+uuid = "145ac929-eb8f-4c2d-a659-99b6ac427599"
 authors = ["Russell Jarvis <russelljarvis@protonmail.com>"]
+version = "0.1.0"
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
