@@ -1,12 +1,15 @@
-# SpikeNetOpt.jl
-A julia Spiking Neural Network Optimizer
-The Evolutionary.jl package provides Genetic Algorithms that are used to optimize spiking neural networks
+# Description
+A Network and single cell spiking neuron optimizer written in Julia.
+### MOtivation
+Previous attempts to do data driven optimization of spiking neurons in Python where slower and more complex than they needed to be. Python SNN simulation, calls non native C code to enjoy a speed up.
 
-The loss function is constructed by computing Spike Distance between all pairs of neurons
+- The Evolutionary.jl package provides Genetic Algorithms that are used to optimize spiking neural networks
+
+- In a network the loss function is constructed by computing Spike Distance between all pairs of neurons
 Networks are optimized using pair wise spike-distance metric on each pair of neurons
 Pythons NetworkUnit package is used to perform a posthoc evaluation of the optimized network.
 
-See the figure below where local variation and firing rates are compared against every neuron between two model networks.
+<!---See the figure below where local variation and firing rates are compared against every neuron between two model networks.-->
 
 For example this is a ground truth model versus an optimized model t-test of firing rates:
 ```
