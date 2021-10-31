@@ -17,6 +17,8 @@ Student's t-test
 	datasize: 200 	 200
 	t = 11.811 	 p value = 1.82e-25
 ```
+
+Note for perspective 86% of spike times are matched in some of the best, model fitting competitions.
 ![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png)
 
 
