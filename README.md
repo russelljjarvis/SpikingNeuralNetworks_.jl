@@ -6,8 +6,8 @@ The loss function is constructed by computing Spike Distance between all pairs o
 Networks are optimized using pair wise spike-distance metric on each pair of neurons
 Pythons NetworkUnit package is used to perform a posthoc evaluation of the optimized network.
 
-single cell optimization example
-![https://github.com/russelljjarvis/SpikeNetOpt.jl/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/img/single_cell_spike_time_fit.png)
+![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png](single cell optimization example
+)
 
 See the figure below where local variation and firing rates are compared against every neuron between two model networks.
 
