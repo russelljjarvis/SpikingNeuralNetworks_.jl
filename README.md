@@ -7,7 +7,7 @@ Networks are optimized using pair wise spike-distance metric on each pair of neu
 Pythons NetworkUnit package is used to perform a posthoc evaluation of the optimized network.
 
 single cell optimization example
-![](https://github.com/russelljjarvis/SpikeNetOpt.jl/img/single_cell_spike_time_fit.png)
+![https://github.com/russelljjarvis/SpikeNetOpt.jl/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/img/single_cell_spike_time_fit.png)
 
 See the figure below where local variation and firing rates are compared against every neuron between two model networks.
 
