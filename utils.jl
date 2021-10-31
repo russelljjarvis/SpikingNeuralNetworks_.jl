@@ -1,5 +1,6 @@
 include("current_search.jl")
-
+using SpikingNeuralNetworks
+SNN = SpikingNeuralNetworks
 using Evolutionary, Test, Random
 using Distributed
 using SharedArrays
@@ -43,9 +44,7 @@ function initf(n)
 end
 
 
-
-
-function checkmodel(param)
+function checkmodel(param,cell_type,ngt_spikes)
     if cell_type=="IZHI"
         pp = SNN.IZParameter(;a = param[1], b = param[2], c = param[3], d = param[4])
         E = SNN.IZ(;N = 1, param = pp)
@@ -70,27 +69,37 @@ function checkmodel(param)
     ALLEN_DURATION = 2000 * ms
     ALLEN_DELAY = 1000 * ms
 	current = current_search(cell_type,param,ngt_spikes)
-    E.I = [current]#_search(param,ngt_spikes)*nA]
+    E.I = [current*nA]#_search(param,ngt_spikes)*nA]
 
     SNN.monitor(E, [:v])
+	###
+	# TODO buid t into neuron models
+	# SNN.monitor(E, [:t])
+    ###
     SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
-    if vecp
-        vec = SNN.vecplot(E, :v)
-        vec |> display
-        vec
-    end
+	#vecp=false
+    #if vecp
+    #    vec |> display
+    #    vec
+    #end
+	#vec = SNN.vecplot(E, :v)
 
+    #vec
+	vm = get_vm(E)
+	vm
 end
 
 function get_data()
-    if isfile("ground_truth.jld")
-        vmgtv = load("ground_truth.jld","vmgtv")
-        ngt_spikes = load("ground_truth.jld","ngt_spikes")
-        gt_spikes = load("ground_truth.jld","gt_spikes")
+	print(pwd())
+	file="../JLD/ground_truth.jld"
+    if isfile(file)
+        vmgtv = load(file,"vmgtv")
+        ngt_spikes = load(file,"ngt_spikes")
+        gt_spikes = load(file,"gt_spikes")
 
         ground_spikes = gt_spikes
         ngt_spikes = size(gt_spikes)[1]
-        vmgtt = load("ground_truth.jld","vmgtt")
+        vmgtt = load(file,"vmgtt")
 
         plot(plot(vmgtv,vmgtt,w=1))
 

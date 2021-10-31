@@ -1,3 +1,4 @@
+using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 function raster_synchp(p)
@@ -10,6 +11,14 @@ function raster_synchp(p)
     end
     spikes
 end
+
+
+function get_vm(p)
+    vm = p.records[:v]
+	vm
+end
+
+
 function test_current(cell_type,param,current,ngt_spikes)
     if cell_type=="IZHI"
         pp = SNN.IZParameter(;a = param[1], b = param[2], c = param[3], d = param[4])
