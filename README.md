@@ -1,6 +1,10 @@
 # SpikeNetOpt.jl
-A julia Spiking Neural Network Optimizer
-The Evolutionary.jl package provides Genetic Algorithms that are used to optimize spiking neural networks
+
+## Description
+A Network and single cell spiking neuron optimizer written in Julia.
+### Motivation
+[Previous attempts](https://github.com/russelljjarvis/BluePyOpt/blob/neuronunit_reduced_cells/examples/neuronunit/OptimizationMulitSpikingIzhikevichModel.ipynb)
+ to do data driven optimization of spiking neurons in Python where slower and more complex than they needed to be. Reduced model spiking neurons models have compact equations, and they should be fast to simulate, but Python often calls external codes and programes (C,C++,NEURON,brian2,NEST,PyNN) to achieve a speed up for network simulations, however approaches for speeding up network simulations are not efficient for speeding up single cell simulations.  This strategy of calling external code causes an intolerable run-time cost for single neuron simulations. The Python tool numba JIT partially remedies this problem, however code from the Python optimization framework DEAP/BluePyOpt also induces an additional overhead. An almost pure Julia SNN optimization routine seems to be the solution to efficient optimization of Reduced SNN models. In this package, two other packages: Evolutionary.jl, and MetaHeuristics provide Genetic Algorithms that are used to optimize spiking neural networks
 
 The loss function is constructed by computing Spike Distance between all pairs of neurons
 Networks are optimized using pair wise spike-distance metric on each pair of neurons
