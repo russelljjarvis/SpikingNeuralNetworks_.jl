@@ -1,7 +1,9 @@
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 SNN.@load_units
-function raster_synchp(p)
+using SignalAnalysis
+
+function get_spikes(p)
     fire = p.records[:fire]
     spikes = Float32[]
     for time = eachindex(fire)
@@ -13,18 +15,11 @@ function raster_synchp(p)
 end
 
 
-function get_vm(p)
-    vm = p.records[:v]
-	vm
-end
-
 
 function test_current(cell_type,param,current,ngt_spikes)
     if cell_type=="IZHI"
         pp = SNN.IZParameter(;a = param[1], b = param[2], c = param[3], d = param[4])
-
         E = SNN.IZ(;N = 1, param = pp)
-
     end
 
     if cell_type=="ADEXP"
@@ -49,10 +44,9 @@ function test_current(cell_type,param,current,ngt_spikes)
     ALLEN_DELAY = 1000 * ms
 
     E.I = [current*nA]
-
-    SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
-    spikes = raster_synchp(E)
-    spikes = [s*ms for s in spikes]
+    SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+343ms)
+    spikes = get_spikes(E)
+    spikes = [s/1000 for s in spikes]
     nspk = size(spikes)[1]
     delta = abs(nspk - ngt_spikes)
     return nspk
@@ -99,7 +93,6 @@ function current_search(cell_type,param,ngt_spikes)
     cnt = 0.0
     while (ngt_spikes in keys(current_dict))==false
         current_dict = test_c(check_values,param,ngt_spikes,current_dict,cell_type)
-        #@show(keys(current_dict))
         if ngt_spikes in keys(current_dict)
             return current_dict[ngt_spikes]
         end

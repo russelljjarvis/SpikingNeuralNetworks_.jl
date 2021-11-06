@@ -4,6 +4,9 @@ SNN = SpikingNeuralNetworks
 using Evolutionary, Test, Random
 using Distributed
 using SharedArrays
+using SignalAnalysis
+
+
 function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
     idx = sortperm(state.fitpop)
     record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]
@@ -14,8 +17,8 @@ end
 
 function get_ranges(ranges)
 
-    lower = []
-    upper = []
+    lower = []#Float32[]
+    upper = []#Float32[]
     for (k,v) in ranges
         append!(lower,v[1])
         append!(upper,v[2])
@@ -24,18 +27,16 @@ function get_ranges(ranges)
 end
 
 function init_b(lower,upper)
-    gene = []
-    #chrome = Float32[size(lower)[1]]
+    gene = []#Float32
     for (i,(l,u)) in enumerate(zip(lower,upper))
         p1 = rand(l:u, 1)
         append!(gene,p1)
-        #chrome[i] = p1
     end
     gene
 end
 
 function initf(n)
-    genesb = []
+    genesb = []#Float32[]
     for i in 1:n
         genes = init_b(lower,upper)
         append!(genesb,[genes])
@@ -43,6 +44,54 @@ function initf(n)
     genesb
 end
 
+function custom_raster(P1::Array,P2::Array)
+    y0 = Int32[0]
+    X = Float32[];
+	Y = Float32[]
+	N=1
+	y=0
+	for p in [P1,P2]
+		y+=1
+		append!(X, P1)
+		append!(Y, 1 .+ sum(y0))
+    	push!(y0, 1)
+		append!(X, P2)
+		append!(Y, 1 .+ sum(y0))
+	    push!(y0, 1)
+		N+=1
+    end
+    plt = scatter(X, Y,w=50, m = (1, :black), leg = :none, marker=:vline,
+                  xaxis=("t", (0, Inf)), yaxis = ("neuron",))
+    y0 = y0[2:end-1]
+    !isempty(y0) && hline!(plt, cumsum(y0), linecolor = :red)
+    return plt
+end
+
+
+function custom_raster2(P1::Array,P2::Array)
+	#neuron1=1*zeros(length(P1))
+	#neuron2 = [2*i for i in neuron1]
+	#@show(P1)
+	#@show(P2)
+    plt3=plot!(P1, seriestype="vline", label="")
+	plt4=plot!(P2, seriestype="vline", label="")
+	display(plt3)
+	display(plt4)
+
+	#plt3 = vline!(P1)#,P1)#,w=50)
+	#display(plt3)
+	#plt4 = vline!(P2)
+	#display(plt4)
+	#plot!(plt3,plt3)#,P2)#,w=50)
+    #return plt1
+end
+
+function get_vm(p,simulation_duration)
+    vm = p.records[:v]
+	vm = [i[1] for i in vm]
+	vm = signal(vm, length(vm)/simulation_duration)
+	vm
+end
 
 function checkmodel(param,cell_type,ngt_spikes)
     if cell_type=="IZHI"
@@ -50,7 +99,6 @@ function checkmodel(param,cell_type,ngt_spikes)
         E = SNN.IZ(;N = 1, param = pp)
     end
     if cell_type=="ADEXP"
-
 		adparam = SNN.ADEXParameter(;a = param[1],
             b = param[2],
             cm = param[3],
@@ -62,7 +110,6 @@ function checkmodel(param,cell_type,ngt_spikes)
             v_reset = param[9],
             spike_delta = param[10])
 			E = SNN.AD(;N = 1, param=adparam)
-
     end
 
 
@@ -72,27 +119,39 @@ function checkmodel(param,cell_type,ngt_spikes)
     E.I = [current*nA]#_search(param,ngt_spikes)*nA]
 
     SNN.monitor(E, [:v])
+	SNN.monitor(E, [:fire])
+
 	###
 	# TODO buid t into neuron models
 	# SNN.monitor(E, [:t])
     ###
-    SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
-	#vecp=false
-    #if vecp
-    #    vec |> display
-    #    vec
-    #end
-	#vec = SNN.vecplot(E, :v)
+	simulation_duration= ALLEN_DURATION+ALLEN_DELAY+343ms
+    SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = simulation_duration)
+	spikes = get_spikes(E)
+    spikes = [s/1000.0 for s in spikes]
+	vm = get_vm(E,simulation_duration)
+	#vm = E.records[:v]
+	#vm = [i[1] for i in vm]
 
-    #vec
-	vm = get_vm(E)
-	vm
+	return (vm,spikes)
 end
-
+function Evolutionary.value!(::Val{:multiproc}, fitness, objfun, population::AbstractVector{IT}) where {IT}
+	fitness = SharedArrays.SharedArray{Float32}(fitness)
+	@time @sync @distributed for i in 1:length(population)
+		fitness[i] = value(objfun, population[i])
+	end
+	#@show(fitness)
+	fitness
+end
+function Evolutionary.value!(::Val{:serial}, fitness, objfun, population::AbstractVector{IT}) where {IT}
+	Threads.@threads for i in 1:length(population)
+		fitness[i] = value(objfun, population[i])
+	end
+end
 function get_data()
-	print(pwd())
+	#print(pwd())
 	file="../JLD/ground_truth.jld"
-    if isfile(file)
+    if false#isfile(file)
         vmgtv = load(file,"vmgtv")
         ngt_spikes = load(file,"ngt_spikes")
         gt_spikes = load(file,"gt_spikes")
@@ -133,24 +192,29 @@ function get_data()
         ngt_spikes = size(gt_spikes)[1]
         vmgtv = py"vmm.magnitude"
         vmgtt = py"vmm.times"
-        plot(plot(vmgtv,vmgtt,w=1))
 
-        save("ground_truth.jld", "vmgtv", vmgtv,"vmgtt",vmgtt, "ngt_spikes", ngt_spikes,"gt_spikes",gt_spikes)
-        filename = string("ground_truth: ", py"target_num_spikes")#,py"specimen_id)
-        filename = string(filename,py"specimen_id")
-        filename = string(filename,".jld")
-        save(filename, "vmgtv", vmgtv,"vmgtt",vmgtt, "ngt_spikes", ngt_spikes,"gt_spikes",gt_spikes)
+		#s_a = signal(opt_vec, length(opt_vec)/3.5)
+		julia_version_vm = signal(vmgtv, length(vmgtt)/last(vmgtt))
+
+
+		plot(plot(vmgtv,vmgtt,w=1))
+
+        save("ground_truth.jld", "vmgtv", vmgtv,"vmgtt",vmgtt, "ngt_spikes", ngt_spikes,"gt_spikes",gt_spikes,"julia_version_vm",julia_version_vm)
+        #filename = string("ground_truth: ", py"target_num_spikes")#,py"specimen_id)
+        #filename = string(filename,py"specimen_id")
+        #filename = string(filename,".jld")
+        #save(filename, "vmgtv", vmgtv,"vmgtt",vmgtt, "ngt_spikes", ngt_spikes,"gt_spikes",gt_spikes)
 
     end
 
         vmgtv = load("ground_truth.jld","vmgtv")
         ngt_spikes = load("ground_truth.jld","ngt_spikes")
         ngt_spikes = size(gt_spikes)[1]
-
         ground_spikes = load("ground_truth.jld","gt_spikes")
 
         vmgtt = load("ground_truth.jld","vmgtt")
-    return (vmgtv,vmgtt,ngt_spikes,ground_spikes)
+		julia_version_vm = load("ground_truth.jld","julia_version_vm")
+    return (vmgtv,vmgtt,ngt_spikes,ground_spikes,julia_version_vm)
 end
 function get_izhi_ranges()
     ranges_izhi = DataStructures.OrderedDict{Char,Float32}()

@@ -14,11 +14,15 @@ using PyPlot
 #directed = pwd()
 #unicodeplots()
 
-trace = load("PopulationScatter.jld", "trace")
+trace = load("JLD/PopulationScatter.jld", "trace")
 evo_population = [t.metadata["pop"] for t in trace]
 evo_loss = [t.value for t in trace]
 evo_iteration = [t.iteration for t in trace]
 points = last(evo_population)
+
+
+
+
 
 #=for (points, j, k) in zip(evo_population, evo_loss, evo_iteration)
     X = points[2, :]

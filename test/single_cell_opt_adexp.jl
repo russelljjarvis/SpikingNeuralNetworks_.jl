@@ -1,4 +1,7 @@
 ENV["PYTHON_JL_RUNTIME_PYTHON"] = Sys.which("python")
+dir(x) = fieldnames(typeof(x))
+singlify(x::Float64) = Float32(x)
+
 using Pkg
 using PyCall
 using OrderedCollections
@@ -10,6 +13,9 @@ SNN.@load_units
 using Distributed
 import DataStructures
 using JLD
+using Metaheuristics
+using Plots
+unicodeplots()
 
 global ngt_spikes
 global opt_vec
@@ -17,33 +23,21 @@ global extremum
 global extremum_param
 global ngt_spikes
 global fitness
-using Metaheuristics
-
-using Plots
-unicodeplots()
 
 
 
 
 PARALLEL=false
+THREADS=false
 if PARALLEL
 	if nprocs()==1
 		addprocs(8)
+	else
+		@everywhere include("../utils.jl")
+		@everywhere include("../current_search.jl")
+		eval(macroexpand(quote @everywhere using SpikingNeuralNetworks end))
+		eval(macroexpand(quote @everywhere using PyCall end))
 
-	end
-	@everywhere include("../utils.jl")
-	@everywhere include("../current_search.jl")
-
-	eval(macroexpand(quote @everywhere using SpikingNeuralNetworks end))
-	eval(macroexpand(quote @everywhere using PyCall end))
-
-	function Evolutionary.value!(::Val{:serial}, fitness, objfun, population::AbstractVector{IT}) where {IT}
-	    fitness = SharedArrays.SharedArray{Float32}(fitness)
-	    @time @sync @distributed for i in 1:length(population)
-	        fitness[i] = value(objfun, population[i])
-	    end
-	    @show(fitness)
-	    fitness
 	end
 else
 	include("../utils.jl")
@@ -56,7 +50,9 @@ global cell_type="ADEXP"
 global vecp=false
 ###
 
-(vmgtv,vmgtt,ngt_spikes,ground_spikes) = get_data()
+(vmgtv,vmgtt,ngt_spikes,ground_spikes,julia_version_vm) = get_data()
+global simdur = last(vmgtt)*1000
+
 println("Ground Truth")
 plot(vmgtt[:],vmgtv[:]) |> display
 
@@ -67,9 +63,13 @@ ALLEN_DURATION = 2000 * ms
 ALLEN_DELAY = 1000 * ms
 
 function loss(E,ngt_spikes,ground_spikes)
-    spikes = raster_synchp(E)
+    spikes = get_spikes(E)
     spikes = [s/1000.0 for s in spikes]
-	#@show(spikes)
+
+	#opt_vec = [i[1] for i in opt_vec]
+	#s_a = signal(opt_vec, length(opt_vec)/last(vmgtt))
+	#s_b = signal(vmgtv, length(vmgtt)/last(vmgtt))
+
 	maxt = findmax(sort!(unique(vcat(spikes,ground_spikes))))[1]
     if size(spikes)[1]>1
         t, S = SPIKE_distance_profile(spikes, ground_spikes;t0=0,tf = maxt)
@@ -77,7 +77,16 @@ function loss(E,ngt_spikes,ground_spikes)
     else
         spkdistance = 10.0
     end
-	@show(spkdistance)
+	if length(spikes)>1
+
+		custom_raster2(spikes,ground_spikes)
+		custom_raster(spikes,ground_spikes)
+
+		#savefig(crp, "aligned_VMs_adexp.png")
+		#display(crp)
+	end
+	spkdistance*=spkdistance
+
     delta = abs(size(spikes)[1] - ngt_spikes)
     return spkdistance+delta
 
@@ -112,57 +121,73 @@ function loss(param)
     ALLEN_DELAY = 1000 * ms
 
     E.I = [current*nA]
-    SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
+	#@show(simdur)
+    SNN.sim!([E]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = simdur)
     vecplot(E, :v) |> display
     error = loss(E,ngt_spikes,ground_spikes)
 	@show(error)
 
     error
 end
-
+#=
+function Evolutionary.value!(::Val{:serial}, fitness, objfun, population::AbstractVector{IT}) where {IT}
+	Threads.@threads for i in 1:length(population)
+		fitness[i] = value(objfun, population[i])
+	end
+end
+=#
 ɛ = 0.125
 options = GA(
-    populationSize = 40,
+    populationSize = 10,
     ɛ = ɛ,
     selection = ranklinear(1.5),#ss,
     crossover = intermediate(1.0),#line(1.0),#xovr,
     mutation = uniform(1.0),#domainrange(fill(1.0,ts)),#ms
 )
 @time result = Evolutionary.optimize(loss,lower,upper, initd, options,
-    Evolutionary.Options(iterations=40, successive_f_tol=25, show_trace=true, store_trace=true)
+    Evolutionary.Options(iterations=40, successive_f_tol=25, show_trace=true, store_trace=true)#,parallelisation=:thread)
 )
+import Plots
+gr()
+
 fitness = minimum(result)
 println("GA: ɛ=$ɛ) => F: $(minimum(result))")# C: $(Evolutionary.iterations(result))")
 extremum_param = Evolutionary.minimizer(result)
 
-
-opt_vec = checkmodel(extremum_param,cell_type,ngt_spikes)
-
-#@show(result)
-#@show(result.trace)
+using SignalAnalysis
+opt_vec,opt_spikes = checkmodel(extremum_param,cell_type,ngt_spikes)
 trace = result.trace
-dir(x) = fieldnames(typeof(x))
-dir(trace[1, 1, 1])
-trace[1, 1, 1].metadata#["population"]
-filename = string("../JLD/PopulationScatter_adexp.jld")#, py"target_num_spikes")#,py"specimen_id)
-#save(filename, "trace", trace)
-save(filename, "opt_vec", opt_vec,"extremum_param", extremum_param, "vmgtt", vmgtt, "vmgtv", vmgtv)
-
-#evo_population = [t.metadata[""] for t in trace]
-#E1, spkd_found = eval_best(params)
-
+filename = string("../JLD/PopulationScatter_adexp.jld")
+save(filename,"trace",trace,"opt_vec", opt_vec,"extremum_param", extremum_param, "vmgtt", vmgtt, "vmgtv", vmgtv, "ground_spikes", ground_spikes,"opt_spikes",opt_spikes)
 evo_loss = [t.value for t in trace]
-
-display(plot(evo_loss))
+loss_evolution = []
+for (i,l) in enumerate(evo_loss)
+	if i>1
+		append!(loss_evolution,l)
+	end
+end
+display(plot(loss_evolution))
 println("probably jumbled extremum param")
 println(extremum_param)
 
-p1=plot(opt_vec) |> display
-plot!(p1,vmgtt[:],vmgtv[:])|> display
-plot(vmgtt[:],vmgtv[:]) |> display
+
+crp=custom_raster(opt_spikes,ground_spikes))
+savefig(crp, "aligned_VMs_adexp.png")
+display(crp)
+
+opt_vec = [i[1] for i in opt_vec]
+
+s_a = signal(opt_vec, length(opt_vec)/last(vmgtt))
+s_b = signal(vmgtv, length(vmgtt)/last(vmgtt))
+p = plot(s_a)
+p2 = plot!(p, s_b)
+display(p2)
+savefig(p2, "aligned_VMs_adexp.png")
+
+#display(plot(s_a))
+#display(plot(s_b))
 
 @show(result.minimizer)
-
 @show(fitness)
 
 #plot(opt_vec)|> display
