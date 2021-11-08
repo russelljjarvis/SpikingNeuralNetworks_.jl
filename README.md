@@ -27,17 +27,16 @@ Note for perspective 86% of spike times are matched in some of the best, model f
 
 # DONE
 
-- [x] Used spike distance and genetic algorithms to optimize networks quickly
+- [x] Used spike distance and genetic algorithms to optimize network spike raster activity.
 - [x] Used pythons NetworkUnit to validate results
 - [x] NetworkUnit t-tests of results
 - [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
 - [x] Implemented multi-threading
 ## TODO
+- [ ] Optimize against FPGA Event Stream Data AEDAT4
 - [ ] Implemented multi-processing
 - [ ] Animation of Genetic Algorithm Convergence.
 - [ ] Different Spiking Neural Network Backends (WaspNet.jl,SpikingNN.jl)
-@russelljjarvis
 - [ ] Multiprocessing as opposed to multi-threading
-- [ ] GPU
-- [ ] NeuroEvolution @russelljjarvis
+- [ ] NeuroEvolution
 - [ ] ADAM-Opt predictions using evolved population.
