@@ -1,7 +1,6 @@
 
 # Spiking Network Examples (and Package) in Julia
-- [Description](#Description)
-- [Motivation](#Motivation)
+- [Description and Motivation](##Description)
 - [Example Outputs](#Example Outputs)
 - [Getting started](#getting-started)
   - [Install the Julia module](#Install the Julia module)
