@@ -15,13 +15,14 @@ Pythons NetworkUnit package is used to perform a posthoc evaluation of the optim
 ### Example Outputs
 See the figure below where local variation and firing rates are compared against every neuron between two model networks.
 
+#### Network optimization
 For example this is a ground truth model versus an optimized model t-test of firing rates:
 ```
 Student's t-test
 	datasize: 200 	 200
 	t = 11.811 	 p value = 1.82e-25
 ```
-
+#### Single Cell optimization
 Note for perspective 86% of spike times are matched in some of the best, model fitting competitions.
 ![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png)
 
