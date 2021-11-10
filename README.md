@@ -1,9 +1,9 @@
 
 # Spiking Network Examples (and Package) in Julia
-- [Description and Motivation](##Description)
-- [Example Outputs](#Example Outputs)
-- [Getting started](#getting-started)
-  - [Install the Julia module](#Install the Julia module)
+- [Description and Motivation](#Description)
+	- [Example Outputs](#Example Outputs)
+	- [Getting started](#getting-started)
+	- [Install the Julia module](#Install the Julia module)
 
 ## Description
 A Network and single cell spiking neuron optimizer written in Julia.
