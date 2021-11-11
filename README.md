@@ -32,7 +32,20 @@ Note for perspective 86% of spike times are matched in some of the best, model f
 ![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png)
 
 
+### Getting Started
+# Install the Julia module
+This is not yet an official package, so the package would need to be added in developer mode:
+```
+git clone https://github.com/russelljjarvis/SpikeNetOpt.jl
+```
 
+```
+julia
+using Pkg;
+Pkg.activate(".")
+or Pkg.develop()
+```
+### Development Plans
 # DONE
 
 - [x] Used spike distance and genetic algorithms to optimize network spike raster activity.
