@@ -54,10 +54,11 @@ or Pkg.develop()
 - [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
 - [x] Implemented multi-threading
 ## TODO
-- [ ] Optimize against FPGA Event Stream Data AEDAT4
-- [ ] Implemented multi-processing
-- [ ] Animation of Genetic Algorithm Convergence.
+- [ ] Ability to toggle between simulator backends (AStupid bear vs https://github.com/darsnack/SpikingNN.jl)
+- [ ] Implemented multi-processing of feature extraction/spike distance (sort of)
+- [ ] Animation of Genetic Algorithm Convergence (sort of)
 - [ ] Different Spiking Neural Network Backends (WaspNet.jl,SpikingNN.jl)
 - [ ] Multiprocessing as opposed to multi-threading
 - [ ] NeuroEvolution
 - [ ] ADAM-Opt predictions using evolved population.
+- [ ] Read in and optimize against FPGA Event Stream Data AEDAT
