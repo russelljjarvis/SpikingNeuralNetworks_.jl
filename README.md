@@ -1,8 +1,4 @@
-[![All Contributors](https://img.shields.io/badge/all_contributors-54-orange.svg?style=flat-square)](#contributors-)
-<div align="center">
-    <img src="docs/assets/contributors-table-small.png" alt="All Contributors Table Screenshot" width="800px" />
-</div>
-
+[the @all-contributors bot 🤖](https://allcontributors.org/docs/en/bot/overview)
 # Spiking Network Examples in Julia
 - [Description and Motivation](#Description)
 - [Example Outputs](#Example-Outputs)
