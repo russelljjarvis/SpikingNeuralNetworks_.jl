@@ -1,4 +1,3 @@
-[the @all-contributors bot 🤖](https://allcontributors.org/docs/en/bot/overview)
 # Spiking Network Examples in Julia
 - [Description and Motivation](#Description)
 - [Example Outputs](#Example-Outputs)
