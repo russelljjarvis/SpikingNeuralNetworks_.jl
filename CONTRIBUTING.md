@@ -1,6 +1,6 @@
 
 
-# Contributing to Open Source Science Accessibility Project 
+# Contributing to Open Source SpikeNetOpt.jl Project 
 This content is based upon a pre-established [standard](https://github.com/github/opensource.guide) that developers in this project adhere to.
 
 
