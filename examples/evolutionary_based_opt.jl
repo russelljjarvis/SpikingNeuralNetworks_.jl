@@ -233,16 +233,6 @@ options = GA(
     crossover = intermediate(0.5),#xovr,
     mutation = uniform(0.5),#(.015),#domainrange(fill(1.0,ts)),#ms
 )
-# mutation = domainrange(fill(0.5,4))
-#
-#function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
-#    idx = sortperm(state.fitpop)
-#record["population"] = population
-#    state.fitpop[idx[1:5]]
-#    record["fitpop"] = state.fitpop[idx[1:5]]
-#end
-
-#Random.seed!(0);
 result = Evolutionary.optimize(
     loss,
     lower,
@@ -295,13 +285,5 @@ save(filename, "trace", trace)
 #evo_population = [t.metadata[""] for t in trace]
 evo_loss = [t.value for t in trace]
 display(plot(evo_loss))
-
-#first_dim1 = [t.metadata["population"][1][1] for t in trace]
-#first_dim2 = [t.metadata["population"][1][2] for t in trace]
-#first_dim3 = [t.metadata["population"][1][3] for t in trace]
-#first_dim4 = [t.metadata["population"][1][4] for t in trace]
-
-#display(plot(first_dim1))
-#display(plot(first_dim1,first_dim2,first_dim3))
 
 run(`python-jl validate_candidate.py`)
