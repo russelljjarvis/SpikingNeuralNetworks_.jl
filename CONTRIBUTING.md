@@ -66,7 +66,4 @@ Which employs algorithms like:
 Kincaid, J. Peter, et al. "Derivation of new readability formulas (automated readability index, fog count and flesch reading ease formula) for navy enlisted personnel." (1975).
 
 ## Other Relevant Links:
-
-https://stackoverflow.com/questions/32429445/is-web-scraping-allowed?fbclid=IwAR1noACRESdM1zld2zKJZ019ZB5CUFj2Xw38hh4fsrJXwZINsE0I09uT2_A
-
 https://www.copyright.gov/fair-use/more-info.html
