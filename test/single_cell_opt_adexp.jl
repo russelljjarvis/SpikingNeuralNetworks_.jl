@@ -145,7 +145,7 @@ options = GA(
     mutation = uniform(1.0),#domainrange(fill(1.0,ts)),#ms
 )
 @time result = Evolutionary.optimize(loss,lower,upper, initd, options,
-    Evolutionary.Options(iterations=40, successive_f_tol=25, show_trace=true, store_trace=true)#,parallelisation=:thread)
+    Evolutionary.Options(iterations=140, successive_f_tol=25, show_trace=true, store_trace=true)#,parallelisation=:thread)
 )
 import Plots
 gr()
@@ -167,13 +167,8 @@ for (i,l) in enumerate(evo_loss)
 	end
 end
 display(plot(loss_evolution))
-println("probably jumbled extremum param")
+println("Fittest model parameters")
 println(extremum_param)
-
-
-crp=custom_raster(opt_spikes,ground_spikes))
-savefig(crp, "aligned_VMs_adexp.png")
-display(crp)
 
 opt_vec = [i[1] for i in opt_vec]
 
@@ -182,7 +177,12 @@ s_b = signal(vmgtv, length(vmgtt)/last(vmgtt))
 p = plot(s_a)
 p2 = plot!(p, s_b)
 display(p2)
-savefig(p2, "aligned_VMs_adexp.png")
+savefig(p2, "../imgs/aligned_VMs_adexp.png")
+
+
+crp=custom_raster(opt_spikes,ground_spikes)
+savefig(crp, "../imgs/aligned_VMs_adexp.png")
+display(crp)
 
 #display(plot(s_a))
 #display(plot(s_b))
