@@ -48,6 +48,20 @@ using Pkg;
 Pkg.activate(".")
 or Pkg.develop()
 ```
+##Entry Points
+
+Optimize a spiking neural network by exploring effect of parameter that controls connectome graph structure:
+```
+cd examples
+julia sdo_network.jl
+```
+
+Single cell data fitting against spike times:
+```
+cd test
+julia single_cell_opt_adexp.jl 
+julia single_cell_opt_izhi.jl
+```
 ### Development Plans
 # DONE
 
