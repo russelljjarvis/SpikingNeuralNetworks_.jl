@@ -1,0 +1,28 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "russelljjarvis",
+      "name": "Russell Jarvis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7786645?v=4",
+      "profile": "https://russelljjarvis.github.io/home/",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas",
+        "design",
+        "infra"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "SpikeNetOpt.jl",
+  "projectOwner": "russelljjarvis",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
