@@ -48,7 +48,7 @@ using Pkg;
 Pkg.activate(".")
 or Pkg.develop()
 ```
-##Entry Points
+## Entry Points
 
 Optimize a spiking neural network by exploring effect of parameter that controls connectome graph structure:
 ```
