@@ -63,13 +63,13 @@ julia single_cell_opt_adexp.jl
 julia single_cell_opt_izhi.jl
 ```
 ### Development Plans
-# DONE
+## DONE
 
 - [x] Used spike distance and genetic algorithms to optimize network spike raster activity.
-- [x] Used pythons NetworkUnit to validate results
-- [x] NetworkUnit t-tests of results
+- [x] Used pythons NetworkUnit to validate results and t-tests of results
 - [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
-- [x] Implemented multi-threading
+## Part Done
+- [] Implemented multi-threading
 ## TODO
 - [ ] Ability to toggle between simulator backends (AStupid bear vs https://github.com/darsnack/SpikingNN.jl)
 - [ ] Implemented multi-processing of feature extraction/spike distance (sort of)
