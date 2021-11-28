@@ -220,6 +220,7 @@ function raster_difference(spkd0, spkd_found)
     spkd
 end
 
+#=
 using Base.Threads
 
 function raster_difference_threads(spkd0, spkd_found)
@@ -264,7 +265,7 @@ function raster_difference_threads(spkd0, spkd_found)
     end
     spkd
 end
-
+=#
 
 
 function loss(model)

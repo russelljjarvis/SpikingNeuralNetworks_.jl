@@ -10,7 +10,7 @@ using Distributed
 using SharedArrays
 using Plots
 using UnicodePlots
-sing Evolutionary
+using Evolutionary
 
 SNN.@load_units
 unicodeplots()
@@ -48,7 +48,7 @@ function get_trains(p)
         cellsa[inx] = []
     end
     @inbounds for cell_id in unique(y)
-        @inbounds for (time, cell)) in collect(zip(x, y))
+        @inbounds for (time, cell) in collect(zip(x, y))
             if Int(cell_id) == cell
                 append!(cellsa[Int(cell_id)], time)
 
@@ -244,9 +244,10 @@ result = Evolutionary.optimize(
         successive_f_tol = 75,
         show_trace = true,
         store_trace = true,
-        parallelization = :thread,
     ),
 )
+#        parallelization = :thread,
+
 fitness = minimum(result)
 
 filename = string("GAsolution.jld")#, py"target_num_spikes")#,py"specimen_id)
