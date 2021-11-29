@@ -20,7 +20,7 @@ using Distributed
 using SharedArrays
 using Plots
 using UnicodePlots
-using Evolutionary
+#using Evolutionary
 using Distributions
 using LightGraphs
 using Metaheuristics
