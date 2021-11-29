@@ -10,6 +10,42 @@
 
 ## Description
 Julia has enough tools to support fitting spiking neural network models to data. Python speed necessitates external simulators to do network simulation. As much as possible it would be nice to do fast, efficient data fitting of spike trains to network models in one language, lets try to do that here.
+
+### Getting Started
+# Install the Julia module
+This is not yet an official package, so the package would need to be added in developer mode:
+The short way:
+```
+Pkg.clone("https://github.com/russelljjarvis/SpikeNetOpt.jl.git")
+```
+
+The long way:
+```
+git clone https://github.com/russelljjarvis/SpikeNetOpt.jl
+```
+
+```
+julia
+using Pkg;
+Pkg.activate(".")
+or Pkg.develop()
+```
+## Entry Points
+
+Optimize a spiking neural network by exploring effect of parameter that controls connectome graph structure:
+```
+cd examples
+julia evolutionary_based_opt.jl
+```
+
+Single cell data fitting against spike times:
+```
+cd test
+julia single_cell_opt_adexp.jl 
+julia single_cell_opt_izhi.jl
+```
+
+
 ### Motivation
 [Previous work](https://github.com/russelljjarvis/BluePyOpt/blob/neuronunit_reduced_cells/examples/neuronunit/OptimizationMulitSpikingIzhikevichModel.ipynb) in data-driven optimization of spiking neurons was implemented in Python. The Python implementation of reduced model simulation sometimes called external simulation, and overall my previous implementation of reduced model optimization was slower and more complex than it needed to be, for language and tool specific reasons.
 
@@ -35,33 +71,6 @@ Note for perspective 86% of spike times are matched in some of the best, model f
 ![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png)
 
 
-### Getting Started
-# Install the Julia module
-This is not yet an official package, so the package would need to be added in developer mode:
-```
-git clone https://github.com/russelljjarvis/SpikeNetOpt.jl
-```
-
-```
-julia
-using Pkg;
-Pkg.activate(".")
-or Pkg.develop()
-```
-## Entry Points
-
-Optimize a spiking neural network by exploring effect of parameter that controls connectome graph structure:
-```
-cd examples
-julia sdo_network.jl
-```
-
-Single cell data fitting against spike times:
-```
-cd test
-julia single_cell_opt_adexp.jl 
-julia single_cell_opt_izhi.jl
-```
 ### Development Plans
 ## DONE
 
