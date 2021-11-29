@@ -19,7 +19,7 @@ Julia has enough tools to support fitting spiking neural network models to data.
 This is not yet an official package, so the package would need to be added in developer mode:
 The short way:
 ```
-Pkg.clone("https://github.com/russelljjarvis/SpikeNetOpt.jl.git")
+Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl.git")
 ```
 
 The long way:
