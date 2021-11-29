@@ -8,7 +8,6 @@ russelljjarvis/SpikeNetOpt.jl
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/russelljjarvis/SpikeNetOpt.jl.svg)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg)
-![GitHub contributors](https://img.shields.io/github/contributors/russelljjarvis/SpikeNetOpt.jl.svg)
 
 - [Description and Motivation](#Description)
 - [Example Outputs](#Example-Outputs)
