@@ -18,9 +18,12 @@ unicodeplots()
 ###
 # Network 1.
 ###
-
+global E
+global spkd_ground
 global Ne = 200;
 global Ni = 50
+
+
 function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02)
     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = a, b = 0.2, c = -65, d = 8))
     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
@@ -60,8 +63,6 @@ function get_trains(p)
     cellsa
 
 end
-global E
-global spkd_ground
 
 P, C = make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
 E, I = P #, EEA]
@@ -74,13 +75,9 @@ sim_length = 1000
     SNN.sim!(P, C, 1ms)
 
 end
-#_,_,_,spkd_ground = raster_synchp(P[1])
 spkd_ground = get_trains(P[1])
 sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
-#sggcu =[ CuArray(convert(Array{Float32,1},sg)) for sg in spkd_ground ]
 
-#Flux.SGD
-#Flux.gpu
 function rmse(spkd)
     total = 0.0
     @inbounds for i = 1:size(spkd, 1)
@@ -88,9 +85,6 @@ function rmse(spkd)
     end
     return sqrt(total / size(spkd, 1))
 end
-
-global Ne = 200;
-global Ni = 50
 
 function raster_difference(spkd0, spkd_found)
     maxi0 = size(spkd0)[2]
