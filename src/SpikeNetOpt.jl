@@ -11,16 +11,8 @@ SNN.@load_units
 using Evolutionary#, Test, Random
 import DataStructures
 using JLD
-
 using Reexport
-
 using UnicodePlots
-#using Evolutionary, Test, Random
-#using Pkg
-
-#import Pkg
-#using SpikingNeuralNetworks
-#SNN = SpikingNeuralNetworks
 using SpikeSynchrony
 using Statistics
 using JLD
@@ -28,11 +20,15 @@ using Distributed
 using SharedArrays
 using Plots
 using UnicodePlots
-#using Evolutionary
+using Evolutionary
 using Distributions
 using LightGraphs
 using Metaheuristics
-
+using ClearStacktrace
+using SharedArrays
+using WaspNet
+using SpikingNN
+using Reexport
 
 # Export Function names and struct names found in file utils
 export get_vm
