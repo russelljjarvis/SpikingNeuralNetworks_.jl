@@ -18,10 +18,6 @@ end
 # Code appropriated from:
 # https://github.com/JuliaML/MLPlots.jl/blob/master/src/optional/onlineai.jl
 ###
-type SpikeTrains
-    n::Int
-    plt
-end
 
 function SpikeTrains(n::Integer; kw...)
     plt = plot(n; leg=false, yticks=nothing, kw...)
