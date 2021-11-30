@@ -1,4 +1,4 @@
-title: 'Towards Neuronal Deep Fakes: Data Driven Optimization of Reduced Neuronal Models'
+title: 'Data Driven Optimization of Reduced Neuronal Models'
 
 tags:
   - data driven optimization
