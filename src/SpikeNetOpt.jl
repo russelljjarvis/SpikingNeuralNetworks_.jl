@@ -37,7 +37,9 @@ module SpikeNetOpt
     function make_net_SNN end
     include("utils.jl")
     include("current_search.jl")
-    include("spike_distance_opt.jl")
+    #include("spike_distance_opt.jl")
+    include("sdo_network.jl")
+
     @show(make_net_SNN)
     #include("sciunit.jl")
 
