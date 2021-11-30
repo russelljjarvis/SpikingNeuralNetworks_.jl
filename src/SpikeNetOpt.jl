@@ -34,8 +34,11 @@ module SpikeNetOpt
     function get_trains end
     function get_vm end
     function checkmodel end
+    function make_net_SNN end
     include("utils.jl")
     include("current_search.jl")
+    include("spike_distance_opt.jl")
+    @show(make_net_SNN)
     #include("sciunit.jl")
 
 end
