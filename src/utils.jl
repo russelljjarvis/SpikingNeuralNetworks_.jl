@@ -18,30 +18,10 @@ end
 # Code appropriated from:
 # https://github.com/JuliaML/MLPlots.jl/blob/master/src/optional/onlineai.jl
 ###
-#=
-
-function SpikeTrains(n::Integer; kw...)
-    plt = plot(n; leg=false, yticks=nothing, kw...)
-    SpikeTrains(n, plt)
-end
-
-const _halfheight = 0.6
-function Base.push!(spiketrains::SpikeTrains, idx::Integer, t::Real)
-    append!(spiketrains.plt, idx, Float64[NaN, t, t],
-            Float64[NaN, idx + _halfheight, idx - _halfheight])
-    spiketrains
-end
-function Base.push!{T<:Real}(spiketrains::SpikeTrains, ts::AbstractVector{T})
-    for i in 1:length(ts)
-        push!(spiketrains, i, ts[i])
-    end
-    spiketrains
-end
-=#
 function get_ranges(ranges)
 
     lower = Float32[]
-    upper = []#Float32[]
+    upper = Float32[]
     for (k,v) in ranges
         append!(lower,v[1])
         append!(upper,v[2])
@@ -90,24 +70,6 @@ function custom_raster(P1::Array,P2::Array)
     return plt
 end
 
-
-function custom_raster2(P1::Array,P2::Array)
-	#neuron1=1*zeros(length(P1))
-	#neuron2 = [2*i for i in neuron1]
-	#@show(P1)
-	#@show(P2)
-    plt3=plot!(P1, seriestype="vline", label="")
-	plt4=plot!(P2, seriestype="vline", label="")
-	display(plt3)
-	display(plt4)
-
-	#plt3 = vline!(P1)#,P1)#,w=50)
-	#display(plt3)
-	#plt4 = vline!(P2)
-	#display(plt4)
-	#plot!(plt3,plt3)#,P2)#,w=50)
-    #return plt1
-end
 
 function get_vm(p,simulation_duration)
     vm = p.records[:v]
