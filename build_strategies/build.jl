@@ -4,22 +4,18 @@
 
 using Pkg
 Pkg.add("PyPlot")
-
-#Pkg.add("Conda")
-
-run(`$(which pip) install -networkunit`)
-Pkg.add("SharedArrays")
-Pkg.add("GPUArrays")
-Pkg.add(url = "https://github.com/JuliaFolds/FLoops.jl")
-Pkg.add("FoldsCUDA")
-Pkg.add("Floops")
-Pkg.add("Requires")
-Pkg.add("UnPack")
-Pkg.add(url = "https://github.com/JuliaGPU/KernelAbstractions.jl")
-Pkg.add("LightGraphs")
-Pkg.add("Flux")
 Pkg.add(url = "https://github.com/russelljjarvis/SpikeSynchrony.jl")
 
+Pkg.add(url="https://github.com/paulmthompson/SpikeSorting.jl.git")
+Pkg.add(url="https://github.com/paulmthompson/Spikes.jl.git")
+
+Pkg.add("Conda")
+run(`$(which pip) install -networkunit`)
+Pkg.add("SharedArrays")
+Pkg.add("Requires")
+Pkg.add("UnPack")
+Pkg.add("LightGraphs")
+Pkg.add("Flux")
 Pkg.add("PyPlot")
 Pkg.add("PyCall")
 Pkg.add("OrderedCollections")
