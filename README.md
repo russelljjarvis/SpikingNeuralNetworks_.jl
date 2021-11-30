@@ -38,8 +38,13 @@ julia
 
 Optimize a spiking neural network by exploring effect of parameter that controls connectome graph structure:
 ```
+julia
+include("examples/run_net_opt.jl")
+
+```
+```
 cd examples
-julia evolutionary_based_opt.jl
+julia run_net_opt.jl
 ```
 
 Single cell data fitting against spike times:
