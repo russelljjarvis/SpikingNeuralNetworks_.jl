@@ -1,6 +1,5 @@
 using UnicodePlots
 import Pkg
-using Flux
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using SpikeSynchrony
@@ -14,8 +13,6 @@ using Evolutionary
 using Distributions
 using LightGraphs
 using Metaheuristics
-#Pkg.add("LightGraphs")
-#Pkg.add("GraphPlot")
 
 ##
 # Override to function to include a state.

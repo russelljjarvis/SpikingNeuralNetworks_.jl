@@ -26,9 +26,6 @@ using Zygote
 dir(x) = fieldnames(typeof(x))
 singlify(x::Float64) = Float32(x)
 
-#theme(:lime)
-#directed = pwd()
-#unicodeplots()
 filename = string("../JLD/PopulationScatter_adexp.jld")
 
 trace = load(filename , "trace")

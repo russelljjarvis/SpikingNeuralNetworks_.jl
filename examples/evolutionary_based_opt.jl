@@ -1,6 +1,7 @@
+#=
 using UnicodePlots
 import Pkg
-using Flux
+#using Flux
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using SpikeSynchrony
@@ -11,8 +12,9 @@ using SharedArrays
 using Plots
 using UnicodePlots
 using Evolutionary
-
-SNN.@load_units
+=#
+using SpikeNetOpt
+#SNN.@load_units
 unicodeplots()
 
 ###
@@ -23,7 +25,7 @@ global spkd_ground
 global Ne = 200;
 global Ni = 50
 
-
+#=
 function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02)
     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = a, b = 0.2, c = -65, d = 8))
     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
@@ -36,35 +38,14 @@ function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02
     return P, C
 
 end
-function get_trains(p)
-    fire = p.records[:fire]
-    x, y = Float32[], Float32[]
-    for time in eachindex(fire)
-        for neuron_id in findall(fire[time])
-            push!(x, time)
-            push!(y, neuron_id)
-        end
-    end
-    cellsa = Array{Union{Missing,Any}}(undef, 1, Int(findmax(y)[1]))
-    nac = Int(findmax(y)[1])
-    for (inx, cell_id) in enumerate(1:nac)
-        cellsa[inx] = []
-    end
-    @inbounds for cell_id in unique(y)
-        @inbounds for (time, cell) in collect(zip(x, y))
-            if Int(cell_id) == cell
-                append!(cellsa[Int(cell_id)], time)
+=#
 
-            end
 
-        end
-    end
-
-    cellsa
-
-end
-
-P, C = make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
+###
+# is get_trains
+###
+#=#
+P, C = SpikeNetOpt.make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
 E, I = P #, EEA]
 EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
