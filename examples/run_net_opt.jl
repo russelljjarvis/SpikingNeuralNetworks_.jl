@@ -5,13 +5,15 @@ using Plots
 unicodeplots()
 
 using SpikeNetOpt
+SNO = SpikeNetOpt
+@show(varinfo(SNO))
+
 using SpikingNeuralNetworks
+using Evolutionary
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 
 ##
-# global GT = 26
-# P, C = SpikeNetOpt.make_net_from_graph_structure(GT)
 ##
 
 
@@ -24,13 +26,16 @@ global σee = 1.0
 global pee = 0.5
 global σei = 1.0
 global pei = 0.5
+MU = 10
 
 
 global E
 global spkd_ground
+global GT = 26
+
 
 P, C = SpikeNetOpt.make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
-E, I = P #, EEA]
+E, I = P
 EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
 sim_length = 1000
@@ -39,11 +44,13 @@ sim_length = 1000
     SNN.sim!(P, C, 1ms)
 
 end
-#_,_,_,spkd_ground = SpikeNetOpt.get(P[1])
+#spkd_ground = SpikeNetOpt.get(P[1])
 spkd_ground = SpikeNetOpt.get_trains(P[1])
+#@show(spkd_ground)
 sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
+#P, C = SpikeNetOpt.make_net_from_graph_structure(GT)
 
-P, C = SpikeNetOpt.make_net(GT)
+#P, C = SpikeNetOpt.make_net(GT)
 E, I = P
 EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
@@ -62,7 +69,16 @@ spkd_ground = get_trains(P[1])
 ##
 sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
 
+EVOLUTIONARY_OPT = true
+META_HEUR_OPT = false
 if META_HEUR_OPT
+
+    #lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
+    #upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
+
+    #lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
+    #upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
+
     D = 10
     bounds = [3ones(D) 40ones(D)]'
     a = view(bounds, 1, 1)
@@ -94,32 +110,16 @@ if META_HEUR_OPT
 
     methods = [
             SMS_EMOA(N = 5, n_samples=5, options=options),
-            NSGA2(options=options),
-            MOEAD_DE(gen_ref_dirs(nobjectives, npartitions), options=Options( seed = 1, iterations = 500)),
-            NSGA3(options=options),
-          ]
+            NSGA2(options=options)
+            ]
+            #MOEAD_DE(gen_ref_dirs(nobjectives, npartitions), options=Options( seed = 1, iterations = 500)),
+            #NSGA3(options=options),
+
 
     for method in methods
         f_calls = 0
-        result = ( optimize(f, bounds, method) )
-        show(IOBuffer(), "text/html", result)
-        show(IOBuffer(), "text/plain", result.population)
-        show(IOBuffer(), "text/html", result.population)
-        show(IOBuffer(), result.population[1])
-        @test Metaheuristics.PerformanceIndicators.igd(result.population, pf) <= 0.2
-        @test Metaheuristics.PerformanceIndicators.spacing(result) < 0.2
-        @test Metaheuristics.PerformanceIndicators.covering(pf, result.population) <= 1.0
-        @test Metaheuristics.PerformanceIndicators.covering(result, result) ≈ 0.0
-
-        # number of function evaluations should be reported correctly
-        @test f_calls == result.f_calls
-        # test obtaining non-dominated solutions
-        pf1 = pareto_front(result)
-        pf2 = pareto_front(result.population)
-
-        @test size(pf1, 1) == size(pf2,1) &&
-              Metaheuristics.PerformanceIndicators.igd(pf1, pf2) ≈ 0.0
-        result = optimize(loss, bounds)#, method)
+        result = optimize(SpikeNetOpt.loss, bounds, method)
+        #result = optimize(SpikeNetOpt.loss, bounds)#, method)
         @show(result)
 
     end
@@ -127,6 +127,13 @@ if META_HEUR_OPT
 end
 
 if EVOLUTIONARY_OPT
+
+
+    lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
+    upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
+    lower = vec(lower)
+    upper = vec(upper)
+
     options = GA(
         populationSize = MU,
         ɛ = 4,
@@ -135,13 +142,12 @@ if EVOLUTIONARY_OPT
         crossover = intermediate(0.5),#xovr,
         mutation = uniform(0.5),#(.015),#domainrange(fill(1.0,ts)),#ms
     )
-
     #Random.seed!(0);
     result = Evolutionary.optimize(
-        loss,
+        SpikeNetOpt.loss,
         lower,
         upper,
-        initd,
+        SpikeNetOpt.initd,
         options,
         Evolutionary.Options(
             iterations = 50,

@@ -334,7 +334,31 @@ function eval_best(params)
 end
 
 
-function init_b(lower, upper)
+function initd()
+    population = initd(10)
+    garray = zeros((length(population)[1], length(population[1])))
+    for (i, p) in enumerate(population)
+        garray[i, :] = p
+    end
+    garray[1, :]
+end
+
+function initd(n)
+    genesb = []
+    lower = Float32[0.0 0.0 0.0 0.0]
+    upper = Float32[1.0 1.0 1.0 1.0]
+    lower = vec(lower)
+    upper = vec(upper)
+
+    for i = 1:n
+        genes = initd(lower, upper)
+        append!(genesb, [genes])
+    end
+    genesb
+end
+
+
+function initd(lower, upper)
     gene = []
 
     for (i, (l, u)) in enumerate(zip(lower, upper))
@@ -344,37 +368,7 @@ function init_b(lower, upper)
     gene
 end
 
-function initf(n)
-    genesb = []
-    for i = 1:n
-        genes = init_b(lower, upper)
-        append!(genesb, [genes])
-    end
-    genesb
-end
 
-
-
-function initd()
-    population = initf(10)
-    garray = zeros((length(population)[1], length(population[1])))
-    for (i, p) in enumerate(population)
-        garray[i, :] = p
-    end
-    garray[1, :]
-end
-
-
-#lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
-#upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
-
-#lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
-#upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
-
-#lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
-#upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
-#lower = vec(lower)
-#upper = vec(upper)
 #using Evolutionary, MultivariateStats
 #range = Any[lower,upper]
 
