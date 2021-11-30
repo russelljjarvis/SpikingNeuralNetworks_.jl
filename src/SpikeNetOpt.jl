@@ -23,8 +23,8 @@ module SpikeNetOpt
     using Metaheuristics
     using ClearStacktrace
     using SharedArrays
-    using WaspNet
-    using SpikingNN
+    #using WaspNet
+    #using SpikingNN
     using SignalAnalysis
     #using Reexport
     #using Spikes
