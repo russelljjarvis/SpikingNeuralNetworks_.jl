@@ -265,56 +265,75 @@ function raster_difference_threads(spkd0, spkd_found)
 end
 =#
 
-
+#=
 function loss(model)
-    #σee = model[1]
-    #pee = model[2]
-    #σei = model[3]
-    #pei = model[4]
-    #P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
-    #@show(model)
-    println("best candidate ",26)
-    println(" ")
-    #println("found ", model[1])
-    P1, C1 = make_net_SNN(model[1])#,a=a)
-
+    @show(Ne,Ni)
+    @show(model)
+    P1, C1 = make_net_SNN(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
     sim_length = 500
     @inbounds for t = 1:sim_length*ms
-        E1.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
+        E1.I = vec([11.5 for i = 1:sim_length])
+        SNN.sim!(P1, C1, 1ms)
+    end
+    spkd_found = get_trains(P1[1])
+    println("Ground Truth \n")
+    SNN.raster([E]) |> display
+    println("Best Candidate \n")
+    SNN.raster([E1]) |> display
+    error = raster_difference(spkd_ground, spkd_found)
+    error = sum(error)
+    @show(error)
+
+    error
+
+end
+=#
+
+function loss(model)
+    @show(Ne,Ni)
+    @show(model)
+
+    σee = model[1]
+    pee = model[2]
+    σei = model[3]
+    pei = model[4]
+    P1, C1 = make_net_SNN(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+    E1, I1 = P1
+    SNN.monitor([E1, I1], [:fire])
+    sim_length = 500
+    @inbounds for t = 1:sim_length*ms
+        E1.I = vec([11.5 for i = 1:sim_length])
         SNN.sim!(P1, C1, 1ms)
     end
 
     spkd_found = get_trains(P1[1])
-    #println("Ground Truth \n")
-    #SNN.raster([E]) |> display
-    #println("Best Candidate \n")
-
-    #SNN.raster([E1]) |> display
+    println("Ground Truth \n")
+    SNN.raster([E]) |> display
+    println("Best Candidate \n")
+    SNN.raster([E1]) |> display
 
     error = raster_difference(spkd_ground, spkd_found)
     error = sum(error)
-    #@show(error)
-    #println("Broke here")
+    @show(error)
 
     error
 
 end
 
 
-
 function eval_best(params)
-    xx = Int(round(params[1]))
-    @show(xx)
-    P1, C1 = make_net_SNN(xx)#,a=a)
-    println("found ",xx)
+    #xx = Int(round(params[1]))
+    #@show(xx)
+    #P1, C1 = make_net_SNN(xx)#,a=a)
+    #println("found ",xx)
 
-    #σee = params[1]
-    #pee = params[2]
-    #σei = params[3]
-    #pei = params[4]
-    #P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+    σee = params[1]
+    pee = params[2]
+    σei = params[3]
+    pei = params[4]
+    P1, C1 = make_net_SNN(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
     sim_length = 500

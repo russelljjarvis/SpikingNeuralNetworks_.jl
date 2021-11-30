@@ -314,7 +314,7 @@ function spike_train_difference(spkd0, spkd_found)
         end
     end
     #scatter([i for i in 1:mini],spkd)|>display
-    error = rmse(spkd) + sum(spkd)
+    error = sum(spkd) #+ sum(spkd)
 end
 
 
