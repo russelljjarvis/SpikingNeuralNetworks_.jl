@@ -235,7 +235,7 @@ function get_izhi_ranges()
     lower,upper = get_ranges(ranges_izhi)
     return lower,upper
 end
-
+#=
 function initd()
     population = initf(50)
     garray = zeros((length(population)[1], length(population[1])))
@@ -244,6 +244,7 @@ function initd()
     end
     garray[1,:]
 end
+=#
 function get_adexp_ranges()
     ranges_adexp = DataStructures.OrderedDict{String,Tuple{Float32,Float32}}()
     ranges_adexp[:"a"] = (2.0, 10)
@@ -314,4 +315,39 @@ function spike_train_difference(spkd0, spkd_found)
     end
     #scatter([i for i in 1:mini],spkd)|>display
     error = rmse(spkd) + sum(spkd)
+end
+
+
+function initd()
+    population = initd(10)
+    garray = zeros((length(population)[1], length(population[1])))
+    for (i, p) in enumerate(population)
+        garray[i, :] = p
+    end
+    garray[1, :]
+end
+
+function initd(n)
+    genesb = []
+    lower = Float32[0.0 0.0 0.0 0.0]
+    upper = Float32[1.0 1.0 1.0 1.0]
+    lower = vec(lower)
+    upper = vec(upper)
+
+    for i = 1:n
+        genes = initd(lower, upper)
+        append!(genesb, [genes])
+    end
+    genesb
+end
+
+
+function initd(lower, upper)
+    gene = []
+
+    for (i, (l, u)) in enumerate(zip(lower, upper))
+        p1 = rand(l:u, 1)
+        append!(gene, p1)
+    end
+    gene
 end

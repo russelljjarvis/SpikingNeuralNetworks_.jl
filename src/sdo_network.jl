@@ -65,7 +65,10 @@ global pee = 0.5
 global σei = 1.0
 global pei = 0.5
 
-function make_net_SNN(xx)#;
+global E
+global spkd_ground
+
+function make_net_from_graph_structure(xx)#;
 
     xx = Int(round(xx))
     @show(xx)
@@ -118,7 +121,7 @@ function make_net_SNN(xx)#;
 end
 
 
-function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5)
+function make_net_SNN(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5)
      Ne = 200;
      Ni = 50
 
@@ -159,8 +162,6 @@ function get_trains(p)
     cellsa
 
 end
-global E
-global spkd_ground
 
 #P, C = make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
 #sggcu =[ CuArray(convert(Array{Float32,1},sg)) for sg in spkd_ground ]
@@ -334,39 +335,6 @@ function eval_best(params)
 end
 
 
-function initd()
-    population = initd(10)
-    garray = zeros((length(population)[1], length(population[1])))
-    for (i, p) in enumerate(population)
-        garray[i, :] = p
-    end
-    garray[1, :]
-end
-
-function initd(n)
-    genesb = []
-    lower = Float32[0.0 0.0 0.0 0.0]
-    upper = Float32[1.0 1.0 1.0 1.0]
-    lower = vec(lower)
-    upper = vec(upper)
-
-    for i = 1:n
-        genes = initd(lower, upper)
-        append!(genesb, [genes])
-    end
-    genesb
-end
-
-
-function initd(lower, upper)
-    gene = []
-
-    for (i, (l, u)) in enumerate(zip(lower, upper))
-        p1 = rand(l:u, 1)
-        append!(gene, p1)
-    end
-    gene
-end
 
 
 #using Evolutionary, MultivariateStats
