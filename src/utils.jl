@@ -274,3 +274,44 @@ function vecplot(P::Array, sym)
     N = length(plts)
     plot(plts..., size = (600, 400N), layout = (N, 1))
 end
+
+function spike_train_difference(spkd0, spkd_found)
+    maxi0 = size(spkd0)[2]
+    maxi1 = size(spkd_found)[2]
+    mini = findmin([maxi0, maxi1])[1]
+    spkd = ones(mini)#SharedArrays.SharedArray{Float32}(mini)
+    maxi = findmax([maxi0, maxi1])[1]
+
+    if maxi > 0
+        if maxi0 != maxi1
+            return sum(ones(maxi))
+
+        end
+        if isempty(spkd_found[1, :])
+            return sum(ones(maxi))
+        end
+    end
+    spkd = ones(mini)
+    @inbounds for (_, i) in zip(spkd, eachindex(spkd))
+        if !isempty(spkd0[i]) && !isempty(spkd_found[i])
+
+            maxt1 = findmax(spkd0[i])[1]
+            maxt2 = findmax(spkd_found[i])[1]
+            maxt = findmax([maxt1, maxt2])[1]
+
+            if maxt1 > 0.0 && maxt2 > 0.0
+                t, S = SpikeSynchrony.SPIKE_distance_profile(
+                    unique(sort(spkd0[i])),
+                    unique(sort(spkd_found[i]));
+                    t0 = 0.0,
+                    tf = maxt,
+                )
+                b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+
+            end
+        end
+    end
+    #scatter([i for i in 1:mini],spkd)|>display
+    error = rmse(spkd) + sum(spkd)
+end

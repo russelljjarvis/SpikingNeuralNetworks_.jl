@@ -65,7 +65,7 @@ global pee = 0.5
 global σei = 1.0
 global pei = 0.5
 
-function make_net_SNN(xx)#;
+function make_net_from_graph_structure(xx)#;
 
     xx = Int(round(xx))
     @show(xx)
@@ -363,18 +363,24 @@ function initd()
     end
     garray[1, :]
 end
+function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
+    idx = sortperm(state.fitpop)
+    record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]
+    record["pop"] = population[:]
+    #record["σ"] = state.
+end
 
 
 #lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
 #upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
 
-lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
-upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
+#lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
+#upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
 
 #lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
 #upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
-lower = vec(lower)
-upper = vec(upper)
+#lower = vec(lower)
+#upper = vec(upper)
 #using Evolutionary, MultivariateStats
 #range = Any[lower,upper]
 
@@ -386,15 +392,8 @@ upper = vec(upper)
 #    state.fitpop[idx[1:5]]
 #    record["fitpop"] = state.fitpop[idx[1:5]]
 #end
-
 #using Evolutionary
 
-function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
-    idx = sortperm(state.fitpop)
-    record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]
-    record["pop"] = population[:]
-    #record["σ"] = state.
-end
 #=
 function Evolutionary.value!(::Val{:serial}, fitness, objfun, population::AbstractVector{IT}) where {IT}
     @show(typeof(fitness))
