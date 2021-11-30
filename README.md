@@ -78,7 +78,9 @@ Student's t-test
 #### Single Cell optimization
 Note for perspective 86% of spike times are matched in some of the best, model fitting competitions.
 ![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png)
-
+![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png
+](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png
+)
 
 ### Development Plans
 ## DONE
@@ -86,18 +88,14 @@ Note for perspective 86% of spike times are matched in some of the best, model f
 - [x] Used spike distance and genetic algorithms to optimize network spike raster activity.
 - [x] Used pythons NetworkUnit to validate results and t-tests of results
 - [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
-## Part Done
-- [] Implemented multi-threading
 ## TODO
-- [ ] Ability to toggle between simulator backends (AStupid bear vs https://github.com/darsnack/SpikingNN.jl)
+- [ ] Ability to toggle between simulator backends (AStupid bear vs https://github.com/darsnack/SpikingNN.jl,WaspNet.jl,SpikingNN.jl)
 - [ ] Implemented multi-processing of feature extraction/spike distance (sort of)
 - [ ] Animation of Genetic Algorithm Convergence (sort of)
-- [ ] Different Spiking Neural Network Backends (WaspNet.jl,SpikingNN.jl)
 - [ ] Multiprocessing as opposed to multi-threading
 - [ ] NeuroEvolution
 - [ ] ADAM-Opt predictions using evolved population.
 - [ ] Read in and optimize against FPGA Event Stream Data AEDAT
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
