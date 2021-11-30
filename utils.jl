@@ -18,10 +18,7 @@ end
 # Code appropriated from:
 # https://github.com/JuliaML/MLPlots.jl/blob/master/src/optional/onlineai.jl
 ###
-type SpikeTrains
-    n::Int
-    plt
-end
+
 
 function SpikeTrains(n::Integer; kw...)
     plt = plot(n; leg=false, yticks=nothing, kw...)
@@ -44,7 +41,7 @@ end
 function get_ranges(ranges)
 
     lower = Float32[]
-    upper = []#Float32[]
+    upper = Float32[]
     for (k,v) in ranges
         append!(lower,v[1])
         append!(upper,v[2])
