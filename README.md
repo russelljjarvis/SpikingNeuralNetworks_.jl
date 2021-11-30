@@ -31,7 +31,7 @@ git clone https://github.com/russelljjarvis/SpikeNetOpt.jl
 julia
 using Pkg;
 Pkg.activate(".")
-or Pkg.develop()
+Pkg.instantiate()
 ```
 ## Entry Points
 
