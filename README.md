@@ -28,10 +28,11 @@ git clone https://github.com/russelljjarvis/SpikeNetOpt.jl
 ```
 
 ```
+cd SpikeNetOpt.jl
 julia
-using Pkg;
-Pkg.activate(".")
-Pkg.instantiate()
+]
+(@v1.5) pkg> develop .
+
 ```
 ## Entry Points
 
