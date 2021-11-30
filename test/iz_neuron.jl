@@ -2,7 +2,10 @@ using SpikingNeuralNetworks
 using ClearStacktrace
 SNN = SpikingNeuralNetworks
 SNN.@load_units
-include("../current_search.jl")
+using SpikeNetOpt
+SNO = SpikeNetOpt
+
+#include("../current_search.jl")
 using Plots
 unicodeplots()
 RS = SNN.IZ(;N = 1, param = SNN.IZParameter(;a = 0.02, b = 0.2, c = -65, d = 8))
@@ -37,7 +40,7 @@ cell_type = "IZHI"
 ngt_spikes=10
 #for p in [P[1]]
     #@show(p.param)
-current_ = current_search(cell_type,P[1],ngt_spikes)
+current_ = SNO.current_search(cell_type,P[1],ngt_spikes)
 P[1].I = [current_*nA]
 @show(current_)
 SNN.monitor(P[1], [:v])
@@ -56,7 +59,7 @@ cell_type = "ADEXP"
 ngt_spikes=10
 #for p in [P[1]]
     #@show(p.param)
-current_ = current_search(cell_type,P[1],ngt_spikes)
+current_ = SNO.current_search(cell_type,P[1],ngt_spikes)
 P[1].I = [current_*nA]
 @show(current_)
 SNN.monitor(P[1], [:v])

@@ -8,7 +8,7 @@ using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 
-include("../opt_single_cell_utils.jl")
+#include("../opt_single_cell_utils.jl")
 
 
 import DataStructures
@@ -29,8 +29,10 @@ unicodeplots()
 global cell_type="ADEXP"
 global vecp=false
 ###
+using SpikeNetOpt
+SNO = SpikeNetOpt
 
-(vmgtv,vmgtt,ngt_spikes,ground_spikes) = get_data()
+(vmgtv,vmgtt,ngt_spikes,ground_spikes) = SNO.get_data()
 println("Ground Truth")
 plot(vmgtt[:],vmgtv[:]) |> display
 
