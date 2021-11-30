@@ -89,24 +89,6 @@ function custom_raster(P1::Array,P2::Array)
 end
 
 
-function custom_raster2(P1::Array,P2::Array)
-	#neuron1=1*zeros(length(P1))
-	#neuron2 = [2*i for i in neuron1]
-	#@show(P1)
-	#@show(P2)
-    plt3=plot!(P1, seriestype="vline", label="")
-	plt4=plot!(P2, seriestype="vline", label="")
-	display(plt3)
-	display(plt4)
-
-	#plt3 = vline!(P1)#,P1)#,w=50)
-	#display(plt3)
-	#plt4 = vline!(P2)
-	#display(plt4)
-	#plot!(plt3,plt3)#,P2)#,w=50)
-    #return plt1
-end
-
 function get_vm(p,simulation_duration)
     vm = p.records[:v]
 	vm = [i[1] for i in vm]
