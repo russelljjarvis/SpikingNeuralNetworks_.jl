@@ -25,6 +25,7 @@ using Zygote
 # https://discourse.julialang.org/t/multilayer-perceptron-with-multidimensional-output-array-using-flux/69747/2
 dir(x) = fieldnames(typeof(x))
 singlify(x::Float64) = Float32(x)
+predict(x, m) = m.W*x .+ m.b
 
 filename = string("../JLD/PopulationScatter_adexp.jld")
 
@@ -83,6 +84,7 @@ end
 
 amod = model(last(keys(opt.state)))
 amod.W
+predict(x, m) = m.W*x .+ m.b
 
 gs[amod.W]
 
