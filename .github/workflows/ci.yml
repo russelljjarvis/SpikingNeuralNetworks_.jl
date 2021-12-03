@@ -56,3 +56,10 @@ jobs:
       Codecov.submit(process_folder())'
       Pkg.develop(PackageSpec(path=pwd()))
       Pkg.instantiate()'
+- run: |
+    julia -e '
+      using Pkg
+      Pkg.develop(PackageSpec(path=pwd()))
+      Pkg.instantiate()
+      test/test_izhi_model.jl
+      '
