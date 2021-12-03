@@ -32,6 +32,10 @@ cd SpikeNetOpt.jl
 julia
 ]
 (@v1.5) pkg> develop .
+```
+Or
+```
+Pkg.develop(PackageSpec(path=pwd()))
 
 ```
 ## Entry Points
