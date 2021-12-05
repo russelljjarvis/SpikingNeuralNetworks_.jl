@@ -63,8 +63,10 @@ julia single_cell_opt_izhi.jl
 [Previous work](https://github.com/russelljjarvis/BluePyOpt/blob/neuronunit_reduced_cells/examples/neuronunit/OptimizationMulitSpikingIzhikevichModel.ipynb) in data-driven optimization of spiking neurons was implemented in Python. The Python implementation of reduced model simulation sometimes called external simulation, and overall my previous implementation of reduced model optimization was slower and more complex than it needed to be, for language and tool specific reasons.
 
 Reduced model spiking neurons models have compact equations, and they should be fast to simulate, but Python often calls external codes and programes (C,C++,NEURON,brian2,NEST,PyNN) to achieve a speedup for network simulations, however, approaches for speeding up network simulations are not necessarily efficient or convenient for running single-cell simulations, as me be required for single cell optimizations.  This strategy of calling external code causes an intolerable code complexity and intolerable run-time cost for single neuron simulations. The Python tool numba JIT partially remedies this problem, however, code from the Python optimization framework DEAP/BluePyOpt also induces an additional overhead. An almost pure Julia SNN optimization routine is a better solution to efficiently optimizing Reduced SNN models. In this package, two other packages: Evolutionary.jl, and Metaheuristics provide genetic algorithms used to optimize spiking neural networks.
- 
+
+#### Other Info
 [A Google Doc presentation](https://docs.google.com/presentation/d/1bWA5LhgAD8D4MGPQxf5P6jtb0spVEGeJKyXCHnh-aq0/edit?usp=sharing) that sets up the motivation for the project.
+[Part of BrainHack](https://brainhack.org/global2021/project/project_98/)
 
 #### Optimization Outputs
 The loss function is constructed by computing Spike Distance between all pairs of neurons
