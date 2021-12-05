@@ -13,9 +13,9 @@
 
 ## Description
 Julia has enough tools to support fitting spiking neural network models to data. Python speed necessitates external simulators to do network simulation. As much as possible it would be nice to do fast, efficient data fitting of spike trains to network models in one language, lets try to do that here.
-
+![Presentation](https://docs.google.com/presentation/d/1bWA5LhgAD8D4MGPQxf5P6jtb0spVEGeJKyXCHnh-aq0/edit?usp=sharing)
 ### Getting Started
-# Install the Julia module
+#### Install the Julia module
 This is not yet an official package, so the package would need to be added in developer mode:
 
 The short way to do this is as follows:
