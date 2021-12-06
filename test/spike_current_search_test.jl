@@ -24,7 +24,8 @@ SNO = SpikeNetOpt
     ALLEN_DELAY = 1000 * ms
 
     SNN.sim!([RS]; dt =1*ms, delay=ALLEN_DELAY,stimulus_duration=ALLEN_DURATION,simulation_duration = ALLEN_DURATION+ALLEN_DELAY+443ms)
-    spikes = SNO.raster_synchp(RS)
+
+    spikes = SNO.get_spikes(RS)
     spikes = [s*ms for s in spikes]
     nspk = size(spikes)[1]
     @test nspk==ngt_spikes
@@ -33,6 +34,8 @@ SNO = SpikeNetOpt
     #v = SNN.vecplot(RS, :v)
     #v |> display
 end
+
+#=
 @testset "ADEXP_spike_search" begin
 
     cell_type = "ADEXP"
@@ -68,7 +71,7 @@ end
     #v = SNN.vecplot(E, :v)
     #v |> display
 end
-
+=#
 #=
 @testset "IZHI" begin
 

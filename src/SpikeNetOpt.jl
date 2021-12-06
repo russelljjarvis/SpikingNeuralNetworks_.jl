@@ -31,6 +31,7 @@ module SpikeNetOpt
     # Export Function names and struct names found in file utils
     export get_trains
     export get_vm
+    export sim_net_darsnack
     function get_trains end
     function get_vm end
     function checkmodel end
@@ -39,18 +40,12 @@ module SpikeNetOpt
     function spike_train_difference end
     function get_spikes end
     function get_trains end
+    function sim_net_darsnack end
 
     include("utils.jl")
     include("current_search.jl")
-    #include("spike_distance_opt.jl")
     include("sdo_network.jl")
-    @show(make_net)
-    @show(make_net_from_graph_structure)
-    @show(spike_train_difference)
-    @show(get_spikes)
-    @show(get_trains)
 
-    #raster_synchp = get_spikes
     #include("sciunit.jl")
 
 end

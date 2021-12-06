@@ -14,6 +14,10 @@ using Distributions
 using LightGraphs
 using Metaheuristics
 
+using SpikingNN
+#using StatsBase
+using Random
+using SparseArrays
 ##
 # Override to function to include a state.
 ##
@@ -25,8 +29,66 @@ unicodeplots()
 ###
 
 
-global Ne = 200;
-global Ni = 50
+const Ne = 200;
+const Ni = 50
+
+
+# https://github.com/RainerEngelken/JuliaCon2017/blob/master/code/generating_large_random_network_topology.ipynb
+# needs less memory (n*k instead of n^2)
+function gensparsetopo(n,k,seed)
+    # seed random
+    #srand(seed)
+    p = k/(n-1)
+    #A = sprand(Bool,n,n,p)
+    #weights = rand(Uniform(n,k),n,n)
+
+end
+#gensparsetopo (generic function with 1 method)
+# https://gist.github.com/flcong/2eba0189d7d3686ea9633a6d14398931
+const seed = 10
+const k = 0.5
+const size = 50
+#const Ground_sparse = gensparsetopo(size,k,seed)
+
+const ground_weights = rand(Uniform(-2,1),size,size)
+
+function sim_net_darsnack(weight_gain_factor)
+    ##
+    # Plan network structure stays constant, only synaptic gain varies.
+    #
+    ##
+
+    # neuron parameters
+    vᵣ = 0
+    τᵣ = 1.0
+    vth = 1.0
+    low = ConstantRate(0.1)
+    high = ConstantRate(0.99)
+    switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
+    #nsynapse = QueuedSynapse(Synapse.Alpha())
+    #excite!(nsynapse, filter(x -> x != 0, [low(t) for t = 1:T]))
+
+    weights = ground_weights .* weight_gain_factor
+    #@show(weights)
+    pop_lif = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
+                              synapse = Synapse.Alpha,
+                              threshold = () -> Threshold.Ideal(vth))
+    nsynapse = QueuedSynapse(Synapse.Alpha())
+    ai = [ nsynapse for i in 1:size]
+    T = 1000
+    excite!(nsynapse, filter(x -> x != 0, [switch(t) for t = 1:T]))
+    spikes = simulate!(pop_lif, T; inputs = ai)
+
+    spikes = values(spikes)
+    #rasterplot(spikes, label = ["Input 1"])#, "Input 2"])
+    #title!("Raster Plot")
+    #xlabel!("Time (sec)")
+
+    @show(spikes)
+
+
+    return spikes
+end
 
 
 

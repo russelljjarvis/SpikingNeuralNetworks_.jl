@@ -18,8 +18,11 @@ end
 
 function test_current(cell_type,param,current,ngt_spikes)
     if cell_type=="IZHI"
+        @show(param)
         pp = SNN.IZParameter(;a = param[1], b = param[2], c = param[3], d = param[4])
+        @show(pp)
         E = SNN.IZ(;N = 1, param = pp)
+        @show(E)
     end
 
     if cell_type=="ADEXP"
