@@ -277,8 +277,8 @@ function vecplot(P::Array, sym)
 end
 
 function spike_train_difference(spkd0, spkd_found)
-    maxi0 = size(spkd0)[2]
-    maxi1 = size(spkd_found)[2]
+    maxi0 = length(spkd0)#[2]
+    maxi1 = length(spkd_found)#[2]
     mini = findmin([maxi0, maxi1])[1]
     spkd = ones(mini)#SharedArrays.SharedArray{Float32}(mini)
     maxi = findmax([maxi0, maxi1])[1]

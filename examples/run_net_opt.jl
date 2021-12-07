@@ -1,14 +1,11 @@
-#using Distributed
 using ClearStacktrace
-
 using Plots
-
 using SpikeNetOpt
 SNO = SpikeNetOpt
-#@show(varinfo(SNO))
-
 using SpikingNeuralNetworks
 using Evolutionary
+using JLD
+
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 unicodeplots()
@@ -20,20 +17,17 @@ unicodeplots()
 ##
 # Ground truths
 ##
-global Ne = 200;
-global Ni = 50
-global σee = 1.0
-global pee = 0.5
-global σei = 1.0
-global pei = 0.5
-MU = 10
-
-
+const Ne = 200;
+const Ni = 50
+const σee = 1.0
+const pee = 0.5
+const σei = 1.0
+const pei = 0.5
+const MU = 10
 global E
-global spkd_ground
-global GT = 26
-
-g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
+#global spkd_ground
+#const GT = 26
+#g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
 
 P, C = SpikeNetOpt.make_net_SNN(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
 E, I = P
@@ -46,13 +40,13 @@ sim_length = 1000
 
 end
 #spkd_ground = SpikeNetOpt.get(P[1])
-spkd_ground = SpikeNetOpt.get_trains(P[1])
+const spkd_ground = SpikeNetOpt.get_trains(P[1])
 #@show(spkd_ground)
 display(SNN.raster(P[1]))
 SNN.raster(P[1]) |> display
 
 #sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
-P
+#P
 #P, C = SpikeNetOpt.make_net(GT)
 ##
 # Ground truth for optimization
@@ -67,8 +61,8 @@ META_HEUR_OPT = false
 EVOLUTIONARY_OPT = true
 
 function loss(model)
-    @show(Ne,Ni)
-    @show(model)
+    #@show(Ne,Ni)
+    #@show(model)
 
     σee = model[1]
     pee = model[2]
