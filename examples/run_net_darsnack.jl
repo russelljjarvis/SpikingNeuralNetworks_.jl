@@ -4,15 +4,18 @@ using ClearStacktrace
 using Plots
 
 using SpikeNetOpt
-SNO = SpikeNetOpt
 #@show(varinfo(SNO))
-
+using JLD
 using SpikingNeuralNetworks
 using Evolutionary
+using SpikingNN
+using Metaheuristics
+
 SNN = SpikingNeuralNetworks
 SNN.@load_units
-unicodeplots()
+SNO = SpikeNetOpt
 
+unicodeplots()
 ##
 ##
 
@@ -27,18 +30,61 @@ const GT = 26
 weight_gain_factor = 0.77
 spkd_ground = SNO.sim_net_darsnack(weight_gain_factor)#(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
 
-META_HEUR_OPT = false
-EVOLUTIONARY_OPT = true
 
+META_HEUR_OPT = true
+EVOLUTIONARY_OPT = false
+
+train = SNO.sim_net_darsnack(10.0)
+
+valued = [v for v in values(train)]
+keyed = [k for k in keys(train)]
+println(" ")
+println(" ")
+println(" ")
+
+println("got here")
+cellsa = Array{Union{Missing,Any}}(undef, length(keyed), Int(last(findmax(valued)[1])))
+#nac = Int(findmax(valued)[1])
+nac = Int(last(findmax(valued)[1]))
+
+for (inx, cell_id) in enumerate(1:nac)
+    cellsa[inx] = []
+end
+@inbounds for cell_id in keys(train)
+    @inbounds for time in train[cell_id]
+        append!(cellsa[Int(cell_id)], time)
+    end
+end
+@show(cellsa)
+1==2
 function loss(model)
     @show(model)
     weight_gain_factor = model[1]
-    spkd_found = SNO.sim_net_darsnack(weight_gain_factor)#,a=a)
-    error = SNO.spike_train_difference(spkd_ground, spkd_found)
+    train_dic = SNO.sim_net_darsnack(weight_gain_factor)
+    #cellsa = SNO.get_trains_dars(train_dic)
+    #=
+    valued = [v for v in values(train_dic)]
+    keyed = [k for k in keys(train_dic)]
+    cellsa = Array{Union{Missing,Any}}(undef, length(keyed), Int(last(findmax(valued)[1])))
+    nac = Int(last(findmax(valued)[1]))
+    for (inx, cell_id) in enumerate(1:nac)
+        cellsa[inx] = []
+    end
+    @inbounds for cell_id in keys(train_dic)
+        @inbounds for time in train_dic[cell_id]
+            append!(cellsa[Int(cell_id)], time)
+        end
+    end
+    @show(cellsa)
+    =#
+    error = SNO.get_trains_dars(train_dic)
+
+    error = SNO.spike_train_difference(spkd_ground, cellsa)
     error = sum(error)
     @show(error)
     error
 end
+
 if EVOLUTIONARY_OPT
 
 
@@ -60,7 +106,7 @@ if EVOLUTIONARY_OPT
         loss,
         lower,
         upper,
-        SNO.initd,
+        vec([1.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0]),
         options,
         Evolutionary.Options(
             iterations = 50,
@@ -90,15 +136,19 @@ if EVOLUTIONARY_OPT
         #end
 
         #spkd_found = get_trains(P1[1])
-        println("Ground Truth: \n")
-        SNN.raster([E]) |> display
-        println("candidate: \n")
-        SNN.raster([E1]) |> display
-        E1, spkd_found
+        #println("Ground Truth: \n")
+        #SNN.raster([E]) |> display
+        #println("candidate: \n")
+        #SNN.raster([E1]) |> display
+
+        SpikingNN.rasterplot(spkd_found, label = ["Input 1"])#, "Input 2"])
+        title!("Raster Plot")
+        xlabel!("Time (sec)")
+        spkd_found
 
     end
 
-    E1, spkd_found = eval_best(params)
+    spkd_found = eval_best(params)
     save(
         filename,
         "spkd_ground",
@@ -124,11 +174,10 @@ if EVOLUTIONARY_OPT
     @show(result)
     @show(result.trace)
     trace = result.trace
-    SNO.dir(trace[1, 1, 1])
+    #SNO.dir(trace[1, 1, 1])
     trace[1, 1, 1].metadata#["population"]
-    E1, spkd_found = eval_best(params)
+    spkd_found = eval_best(params)
     evo_loss = [t.value for t in trace[2:length(trace)]]
-    #evo_loss = [t.value for t in trace[1:last(trace)]]
     display(plot(evo_loss))
     filename = string("PopulationScatter.jld")#, py"target_num_spikes")#,py"specimen_id)
     save(filename, "trace", trace)
@@ -144,33 +193,20 @@ if META_HEUR_OPT
     #upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
 
     D = 10
-    bounds = [3ones(D) 40ones(D)]'
-    a = view(bounds, 1, 1)
-    b = view(bounds, 1, 2)
+    bounds = [0.0ones(D) 3.0ones(D)]'
+    #a = view(bounds, 1, 1)
+    #b = view(bounds, 1, 2)
     information = Information(f_optimum = 0.0)
     options = Options( seed = 1, iterations=10, f_calls_limit =10)
 
-    D = size(bounds, 2)
-    nobjectives=1
-    #=
-    methods = [
-            SMS_EMOA(N = 5, n_samples=5, options=options),
-            NSGA2(options=options),
-            MOEAD_DE(gen_ref_dirs(1, 1), options=Options( seed = 1, iterations = 5)),
-            NSGA3(options=options),
-          ]
-
-    for method in methods
-        result = ( optimize(f, bounds, method) )
-        show(IOBuffer(), "text/html", result)
-        show(IOBuffer(), "text/plain", result.population)
-        show(IOBuffer(), "text/html", result.population)
-        show(IOBuffer(), result.population[1])
-    end
-    =#
-    options = Options( seed = 1, iterations=10000, f_calls_limit = 25000)
+    #D = size(bounds, 2)
+    #nobjectives=1
+    #options = Options( seed = 1, iterations=10000, f_calls_limit = 25000)
     #nobjectives = length(pf[1].f)
-    npartitions = nobjectives == 2 ? 100 : 12
+    #npartitions = nobjectives == 2 ? 100 : 12
+    result = optimize(loss, bounds, NSGA2(options=options))
+    #result = optimize(SpikeNetOpt.loss, bounds)#, method)
+    @show(result)
 
     methods = [
             SMS_EMOA(N = 5, n_samples=5, options=options),
@@ -182,7 +218,7 @@ if META_HEUR_OPT
 
     for method in methods
         f_calls = 0
-        result = optimize(SpikeNetOpt.loss, bounds, method)
+        result = optimize(loss, bounds, method)
         #result = optimize(SpikeNetOpt.loss, bounds)#, method)
         @show(result)
 

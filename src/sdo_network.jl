@@ -79,15 +79,32 @@ function sim_net_darsnack(weight_gain_factor)
     excite!(nsynapse, filter(x -> x != 0, [switch(t) for t = 1:T]))
     spikes = simulate!(pop_lif, T; inputs = ai)
 
-    spikes = values(spikes)
+    #spikes = values(spikes)
     #rasterplot(spikes, label = ["Input 1"])#, "Input 2"])
     #title!("Raster Plot")
     #xlabel!("Time (sec)")
 
-    @show(spikes)
+    #@show(spikes)
 
 
     return spikes
+end
+
+function get_trains_dars(train_dic::Dict)
+    valued = [v for v in values(train_dic)]
+    keyed = [k for k in keys(train_dic)]
+    cellsa = Array{Union{Missing,Any}}(undef, length(keyed), Int(last(findmax(valued)[1])))
+    nac = Int(last(findmax(valued)[1]))
+    for (inx, cell_id) in enumerate(1:nac)
+        cellsa[inx] = []
+    end
+    @inbounds for cell_id in keys(train_dic)
+        @inbounds for time in train_dic[cell_id]
+            append!(cellsa[Int(cell_id)], time)
+        end
+    end
+    @show(cellsa)
+    cellsa
 end
 
 

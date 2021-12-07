@@ -35,6 +35,8 @@ function get_trains(p)
 end
 
 
+
+
 function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
     idx = sortperm(state.fitpop)
     record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]

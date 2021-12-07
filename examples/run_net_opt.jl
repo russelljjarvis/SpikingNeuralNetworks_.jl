@@ -137,7 +137,7 @@ if EVOLUTIONARY_OPT
             SNN.sim!(P1, C1, 1ms)
         end
 
-        spkd_found = get_trains(P1[1])
+        spkd_found = SNO.get_trains(P1[1])
         println("Ground Truth: \n")
         SNN.raster([E]) |> display
         println("candidate: \n")
@@ -172,7 +172,7 @@ if EVOLUTIONARY_OPT
     @show(result)
     @show(result.trace)
     trace = result.trace
-    SNO.dir(trace[1, 1, 1])
+    #SNO.dir(trace[1, 1, 1])
     trace[1, 1, 1].metadata#["population"]
     E1, spkd_found = eval_best(params)
     evo_loss = [t.value for t in trace[2:length(trace)]]
