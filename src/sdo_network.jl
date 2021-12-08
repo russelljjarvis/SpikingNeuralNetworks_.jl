@@ -50,24 +50,56 @@ const k = 0.5
 const size = 50
 #const Ground_sparse = gensparsetopo(size,k,seed)
 
-const ground_weights = rand(Uniform(-2,1),size,size)
+using JLD
+using Logging
+#const ground_weights
+function get_constant_gw()
+    try
+        filename = string("ground_weights.jld")
+        ground_weights = load(filename,"ground_weights")
+        return ground_weights
+
+    catch e
+        # What to do if exception is raised.
+        #warn("Exception: ", e) # What to do on error.
+        @warn("Exception: ")
+        @show(e)
+        println("no")
+        ground_weights = rand(Uniform(-2,1),size,size)
+        filename = string("ground_weights.jld")
+        save(filename, "ground_weights", ground_weights)
+        return ground_weights
+
+    end
+end
+
+    #finally
+    #    ground_weights = rand(Uniform(-2,1),size,size)
+    #    println("gets here no!")
+    #
+    #    filename = string("ground_weights.jld")
+    #    save(filename, "ground_weights", ground_weights)
+        # What to do unconditionally when try/catch block exits.
+    #    return ground_weights
+
+
+
 
 function sim_net_darsnack(weight_gain_factor)
     ##
     # Plan network structure stays constant, only synaptic gain varies.
     #
     ##
+    #ground_weights = 0
+    ground_weights = get_constant_gw()
 
     # neuron parameters
     vᵣ = 0
     τᵣ = 1.0
     vth = 1.0
-    low = ConstantRate(0.1)
+    low = ConstantRate(0.0)
     high = ConstantRate(0.99)
     switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
-    #nsynapse = QueuedSynapse(Synapse.Alpha())
-    #excite!(nsynapse, filter(x -> x != 0, [low(t) for t = 1:T]))
-
     weights = ground_weights .* weight_gain_factor
     #@show(weights)
     pop_lif = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
@@ -76,46 +108,51 @@ function sim_net_darsnack(weight_gain_factor)
     nsynapse = QueuedSynapse(Synapse.Alpha())
     ai = [ nsynapse for i in 1:size]
     T = 1000
-    excite!(nsynapse, filter(x -> x != 0, [switch(t) for t = 1:T]))
+    syn_current = [switch(t) for t = 1:T]
+    #@show(syn_current)
+    excite!(nsynapse, filter(x -> x != 0, syn_current))
     spikes = simulate!(pop_lif, T; inputs = ai)
 
     #spikes = values(spikes)
-    #rasterplot(spikes, label = ["Input 1"])#, "Input 2"])
-    #title!("Raster Plot")
-    #xlabel!("Time (sec)")
+    rasterplot(spikes, label = ["Input 1"])#, "Input 2"])
+    title!("Raster Plot")
+    xlabel!("Time (sec)")
 
     #@show(spikes)
 
 
-    return spikes
+    return spikes,weights
 end
 
 function get_trains_dars(train_dic::Dict)
     valued = [v for v in values(train_dic)]
     keyed = [k for k in keys(train_dic)]
-    cellsa = Array{Union{Missing,Any}}(undef, length(keyed), Int(last(findmax(valued)[1])))
-    nac = Int(last(findmax(valued)[1]))
-    for (inx, cell_id) in enumerate(1:nac)
+    cellsa = Array{Union{Missing,Any}}(undef, length(keyed))#, Int(last(findmax(valued)[1])))
+    #nac = Int(last(findmax(valued)[1]))
+
+    for (inx, cell_id) in enumerate(1:length(keyed))
         cellsa[inx] = []
     end
     @inbounds for cell_id in keys(train_dic)
         @inbounds for time in train_dic[cell_id]
-            append!(cellsa[Int(cell_id)], time)
+            append!(cellsa[Int(cell_id)], time*ms)
         end
     end
-    @show(cellsa)
-    cellsa
+    #@show(cellsa)
+    #cellsa
+    cellsb = cellsa[:,1]
+    cellsb
 end
 
 
-
+#=
 function make_net_SNeuralN()
     weights = rand(Uniform(-2,1),25,25)
     pop = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
                               synapse = Synapse.Alpha,
                               threshold = () -> Threshold.Ideal(vth))
     # create input currents
-    low = ConstantRate(0.14)
+    low = ConstantRate(0.0)
     high = ConstantRate(0.1499)
     switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
     n1synapse = QueuedSynapse(Synapse.Alpha())
@@ -135,14 +172,15 @@ function make_net_SNeuralN()
     input = vcat(input2, input1, input3)
     return input,cb,voltages
 end
+=#
     #outputs = simulate!(pop, T; cb = cb, inputs=input)
 
-global Ne = 200;
-global Ni = 50
-global σee = 1.0
-global pee = 0.5
-global σei = 1.0
-global pei = 0.5
+const Ne = 200;
+const Ni = 50
+const σee = 1.0
+const pee = 0.5
+const σei = 1.0
+const pei = 0.5
 
 global E
 global spkd_ground
