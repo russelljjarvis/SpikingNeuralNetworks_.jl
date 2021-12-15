@@ -278,45 +278,88 @@ function vecplot(P::Array, sym)
     plot(plts..., size = (600, 400N), layout = (N, 1))
 end
 
-function spike_train_difference(spkd0, spkd_found)
-    maxi0 = length(spkd0)#[2]
-    maxi1 = length(spkd_found)#[2]
-    mini = findmin([maxi0, maxi1])[1]
-    spkd = ones(mini)#SharedArrays.SharedArray{Float32}(mini)
-    maxi = findmax([maxi0, maxi1])[1]
+function spike_train_difference(spkd_ground, spkd_found)
+	#@show(spkd_ground)
+	#@show(spkd_found)
+	if length(spkd_found)==0
+		return sum(ones(Int(length(spkd_ground))))
+	end
+	if length(spkd_found)>0
+	    maxi0 = findmax(spkd_ground[:,:])[1]
+		#@show(maxi0)
+	    maxi1 = findmax(spkd_found[:,:])[1]
+		#@show([maxi0, maxi1])
+		maxi1 = maxi1[1]
+		maxi0 = maxi0[1]
+		#@show(maxi1)
+		#@show(maxi0)
 
-    if maxi > 0
-        if maxi0 != maxi1
-            return sum(ones(maxi))
+		mini = findmin([maxi0, maxi1])[1]
+		#@show(mini)
+	    #spkd = ones(Int(mini)#SharedArrays.SharedArray{Float32}(mini)
+	    #maxi = findmax([maxi0, maxi1])[1]
+		l0 = length(spkd_ground)
+		l1 = length(spkd_found)
+		#@show(spkd_ground)
+		#s0 = sum(spkd_ground[1][:,:])
+		#s1 = sum(spkd_found[1][:,:])
+		#@show(s0)
 
-        end
-        if isempty(spkd_found[1, :])
-            return sum(ones(maxi))
-        end
-    end
-    spkd = ones(mini)
-    @inbounds for (_, i) in zip(spkd, eachindex(spkd))
-        if !isempty(spkd0[i]) && !isempty(spkd_found[i])
+		maxi = findmin([l0,l1])[1]
+		spkd = zeros(Int(maxi))
+		#@show(spkd)
+		#@show(maxi)
+		#=
+		if maxi > 0
+			if maxi0 != maxi1
+				println("gets here a")
+				return sum(ones(Int(mini)))
+			end
+			if isempty(spkd_found[1, :])
+				println("gets here b")
 
-            maxt1 = findmax(spkd0[i])[1]
-            maxt2 = findmax(spkd_found[i])[1]
-            maxt = findmax([maxt1, maxt2])[1]
+				return sum(ones(Int(mini)))
+			end
+		end
+		=#
+		#println(length(spkd))
+		#println(length(spkd_ground))
+		#println(length(spkd_found))
+	    @inbounds for (_, i) in zip(spkd, eachindex(spkd))
+	        if !isempty(spkd_ground[i]) && !isempty(spkd_found[i])
 
-            if maxt1 > 0.0 && maxt2 > 0.0
-                t, S = SpikeSynchrony.SPIKE_distance_profile(
-                    unique(sort(spkd0[i])),
-                    unique(sort(spkd_found[i]));
-                    t0 = 0.0,
-                    tf = maxt,
-                )
-                b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
-                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+	            maxt1 = findmax(spkd_ground[i])[1]
+	            maxt2 = findmax(spkd_found[i])[1]
+	            maxt = findmax([maxt1, maxt2])[1]
 
-            end
-        end
-    end
-    #scatter([i for i in 1:mini],spkd)|>display
-    error = sum(spkd) #+ sum(spkd)
+	            if maxt1 > 0.0 && maxt2 > 0.0
+	                t, S = SpikeSynchrony.SPIKE_distance_profile(
+	                    unique(sort(spkd_ground[i])),
+	                    unique(sort(spkd_found[i]));
+	                    t0 = 0.0,
+	                    tf = maxt,
+	                )
+	                #b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+	                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+
+	            end
+	        #end
+			else
+				spkd[i]=0.0
+				#spkd = ones(Int(mini))
+				#println("gets here c")
+
+			end
+	    end
+	    scatter([i for i in 1:mini],spkd)|>display
+		#e1=abs(l0-l1)
+		#e2=abs(s0-s1)
+		#@show(e1)
+		#@show(e2)
+		#@show(spkd)
+
+		error = sum(spkd)#+abs(l0-l1)+abs(s0-s1)#+ sum(spkd)
+	end
 end
 
 

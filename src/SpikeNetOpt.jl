@@ -29,9 +29,11 @@ module SpikeNetOpt
     #using Reexport
     #using Spikes
     # Export Function names and struct names found in file utils
+    #=
     export get_trains
     export get_vm
     export sim_net_darsnack
+
     function get_trains end
     function get_vm end
     function checkmodel end
@@ -41,9 +43,9 @@ module SpikeNetOpt
     function get_spikes end
     function get_trains end
     function sim_net_darsnack end
-
+    =#
     include("utils.jl")
-    include("current_search.jl")
+    #include("current_search.jl")
     include("sdo_network.jl")
 
     #include("sciunit.jl")

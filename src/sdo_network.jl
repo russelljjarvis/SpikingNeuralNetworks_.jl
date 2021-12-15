@@ -18,6 +18,7 @@ using SpikingNN
 #using StatsBase
 using Random
 using SparseArrays
+using Revise
 ##
 # Override to function to include a state.
 ##
@@ -47,7 +48,7 @@ end
 # https://gist.github.com/flcong/2eba0189d7d3686ea9633a6d14398931
 const seed = 10
 const k = 0.5
-const size = 50
+const this_size = 50
 #const Ground_sparse = gensparsetopo(size,k,seed)
 
 using JLD
@@ -57,21 +58,41 @@ function get_constant_gw()
     try
         filename = string("ground_weights.jld")
         ground_weights = load(filename,"ground_weights")
+
         return ground_weights
 
     catch e
-        # What to do if exception is raised.
-        #warn("Exception: ", e) # What to do on error.
-        @warn("Exception: ")
-        @show(e)
-        println("no")
-        ground_weights = rand(Uniform(-2,1),size,size)
+        #this_size = 50
+        ground_weights = rand(Uniform(-2,1),this_size,this_size)
         filename = string("ground_weights.jld")
         save(filename, "ground_weights", ground_weights)
         return ground_weights
-
     end
 end
+
+    #=
+    try
+
+        filename = string("ground_synapsese.jld")
+        synapses = load(filename,"nsynapse")
+    catch e
+        low = ConstantRate(0.0)
+        high = ConstantRate(0.99)
+        switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
+        nsynapse = QueuedSynapse(Synapse.Alpha())
+        T = 1000
+        syn_current = [switch(t) for t = 1:T]
+        excite!(nsynapse, filter(x -> x != 0, syn_current))
+        #ai = [ nsynapse for i in 1:size]
+        @show(nsynapse)
+        filename = string("ground_synapsese.jld")
+
+        save(filename, "nsynapse", nsynapse)
+        println("got here")
+    end
+    return nsynapse, ground_weights
+    =#
+    #ground_weights
 
     #finally
     #    ground_weights = rand(Uniform(-2,1),size,size)
@@ -82,46 +103,155 @@ end
         # What to do unconditionally when try/catch block exits.
     #    return ground_weights
 
-
-
+function syn(T)
+    low = ConstantRate(0.0)
+    high = ConstantRate(0.99)
+    switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
+    the_synapses = QueuedSynapse(Synapse.Alpha())
+    syn_current = [switch(t) for t = 1:T]
+    excite!(the_synapses, filter(x -> x != 0, syn_current))
+    the_synapses
+end
 
 function sim_net_darsnack(weight_gain_factor)
     ##
     # Plan network structure stays constant, only synaptic gain varies.
     #
     ##
-    #ground_weights = 0
     ground_weights = get_constant_gw()
 
     # neuron parameters
     vᵣ = 0
     τᵣ = 1.0
     vth = 1.0
-    low = ConstantRate(0.0)
-    high = ConstantRate(0.99)
-    switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
     weights = ground_weights .* weight_gain_factor
     #@show(weights)
     pop_lif = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
                               synapse = Synapse.Alpha,
                               threshold = () -> Threshold.Ideal(vth))
-    nsynapse = QueuedSynapse(Synapse.Alpha())
-    ai = [ nsynapse for i in 1:size]
+
+
     T = 1000
-    syn_current = [switch(t) for t = 1:T]
-    #@show(syn_current)
-    excite!(nsynapse, filter(x -> x != 0, syn_current))
+
+    the_synapses = syn(T)
+    ai = [ the_synapses for i in 1:this_size]
     spikes = simulate!(pop_lif, T; inputs = ai)
-
-    #spikes = values(spikes)
-    rasterplot(spikes, label = ["Input 1"])#, "Input 2"])
-    title!("Raster Plot")
-    xlabel!("Time (sec)")
-
-    #@show(spikes)
+    println("\n simulated: \n")
+    rasterplot(spikes)|>display#, label = ["Input 1"])#, "Input 2"])
 
 
-    return spikes,weights
+    return spikes,weights,the_synapses
+end
+
+
+
+function sim_net_darsnack_learn(weight_gain_factor)
+    ##
+    # Plan network structure stays constant, only synaptic gain varies.
+    #
+    ##
+    ground_weights = get_constant_gw()
+
+    # neuron parameters
+    #vᵣ = 0
+    #τᵣ = 1.0
+    #vth = 1.0
+    weights = ground_weights .* weight_gain_factor
+    #@show(weights)
+    η₀ = 5.0
+    τᵣ = 1.0
+    vth = 1.0
+
+    pop = Population(weights; cell = () -> SRM0(η₀, τᵣ),
+                              synapse = Synapse.Alpha,
+                              threshold = () -> Threshold.Ideal(vth),
+                              learner = STDP(0.5, 0.5, size(weights, 1)))
+
+    # create step input currents
+    ai = InputPopulation([ConstantRate(0.8) for i in 1:this_size])
+    #ai = [ the_synapses for i in 1:this_size]
+
+    # create network
+    net = Network(Dict([:input => ai, :pop => pop]))
+    connect!(net, :input, :pop; weights = weights, synapse = Synapse.Alpha)
+
+    # simulate
+    #w = Float64[]
+    T = 1000
+
+    @time output = simulate!(net, T; dense = true)
+
+    #pop_lif = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
+    #                          synapse = Synapse.Alpha,
+    #                          threshold = () -> Threshold.Ideal(vth))
+
+
+
+    the_synapses = syn(T)
+    spikes = output[:pop]
+    #spikes = simulate!(pop_lif, T; inputs = ai)
+    println("\n simulated: \n")
+    rasterplot(spikes)|>display#, label = ["Input 1"])#, "Input 2"])
+
+
+    return spikes,weights,ai
+end
+
+function sim_net_darsnack_used(weight_gain_factor)
+    ##
+    # Plan network structure stays constant, only synaptic gain varies.
+    #
+    ##
+    ground_weights = get_constant_gw()
+
+    # neuron parameters
+    vᵣ = 0
+    τᵣ = 1.0
+    vth = 1.0
+    weights = ground_weights .* weight_gain_factor
+    #@show(weights)
+    #η₀ = 5.0
+    #τᵣ = 1.0
+    #vth = 1.0
+
+    pop = Population(weights; cell = () ->LIF(τᵣ, vᵣ),
+                              synapse = Synapse.Alpha,
+                              threshold = () -> Threshold.Ideal(vth))
+                              # threshold = Threshold.Ideal
+                              #learner = STDP(0.5, 0.5, size(weights, 1)))
+
+    # create step input currents
+    ai = InputPopulation([ConstantRate(0.8) for i in 1:this_size])
+    #ai = [ the_synapses for i in 1:this_size]
+
+    # create network
+    net = Network(Dict([:input => ai, :pop => pop]))
+    connect!(net, :input, :pop; weights = weights, synapse = Synapse.Alpha)
+
+    # simulate
+    #w = Float64[]
+    T = 1000
+
+    @time output = simulate!(net, T; dense = true)
+
+    #pop_lif = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
+    #                          synapse = Synapse.Alpha,
+    #                          threshold = () -> Threshold.Ideal(vth))
+
+
+
+    the_synapses = syn(T)
+    spikes = output[:pop]
+    #spikes = simulate!(pop_lif, T; inputs = ai)
+    println("\n simulated: \n")
+    rasterplot(spikes)|>display#, label = ["Input 1"])#, "Input 2"])
+
+    #clear(pop)
+    #clear(net)
+    #clear(ai)
+    #clear(weights)
+
+    return spikes,weights,ai
 end
 
 function get_trains_dars(train_dic::Dict)

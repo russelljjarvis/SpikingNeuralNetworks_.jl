@@ -12,6 +12,7 @@ using SpikingNN
 using Metaheuristics
 using Test
 
+using Revise
 
 SNN = SpikingNeuralNetworks
 SNN.@load_units
@@ -32,39 +33,92 @@ const weight_gain_factor = 0.77
 
 #g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
 
-spkd_ground_dic = SNO.sim_net_darsnack(weight_gain_factor)#(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
+spkd_ground_dic,weights1,synpases1 = SNO.sim_net_darsnack_used(weight_gain_factor)#(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
 spkd_ground = SNO.get_trains_dars(spkd_ground_dic)
+#@show(weights1)
+@show(spkd_ground)
+error1 = SNO.spike_train_difference(spkd_ground, spkd_ground)
 
-error = SNO.spike_train_difference(spkd_ground, spkd_ground)
-@test error==0
-@show(error)
-println(error==0)
-weight_gain_factor1 = 0.77
-nspkd_ground_dic = SNO.sim_net_darsnack(weight_gain_factor1)#(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
+@test error1==0
+@show(error1)
+#println(error==0)
+#weight_gain_factor1 = 0.77
+nspkd_ground_dic,weights2,synpases2 = SNO.sim_net_darsnack_used(weight_gain_factor)#(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
 nspkd_ground = SNO.get_trains_dars(nspkd_ground_dic)
-nerror = SNO.spike_train_difference(spkd_ground, nspkd_ground)
+
+nerror = SNO.spike_train_difference(nspkd_ground, nspkd_ground)
 @test nerror==0
+@show(spkd_ground)
+@show(nspkd_ground)
+nerror2 = SNO.spike_train_difference(spkd_ground, nspkd_ground)
 
-println(nerror)
-@show(nerror)
+@show(nerror2)
+#@test weights1==weights2
+#@test all(isapprox.(weights1, weights2, rtol = 0.0))
+#@test spkd_ground==nspkd_ground
+#@test all(isapprox.(spkd_ground, nspkd_ground, rtol = 0.0))
 
+#@test nerror2==0
+#@show(weights2)
+
+#println(nerror)
+#@show(nerror)
+
+#@test weights1===weights2
 
 META_HEUR_OPT = true
 EVOLUTIONARY_OPT = false
 function loss(model)
-    @show(model)
-    #println(model[1])
-    #println(length(model))
-    weight_gain_factor = model[1]
-    train_dic = SNO.sim_net_darsnack(weight_gain_factor)
-    spikes = SNO.get_trains_dars(train_dic)
-    #display(Plots.historam(spikes))
 
-    error = SNO.spike_train_difference(spkd_ground, spikes)
-    error = sum(error)
+    weight_gain_factor = model[1]
+    println("\n genes \n")
+    @show(model)
+    println(model[1])
+    println("\n")
+
+    train_dic,weights,synpases = SNO.sim_net_darsnack_used(weight_gain_factor)
+    println("\n ground truth: \n")
+    rasterplot(spkd_ground_dic)|>display#
+
+    spkd_found = SNO.get_trains_dars(train_dic)
+
+    l0 = length(spkd_ground)
+    l1 = length(spkd_found)
+    @show(spkd_ground)
+    s0 = sum(spkd_ground[1][:,:])
+    if !isempty(spkd_found[1][:,:])
+        s1 = sum(spkd_found[1][:,:])
+    else
+        #@show(spkd_found)
+
+        s1 = 0
+
+    end
+    temp = abs(l0-l1)+abs(s0-s1)
+    #if temp == 0
+    error = SNO.spike_train_difference(spkd_ground, spkd_found)
+    error = sum(error)+temp
+
+    #else
+    #    error = temp
+    #end
     @show(error)
     error
 end
+
+function eval_best(params)
+    spkd_found,weights,synpases = SNO.sim_net_darsnack_used(params[1])#Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+
+
+    #title!("Raster Plot")
+    #xlabel!("Time (sec)")
+    spkd_found2 = SNO.get_trains_dars(spkd_found)
+    @show(spkd_found2)
+    #display(Plots.historam(spkd_found2))
+    #spkd_found
+    #rasterplot(spkd_found2)#, label = ["Input 1"])#, "Input 2"])
+end
+
 
 if EVOLUTIONARY_OPT
 
@@ -104,17 +158,6 @@ if EVOLUTIONARY_OPT
     params = result.minimizer
 
 
-    function eval_best(params)
-        spkd_found = SNO.sim_net_darsnack(params[1])#Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
-
-
-        title!("Raster Plot")
-        xlabel!("Time (sec)")
-        spkd_found2 = SNO.get_trains_dars(spkd_found)
-        display(Plots.historam(spkd_found2))
-        spkd_found
-        SpikingNN.rasterplot(spkd_found, label = ["Input 1"])#, "Input 2"])
-    end
 
     spkd_found = eval_best(params)
     save(
@@ -159,7 +202,7 @@ logger(st) = begin
     temp = [a.x for a in A]
     bs = st.best_sol
     scatter(temp, label="opt", title="Gen: $(st.iteration)") |> display
-    plot!([bs.x], label="Parento Front", lw=2) |> display
+    plot!([bs.x], label="Pareto Front", lw=1) |> display
 end
 #function main()
        # Transliterated fortran main subroutine
@@ -169,7 +212,7 @@ D = 1
 
 #bounds = [0.0ones(D);# lower bounds
 #        1.0ones(D)]# upper bounds
-bounds = Array([0.0ones(D) 1.1ones(D)]')
+bounds = Array([0.0ones(D) 1.0ones(D)]')
 #pareto_set = [ generateChild(loss(bounds[i])) for i in 1:length(bounds) ]
 
 #information = Information(f_optimum = 0.0)
