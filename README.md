@@ -9,6 +9,7 @@
 - [Example Outputs](#Example-Outputs)
 - [Getting started](#getting-started)
 - [Install the Julia module](#Install-the-Julia-module)
+- [Current Design Flow Chart](#Current-Design-Flow-Chart)
 
 
 ## Description
