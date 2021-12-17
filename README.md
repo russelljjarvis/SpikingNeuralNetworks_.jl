@@ -130,3 +130,5 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 #### Current Design Flow Chart:
 ![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg)
+
+![## Intended Future Design:](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/second_flow_diagram.png)
