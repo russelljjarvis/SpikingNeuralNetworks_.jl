@@ -112,17 +112,15 @@ Output from a single cell optimization:
 	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png" width="250" height="200">
 </centre>
 
-<!--![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png&s=200)-->
 Output from a Network Spike Time optimization (note that Unicode backend is the plotting method, and neuron synapses fire propabilistically):
+
 <centre>
 
 	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png" width="250" height="200">
+
 </centre>
 
 	
-	<!--![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png&s=200
-)-->
-
 ## Development Plans
 #### DONE
 
