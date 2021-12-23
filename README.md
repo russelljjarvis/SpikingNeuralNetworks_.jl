@@ -107,23 +107,23 @@ Student's t-test
 #### Single Cell optimization
 Note for perspective 86% of spike times are matched in some of the best, model fitting competitions.
 Output from a single cell optimization:
-
-<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png" width="200" height="200">
-
+<centre>
+<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png" width="250" height="200">
+</centre>
 <!--![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png&s=200)-->
 Output from a Network Spike Time optimization (note that Unicode backend is the plotting method, and neuron synapses fire propabilistically):
 
-<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png" width="200" height="200">
+<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png" width="250" height="200">
 <!--![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png&s=200
 )-->
 
-### Development Plans
-## DONE
+## Development Plans
+#### DONE
 
 - [x] Used spike distance and genetic algorithms to optimize network spike raster activity.
 - [x] Used pythons NetworkUnit to validate results and t-tests of results
 - [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
-## TODO
+#### TODO
 - [ ] Ability to toggle between simulator backends (AStupid bear vs https://github.com/darsnack/SpikingNN.jl,WaspNet.jl,SpikingNN.jl)
 - [ ] Implemented multi-processing of feature extraction/spike distance (sort of)
 - [ ] Animation of Genetic Algorithm Convergence (sort of)
