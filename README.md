@@ -5,8 +5,9 @@
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/russelljjarvis/SpikeNetOpt.jl.svg)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg)
 
-- [Description and Motivation](#Description)
+- [Description](#Description)
 - [Example Outputs](#Example-Outputs)
+- [Motivation](#Motivation)
 - [Getting started](#getting-started)
 - [Install the Julia module](#Install-the-Julia-module)
 - [Current Design Flow Chart](#Current-Design-Flow-Chart)
