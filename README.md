@@ -1,5 +1,5 @@
 # Spiking Network Examples in Julia
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 ![GitHub issues](https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/russelljjarvis/SpikeNetOpt.jl.svg)
