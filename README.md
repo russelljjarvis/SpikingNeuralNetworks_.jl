@@ -107,11 +107,14 @@ Student's t-test
 #### Single Cell optimization
 Note for perspective 86% of spike times are matched in some of the best, model fitting competitions.
 Output from a single cell optimization:
-![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png&s=200)
+
+<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png" width="200" height="590">
+
+![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png&s=200)
 Output from a Network Spike Time optimization (note that Unicode backend is the plotting method, and neuron synapses fire propabilistically):
 
-![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png
-](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png&s=200
+<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png" width="200" height="590">
+![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png&s=200
 )
 
 ### Development Plans
