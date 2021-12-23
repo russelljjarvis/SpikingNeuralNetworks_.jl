@@ -10,7 +10,7 @@
 - [Motivation](#Motivation)
 - [Getting started](#getting-started)
 - [Install the Julia module](#Install-the-Julia-module)
-- [Development Plans](Development Plans)
+- [Development Plans](#Development Plans)
 - [Current Design Flow Chart](#Current-Design-Flow-Chart)
 
 
@@ -108,14 +108,14 @@ Student's t-test
 Note for perspective 86% of spike times are matched in some of the best, model fitting competitions.
 Output from a single cell optimization:
 
-<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png" width="200" height="590">
+<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png" width="200" height="200">
 
-![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png&s=200)
+<!--![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/single_cell_spike_time_fit.png&s=200)-->
 Output from a Network Spike Time optimization (note that Unicode backend is the plotting method, and neuron synapses fire propabilistically):
 
-<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png" width="200" height="590">
-![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png&s=200
-)
+<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png" width="200" height="200">
+<!--![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png&s=200
+)-->
 
 ### Development Plans
 ## DONE
