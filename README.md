@@ -10,7 +10,7 @@
 - [Motivation](#Motivation)
 - [Getting started](#getting-started)
 - [Install the Julia module](#Install-the-Julia-module)
-- [Development Plans](#Development Plans)
+- [Development Plans](#Development-Plans)
 - [Current Design Flow Chart](#Current-Design-Flow-Chart)
 
 
