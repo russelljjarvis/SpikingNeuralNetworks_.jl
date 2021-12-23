@@ -43,20 +43,20 @@ jobs:
     name: Aftersuccess
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
-        with:
-          version: '1'
-  - run: |
-    julia -e '
-      using Pkg
-      Pkg.add("Coverage")
-      using Coverage
-      Codecov.submit(process_folder())'
-      Pkg.develop(PackageSpec(path=pwd()))
-      Pkg.instantiate()'
-  - run: |
-      julia -e '
+    - uses: actions/checkout@v2
+    - uses: julia-actions/setup-julia@v1
+      with:
+        version: '1'
+    - run: |
+        julia -e '
+        using Pkg
+        Pkg.add("Coverage")
+        using Coverage
+        Codecov.submit(process_folder())'
+        Pkg.develop(PackageSpec(path=pwd()))
+        Pkg.instantiate()'
+    - run: |
+        julia -e '
         using Pkg
         Pkg.develop(PackageSpec(path=pwd()))
         Pkg.instantiate()
@@ -66,5 +66,5 @@ jobs:
     name: Unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-  - runs: test/runtests.jl
+    - uses: actions/checkout@v2
+    - run: test/runtests.jl
