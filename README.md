@@ -73,7 +73,7 @@ julia single_cell_opt_izhi.jl
 
 ### Motivation
 <details>
-  <summary>Motivation</summary>
+  <summary>Detailed Motivation</summary>
 
 
 [Previous work](https://github.com/russelljjarvis/BluePyOpt/blob/neuronunit_reduced_cells/examples/neuronunit/OptimizationMulitSpikingIzhikevichModel.ipynb) in data-driven optimization of spiking neurons was implemented in Python. The Python implementation of reduced model simulation sometimes called external simulation, and overall my previous implementation of reduced model optimization was slower and more complex than it needed to be, for language and tool specific reasons.
