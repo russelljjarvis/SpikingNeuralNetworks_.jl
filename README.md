@@ -16,7 +16,11 @@
 Julia has enough tools to support fitting spiking neural network models to data. Python speed necessitates external simulators to do network simulation. As much as possible it would be nice to do fast, efficient data fitting of spike trains to network models in one language, lets try to do that here.
 
 ### Getting Started
-#### Install the Julia module
+
+<details>
+  <summary>#### Install the Julia module</summary>
+  
+
 This is not yet an official package, so the package would need to be added in developer mode. The short way to do this is as follows:
 ```
 Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl.git")
@@ -38,6 +42,7 @@ Or
 Pkg.develop(PackageSpec(path=pwd()))
 
 ```
+</details>
 ## Entry Points
 
 Optimize a spiking neural network by exploring effect of parameter that controls connectome graph structure:
