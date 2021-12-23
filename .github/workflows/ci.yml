@@ -67,4 +67,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: test/runtests.jl
+    - run: |
+        chmod a+x test/runtests.jl
+        test/runtests.jl
