@@ -1,4 +1,27 @@
-# Spiking Network Examples in Julia
+<h1 align="center">
+  Spiking Network Examples in Julia
+</h1>
+
+<p align="center">
+  <img alt="GitHub" src="https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square">
+  <img alt="https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg">
+  <img alt="GitHub" src="https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg">
+  <img alt="GitHub" src="https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg">
+  <img alt="GitHub" src="https://img.shields.io/github/issues-pr/russelljjarvis/SpikeNetOpt.jl.svg">
+  <img alt="GitHub" src="https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg">
+
+</p>
+
+<p align="center">
+  <a href="#Description">Description</a> •
+  <a href="#Outputs">Example-Outputs"</a> •
+  <a href="#Motivation">Motivation</a> •
+  <a href="#Install">Install-the-Julia-module</a>
+  <a href="#Plans">Development-Plans</a>
+  <a href="#Flow Chart">Current-Design-Flow-Chart</a>
+	
+</p>
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 ![GitHub issues](https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg)
@@ -13,9 +36,10 @@
 - [Development Plans](#Development-Plans)
 - [Current Design Flow Chart](#Current-Design-Flow-Chart)
 
-
-## Description
+<p align="center">
 Julia has enough tools to support fitting spiking neural network models to data. Python speed necessitates external simulators to do network simulation. As much as possible it would be nice to do fast, efficient data fitting of spike trains to network models in one language, lets try to do that here.
+</p>
+
 
 ### Getting Started
 
