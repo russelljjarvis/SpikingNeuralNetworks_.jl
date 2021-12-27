@@ -17,7 +17,7 @@
   <a href="#Motivation">Motivation</a> •
   <a href="#Install-the-Julia-module">Install</a> •
   <a href="#Development-Plans">Plans</a> •
-  <a href="#Current-Design-Flow-Chart">Flow Chart</a> •	
+  <a href="#Current-Design-Flow-Chart">Flow Chart</a> 	
 </p>
 
 <p align="center">
