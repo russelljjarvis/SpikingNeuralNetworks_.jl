@@ -4,8 +4,7 @@
 
 <p align="center">
   <img alt="GitHub" src="https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square">
-  <img alt="https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg">
-  <img alt="GitHub" src="https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg">
+  <img alt="GitHub" src="https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/issues-pr/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg">
@@ -14,12 +13,11 @@
 
 <p align="center">
   <a href="#Description">Description</a> •
-  <a href="#Outputs">Example-Outputs"</a> •
+  <a href="#Outputs">Example-Outputs</a> •
   <a href="#Motivation">Motivation</a> •
-  <a href="#Install">Install-the-Julia-module</a>
-  <a href="#Plans">Development-Plans</a>
-  <a href="#Flow Chart">Current-Design-Flow-Chart</a>
-	
+  <a href="#Install">Install-the-Julia-module</a> •
+  <a href="#Plans">Development-Plans</a> •
+  <a href="#Flow Chart">Current-Design-Flow-Chart</a> •	
 </p>
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
