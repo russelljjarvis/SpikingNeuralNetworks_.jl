@@ -133,8 +133,7 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 <p align="center">
 	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg" width="250" height="200">
 </p>
-(https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg)
-#### Intended Future Design:
+<h4> Intended Future Design: </h4>
 <p align="center">
 	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/second_flow_diagram.png" width="250" height="200">
 </p>
