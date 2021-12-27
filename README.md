@@ -16,7 +16,7 @@
   <a href="#Example-Outputs">Outputs</a> •
   <a href="#Motivation">Motivation</a> •
   <a href="#Install-the-Julia-module">Install</a> •
-  <a href="#Development-Plans">Olans</a> •
+  <a href="#Development-Plans">Plans</a> •
   <a href="#Current-Design-Flow-Chart">Flow Chart</a> •	
 </p>
 
