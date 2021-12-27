@@ -20,19 +20,6 @@
   <a href="#Flow Chart">Current-Design-Flow-Chart</a> •	
 </p>
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
-![GitHub issues](https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg)
-![GitHub closed issues](https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/russelljjarvis/SpikeNetOpt.jl.svg)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg)
-
-- [Description](#Description)
-- [Example Outputs](#Example-Outputs)
-- [Motivation](#Motivation)
-- [Getting started](#getting-started)
-- [Install the Julia module](#Install-the-Julia-module)
-- [Development Plans](#Development-Plans)
-- [Current Design Flow Chart](#Current-Design-Flow-Chart)
 
 <p align="center">
 Julia has enough tools to support fitting spiking neural network models to data. Python speed necessitates external simulators to do network simulation. As much as possible it would be nice to do fast, efficient data fitting of spike trains to network models in one language, lets try to do that here.
