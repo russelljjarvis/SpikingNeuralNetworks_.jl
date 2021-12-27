@@ -74,10 +74,9 @@ julia single_cell_opt_izhi.jl
 
 ### Motivation
 <details>
-  <summary>Detailed Motivation</summary>
+  <summary>Detailed Motivation and Previous work</summary>
 
-
-[Previous work](https://github.com/russelljjarvis/BluePyOpt/blob/neuronunit_reduced_cells/examples/neuronunit/OptimizationMulitSpikingIzhikevichModel.ipynb) in data-driven optimization of spiking neurons was implemented in Python. The Python implementation of reduced model simulation sometimes called external simulation, and overall my previous implementation of reduced model optimization was slower and more complex than it needed to be, for language and tool specific reasons.
+(https://github.com/russelljjarvis/BluePyOpt/blob/neuronunit_reduced_cells/examples/neuronunit/OptimizationMulitSpikingIzhikevichModel.ipynb) in data-driven optimization of spiking neurons was implemented in Python. The Python implementation of reduced model simulation sometimes called external simulation, and overall my previous implementation of reduced model optimization was slower and more complex than it needed to be, for language and tool specific reasons.
 
 Reduced model spiking neurons models have compact equations, and they should be fast to simulate, but Python often calls external codes and programes (C,C++,NEURON,brian2,NEST,PyNN) to achieve a speedup for network simulations, however, approaches for speeding up network simulations are not necessarily efficient or convenient for running single-cell simulations, as me be required for single cell optimizations.  This strategy of calling external code causes an intolerable code complexity and intolerable run-time cost for single neuron simulations. The Python tool numba JIT partially remedies this problem, however, code from the Python optimization framework DEAP/BluePyOpt also induces an additional overhead. An almost pure Julia SNN optimization routine is a better solution to efficiently optimizing Reduced SNN models. In this package, two other packages: Evolutionary.jl, and Metaheuristics provide genetic algorithms used to optimize spiking neural networks.
 
@@ -92,9 +91,10 @@ Reduced model spiking neurons models have compact equations, and they should be 
 The loss function is constructed by computing Spike Distance between all pairs of neurons
 Networks are optimized using pair wise spike-distance metric on each pair of neurons
 Pythons NetworkUnit package is used to perform a posthoc evaluation of the optimized network.
+<details>
+  <summary>Example Outputs</summary>
 
 
-### Example Outputs
 See the figure below where local variation and firing rates are compared against every neuron between two model networks.
 
 #### Network optimization
@@ -117,6 +117,20 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 <p align="center">
 	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/net_compare_unicode.png" width="250" height="200">
 </p>
+</details>
+
+#### Current Design Vs Intended Design Flow Chart:
+
+
+<p align="center">
+	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg" width="250" height="200">
+</p>
+(https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg)
+#### Intended Future Design:
+<p align="center">
+	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/second_flow_diagram.png" width="250" height="200">
+</p>
+
 
 
 	
@@ -155,7 +169,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
-#### Current Design Flow Chart:
-![https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/doc/Flowchart%20(2).jpg)
-#### Intended Future Design:
-![](https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/second_flow_diagram.png)
