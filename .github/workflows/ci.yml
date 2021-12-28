@@ -58,8 +58,11 @@ jobs:
     - run: |
         julia -e '
         using Pkg
-        Pkg.develop(PackageSpec(path=pwd()))         
-        test/test_izhi_model.jl'#  Pkg.instantiate()
+        Pkg.build()
+        test/test_izhi_model.jl'
+        #  Pkg.instantiate()
+        # Pkg.develop(PackageSpec(path=pwd()))         
+        
 
   test:
     name: Unit tests
@@ -70,5 +73,8 @@ jobs:
     - run: |
         julia -e '
         using Pkg
-        Pkg.develop(PackageSpec(path=pwd()))         
+        Pkg.build()
+        Pkg.test()
         test/runtests.jl'
+# Pkg.develop(PackageSpec(path=pwd()))         
+        
