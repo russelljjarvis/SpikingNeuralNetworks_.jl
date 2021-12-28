@@ -9,6 +9,8 @@ SNO = SpikeNetOpt
 
 using SpikingNeuralNetworks
 using Evolutionary
+using Memoize
+
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 unicodeplots()
@@ -20,22 +22,47 @@ unicodeplots()
 ##
 # Ground truths
 ##
-global Ne = 200;
-global Ni = 50
-global σee = 1.0
-global pee = 0.5
-global σei = 1.0
-global pei = 0.5
+const Ne = 200;
+const Ni = 50
+const σee = 1.0
+const pee = 0.5
+const σei = 1.0
+const pei = 0.5
 MU = 10
 
 
-global E
-global spkd_ground
-global GT = 26
+const E
+const spkd_ground
+#global GT = 26
 
-g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
 
-P, C = SpikeNetOpt.make_net_SNN(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
+
+@memoize function get_constant_gw()
+    ##
+    # Load a connectome from disk.
+    ##
+    try
+        filename = string("P1C1_weights.jld")
+        P = load(filename,"P")
+        C = load(filename,"C")
+        return P, C
+
+    catch e
+        P, C = SNO.make_net_SNN(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
+
+        #P, C = SNO.make_net_SNN(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+        filename = string("P1C1_weights.jld")
+        save(filename, "P", P)
+        save(filename, "C", C)
+
+        return P, C
+    end
+end
+
+#g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
+
+P, C = get_constant_gw()
+#SpikeNetOpt.make_net_SNN(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
 E, I = P
 EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
@@ -65,15 +92,26 @@ P
 
 META_HEUR_OPT = true
 
-function loss(model)
+
+#function sim_net_darsnack_learn(weight_gain_factor)
+#    ground_weights = get_constant_gw()
+
+
+function loss(weight_gain_factor)
     @show(Ne,Ni)
     @show(model)
 
-    σee = model[1]
-    pee = model[2]
-    σei = model[3]
-    pei = model[4]
-    P1, C1 = SNO.make_net_SNN(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+
+    #pee = model[2]
+    #σei = model[3]
+    #pei = model[4]
+
+    #P1, C1 = SNO.make_net_SNN(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+
+    P1, C1 = weight_gain_factor[1]
+    for c in C1
+        c.W = c.W.*weight_gain_factor
+
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
     sim_length = 1000

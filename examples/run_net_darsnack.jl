@@ -13,6 +13,7 @@ using Metaheuristics
 using Test
 
 using Revise
+using Memoize
 
 SNN = SpikingNeuralNetworks
 SNN.@load_units
@@ -32,9 +33,12 @@ const weight_gain_factor = 0.77
 #const GT = 26
 
 #g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
+@memoize function get_ground_truth():
+    spkd_ground_dic,weights1,synpases1 = SNO.sim_net_darsnack_used(weight_gain_factor)#(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
+    spkd_ground = SNO.get_trains_dars(spkd_ground_dic)
+    return spkd_ground
 
-spkd_ground_dic,weights1,synpases1 = SNO.sim_net_darsnack_used(weight_gain_factor)#(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
-spkd_ground = SNO.get_trains_dars(spkd_ground_dic)
+spkd_ground = get_ground_truth()
 #@show(weights1)
 @show(spkd_ground)
 error1 = SNO.spike_train_difference(spkd_ground, spkd_ground)

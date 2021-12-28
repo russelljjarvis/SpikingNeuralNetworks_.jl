@@ -380,6 +380,8 @@ function make_net_SNN(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5)
      II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
      P = [E, I]#, EEA]
      C = [EE, EI, IE, II]#, EEA]
+     @show(C)
+
      return P, C
 end
 function get_trains(p)
@@ -547,6 +549,7 @@ function loss(model)
     σei = model[3]
     pei = model[4]
     P1, C1 = make_net_SNN(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
+    @show(C1)
     E1, I1 = P1
     SNN.monitor([E1, I1], [:fire])
     sim_length = 500
