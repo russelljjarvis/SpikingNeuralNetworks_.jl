@@ -1,5 +1,5 @@
 using SpikingNeuralNetworks
-using ClearStacktrace
+#using ClearStacktrace
 using Plots
 unicodeplots()
 SNN = SpikingNeuralNetworks

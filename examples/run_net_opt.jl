@@ -1,4 +1,3 @@
-using ClearStacktrace
 using Plots
 using SpikeNetOpt
 SNO = SpikeNetOpt

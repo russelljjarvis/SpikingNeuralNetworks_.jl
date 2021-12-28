@@ -1,11 +1,6 @@
-#using Distributed
-using ClearStacktrace
-
 using Plots
-
 using SpikeNetOpt
 SNO = SpikeNetOpt
-#@show(varinfo(SNO))
 
 using SpikingNeuralNetworks
 using Evolutionary
@@ -14,9 +9,6 @@ using Memoize
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 unicodeplots()
-
-##
-##
 
 
 ##
@@ -33,8 +25,6 @@ MU = 10
 
 const E
 const spkd_ground
-#global GT = 26
-
 
 
 @memoize function get_constant_gw()

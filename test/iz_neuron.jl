@@ -1,5 +1,5 @@
 using SpikingNeuralNetworks
-using ClearStacktrace
+#using ClearStacktrace
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 using SpikeNetOpt

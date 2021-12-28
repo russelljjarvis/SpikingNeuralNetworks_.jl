@@ -1,10 +1,5 @@
-#using Distributed
-using ClearStacktrace
-
 using Plots
-
 using SpikeNetOpt
-#@show(varinfo(SNO))
 using JLD
 using SpikingNeuralNetworks
 using Evolutionary

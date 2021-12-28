@@ -1,7 +1,6 @@
 
 using Test
 using SpikingNeuralNetworks
-using ClearStacktrace
 using Plots
 unicodeplots()
 SNN = SpikingNeuralNetworks
