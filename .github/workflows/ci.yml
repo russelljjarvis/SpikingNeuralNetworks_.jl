@@ -53,15 +53,14 @@ jobs:
         Pkg.add("Coverage")
         using Coverage
         Codecov.submit(process_folder())'
-        Pkg.develop(PackageSpec(path=pwd()))
-        Pkg.instantiate()'
+        Pkg.develop(PackageSpec(path=pwd()))' #  Pkg.instantiate()
+       
     - run: |
         julia -e '
         using Pkg
-        Pkg.develop(PackageSpec(path=pwd()))
-        Pkg.instantiate()
-        test/test_izhi_model.jl
-        '
+        Pkg.develop(PackageSpec(path=pwd()))         
+        test/test_izhi_model.jl'#  Pkg.instantiate()
+
   test:
     name: Unit tests
     runs-on: ubuntu-latest
@@ -69,4 +68,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: julia-actions/setup-julia@v1
     - run: |
-        test/runtests.jl
+        julia -e '
+        using Pkg
+        Pkg.develop(PackageSpec(path=pwd()))         
+        test/runtests.jl'
