@@ -2,8 +2,8 @@ using Pkg
 using TOML
 Pkg.add("PyPlot")
 Pkg.add(url = "https://github.com/russelljjarvis/SpikeSynchrony.jl")
-Pkg.add(url="https://github.com/paulmthompson/SpikeSorting.jl.git")
-Pkg.add(url="https://github.com/paulmthompson/Spikes.jl.git")
+Pkg.add(url = "https://github.com/paulmthompson/SpikeSorting.jl.git")
+Pkg.add(url = "https://github.com/paulmthompson/Spikes.jl.git")
 Pkg.add("Conda")
 Pkg.add("PyCall")
 run(`$(which pip) install -networkunit`)

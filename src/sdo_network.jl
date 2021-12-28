@@ -36,10 +36,10 @@ const Ni = 50
 
 # https://github.com/RainerEngelken/JuliaCon2017/blob/master/code/generating_large_random_network_topology.ipynb
 # needs less memory (n*k instead of n^2)
-function gensparsetopo(n,k,seed)
+function gensparsetopo(n, k, seed)
     # seed random
     #srand(seed)
-    p = k/(n-1)
+    p = k / (n - 1)
     #A = sprand(Bool,n,n,p)
     #weights = rand(Uniform(n,k),n,n)
 
@@ -57,56 +57,56 @@ using Logging
 function get_constant_gw()
     try
         filename = string("ground_weights.jld")
-        ground_weights = load(filename,"ground_weights")
+        ground_weights = load(filename, "ground_weights")
 
         return ground_weights
 
     catch e
         #this_size = 50
-        ground_weights = rand(Uniform(-2,1),this_size,this_size)
+        ground_weights = rand(Uniform(-2, 1), this_size, this_size)
         filename = string("ground_weights.jld")
         save(filename, "ground_weights", ground_weights)
         return ground_weights
     end
 end
 
-    #=
-    try
+#=
+try
 
-        filename = string("ground_synapsese.jld")
-        synapses = load(filename,"nsynapse")
-    catch e
-        low = ConstantRate(0.0)
-        high = ConstantRate(0.99)
-        switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
-        nsynapse = QueuedSynapse(Synapse.Alpha())
-        T = 1000
-        syn_current = [switch(t) for t = 1:T]
-        excite!(nsynapse, filter(x -> x != 0, syn_current))
-        #ai = [ nsynapse for i in 1:size]
-        @show(nsynapse)
-        filename = string("ground_synapsese.jld")
+    filename = string("ground_synapsese.jld")
+    synapses = load(filename,"nsynapse")
+catch e
+    low = ConstantRate(0.0)
+    high = ConstantRate(0.99)
+    switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
+    nsynapse = QueuedSynapse(Synapse.Alpha())
+    T = 1000
+    syn_current = [switch(t) for t = 1:T]
+    excite!(nsynapse, filter(x -> x != 0, syn_current))
+    #ai = [ nsynapse for i in 1:size]
+    @show(nsynapse)
+    filename = string("ground_synapsese.jld")
 
-        save(filename, "nsynapse", nsynapse)
-        println("got here")
-    end
-    return nsynapse, ground_weights
-    =#
-    #ground_weights
+    save(filename, "nsynapse", nsynapse)
+    println("got here")
+end
+return nsynapse, ground_weights
+=#
+#ground_weights
 
-    #finally
-    #    ground_weights = rand(Uniform(-2,1),size,size)
-    #    println("gets here no!")
-    #
-    #    filename = string("ground_weights.jld")
-    #    save(filename, "ground_weights", ground_weights)
-        # What to do unconditionally when try/catch block exits.
-    #    return ground_weights
+#finally
+#    ground_weights = rand(Uniform(-2,1),size,size)
+#    println("gets here no!")
+#
+#    filename = string("ground_weights.jld")
+#    save(filename, "ground_weights", ground_weights)
+# What to do unconditionally when try/catch block exits.
+#    return ground_weights
 
 function syn(T)
     low = ConstantRate(0.0)
     high = ConstantRate(0.99)
-    switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
+    switch(t; dt = 1) = (t < Int(T / 2)) ? low(t; dt = dt) : high(t; dt = dt)
     the_synapses = QueuedSynapse(Synapse.Alpha())
     syn_current = [switch(t) for t = 1:T]
     excite!(the_synapses, filter(x -> x != 0, syn_current))
@@ -126,21 +126,24 @@ function sim_net_darsnack(weight_gain_factor)
     vth = 1.0
     weights = ground_weights .* weight_gain_factor
     #@show(weights)
-    pop_lif = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
-                              synapse = Synapse.Alpha,
-                              threshold = () -> Threshold.Ideal(vth))
+    pop_lif = Population(
+        weights;
+        cell = () -> LIF(τᵣ, vᵣ),
+        synapse = Synapse.Alpha,
+        threshold = () -> Threshold.Ideal(vth),
+    )
 
 
     T = 1000
 
     the_synapses = syn(T)
-    ai = [ the_synapses for i in 1:this_size]
+    ai = [the_synapses for i = 1:this_size]
     spikes = simulate!(pop_lif, T; inputs = ai)
     println("\n simulated: \n")
-    rasterplot(spikes)|>display#, label = ["Input 1"])#, "Input 2"])
+    rasterplot(spikes) |> display#, label = ["Input 1"])#, "Input 2"])
 
 
-    return spikes,weights,the_synapses
+    return spikes, weights, the_synapses
 end
 
 
@@ -162,13 +165,16 @@ function sim_net_darsnack_learn(weight_gain_factor)
     τᵣ = 1.0
     vth = 1.0
 
-    pop = Population(weights; cell = () -> SRM0(η₀, τᵣ),
-                              synapse = Synapse.Alpha,
-                              threshold = () -> Threshold.Ideal(vth),
-                              learner = STDP(0.5, 0.5, size(weights, 1)))
+    pop = Population(
+        weights;
+        cell = () -> SRM0(η₀, τᵣ),
+        synapse = Synapse.Alpha,
+        threshold = () -> Threshold.Ideal(vth),
+        learner = STDP(0.5, 0.5, size(weights, 1)),
+    )
 
     # create step input currents
-    ai = InputPopulation([ConstantRate(0.8) for i in 1:this_size])
+    ai = InputPopulation([ConstantRate(0.8) for i = 1:this_size])
     #ai = [ the_synapses for i in 1:this_size]
 
     # create network
@@ -191,10 +197,10 @@ function sim_net_darsnack_learn(weight_gain_factor)
     spikes = output[:pop]
     #spikes = simulate!(pop_lif, T; inputs = ai)
     println("\n simulated: \n")
-    rasterplot(spikes)|>display#, label = ["Input 1"])#, "Input 2"])
+    rasterplot(spikes) |> display#, label = ["Input 1"])#, "Input 2"])
 
 
-    return spikes,weights,ai
+    return spikes, weights, ai
 end
 
 function sim_net_darsnack_used(weight_gain_factor)
@@ -214,14 +220,17 @@ function sim_net_darsnack_used(weight_gain_factor)
     #τᵣ = 1.0
     #vth = 1.0
 
-    pop = Population(weights; cell = () ->LIF(τᵣ, vᵣ),
-                              synapse = Synapse.Alpha,
-                              threshold = () -> Threshold.Ideal(vth))
-                              # threshold = Threshold.Ideal
-                              #learner = STDP(0.5, 0.5, size(weights, 1)))
+    pop = Population(
+        weights;
+        cell = () -> LIF(τᵣ, vᵣ),
+        synapse = Synapse.Alpha,
+        threshold = () -> Threshold.Ideal(vth),
+    )
+    # threshold = Threshold.Ideal
+    #learner = STDP(0.5, 0.5, size(weights, 1)))
 
     # create step input currents
-    ai = InputPopulation([ConstantRate(0.8) for i in 1:this_size])
+    ai = InputPopulation([ConstantRate(0.8) for i = 1:this_size])
     #ai = [ the_synapses for i in 1:this_size]
 
     # create network
@@ -244,14 +253,14 @@ function sim_net_darsnack_used(weight_gain_factor)
     spikes = output[:pop]
     #spikes = simulate!(pop_lif, T; inputs = ai)
     println("\n simulated: \n")
-    rasterplot(spikes)|>display#, label = ["Input 1"])#, "Input 2"])
+    rasterplot(spikes) |> display#, label = ["Input 1"])#, "Input 2"])
 
     #clear(pop)
     #clear(net)
     #clear(ai)
     #clear(weights)
 
-    return spikes,weights,ai
+    return spikes, weights, ai
 end
 
 function get_trains_dars(train_dic::Dict)
@@ -265,12 +274,12 @@ function get_trains_dars(train_dic::Dict)
     end
     @inbounds for cell_id in keys(train_dic)
         @inbounds for time in train_dic[cell_id]
-            append!(cellsa[Int(cell_id)], time*ms)
+            append!(cellsa[Int(cell_id)], time * ms)
         end
     end
     #@show(cellsa)
     #cellsa
-    cellsb = cellsa[:,1]
+    cellsb = cellsa[:, 1]
     cellsb
 end
 
@@ -303,7 +312,7 @@ function make_net_SNeuralN()
     return input,cb,voltages
 end
 =#
-    #outputs = simulate!(pop, T; cb = cb, inputs=input)
+#outputs = simulate!(pop, T; cb = cb, inputs=input)
 
 const Ne = 200;
 const Ni = 50
@@ -337,21 +346,21 @@ function make_net_from_graph_structure(xx)#;
     #    SNN.connect!(EE, n, n + 1, 50)
     #end
     #for (i,j) in enumerate(h.fadjlist) println(i,j) end
-    EE = SNN.SpikingSynapse(E, E, :v; σ=0.5, p=0.8)
+    EE = SNN.SpikingSynapse(E, E, :v; σ = 0.5, p = 0.8)
 
-    @inbounds for (i,j) in enumerate(h.fadjlist)
+    @inbounds for (i, j) in enumerate(h.fadjlist)
         @inbounds for k in j
-            SNN.connect!(EE,i, k, 10)
+            SNN.connect!(EE, i, k, 10)
         end
     end
 
-    @inbounds for (i,j) in enumerate(hi.fadjlist)
+    @inbounds for (i, j) in enumerate(hi.fadjlist)
         @inbounds for k in j
-            if i<Ni && k<Ni
+            if i < Ni && k < Ni
 
-                SNN.connect!(EI,i, k, 10)
-                SNN.connect!(IE,i, k, 10)
-                SNN.connect!(II,i, k, 10)
+                SNN.connect!(EI, i, k, 10)
+                SNN.connect!(IE, i, k, 10)
+                SNN.connect!(II, i, k, 10)
             end
         end
     end
@@ -369,20 +378,20 @@ end
 
 
 function make_net_SNN(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5)
-     Ne = 200;
-     Ni = 50
+    Ne = 200
+    Ni = 50
 
-     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
-     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
-     EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = pee)
-     EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = pei)
-     IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 0.5)
-     II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
-     P = [E, I]#, EEA]
-     C = [EE, EI, IE, II]#, EEA]
-     @show(C)
+    E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
+    I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
+    EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = pee)
+    EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = pei)
+    IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 0.5)
+    II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
+    P = [E, I]#, EEA]
+    C = [EE, EI, IE, II]#, EEA]
+    @show(C)
 
-     return P, C
+    return P, C
 end
 function get_trains(p)
     fire = p.records[:fire]
@@ -419,7 +428,7 @@ end
 #Flux.gpu
 
 function rmse(spkd)
-    error = Losses(mean(spkd),spkd;agg=mean)
+    error = Losses(mean(spkd), spkd; agg = mean)
 end
 
 function rmse_depr(spkd)
@@ -541,7 +550,7 @@ end
 =#
 
 function loss(model)
-    @show(Ne,Ni)
+    @show(Ne, Ni)
     @show(model)
 
     σee = model[1]
@@ -620,7 +629,14 @@ end
 
 #using Evolutionary
 
-function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
+function Evolutionary.trace!(
+    record::Dict{String,Any},
+    objfun,
+    state,
+    population,
+    method::GA,
+    options,
+)
     idx = sortperm(state.fitpop)
     record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]
     record["pop"] = population[:]
