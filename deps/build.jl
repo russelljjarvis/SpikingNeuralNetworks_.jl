@@ -2,7 +2,7 @@ import Pkg
 Pkg.add("Pkg")
 Pkg.add("TOML")
 using TOML
-tml = TOML.tryparsefile("../Project.toml")
+# tml = TOML.tryparsefile("../Project.toml")
 
 
 Pkg.add("PyPlot")
