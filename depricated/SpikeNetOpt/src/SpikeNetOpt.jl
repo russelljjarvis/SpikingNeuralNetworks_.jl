@@ -7,31 +7,27 @@ using SpikeSynchrony
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 SNN.@load_units
-
-using Evolutionary#, Test, Random
+using Evolutionary
 import DataStructures
 using JLD
-
-using Reexport
-
 using UnicodePlots
-#using Evolutionary, Test, Random
-#using Pkg
-
-#import Pkg
-#using SpikingNeuralNetworks
-#SNN = SpikingNeuralNetworks
 using SpikeSynchrony
 using Statistics
 using JLD
 using Distributed
-using SharedArrays
 using Plots
 using UnicodePlots
-#using Evolutionary
 using Distributions
 using LightGraphs
-using Metaheuristics
+using ClearStacktrace
+using SharedArrays
+using WaspNet
+using SpikingNN
+using Reexport
+
+#using Plots
+
+#using Metaheuristics
 
 
 # Export Function names and struct names found in file utils

@@ -12,11 +12,9 @@ jobs:
         version:
           - '1.4'
           - '1.5'
-          - 'nightly'
         os:
           - ubuntu-latest
         arch:
-          - x64
           - x86
         exclude:
           - os: ubuntu-latest

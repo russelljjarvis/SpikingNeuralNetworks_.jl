@@ -1,6 +1,5 @@
 using UnicodePlots
 import Pkg
-using Flux
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using SpikeSynchrony
@@ -14,8 +13,6 @@ using Evolutionary
 using Distributions
 using LightGraphs
 using Metaheuristics
-#Pkg.add("LightGraphs")
-#Pkg.add("GraphPlot")
 
 ##
 # Override to function to include a state.
@@ -69,7 +66,9 @@ global σei = 1.0
 global pei = 0.5
 
 function make_net_SNN(xx)#;
+
     xx = Int(round(xx))
+    @show(xx)
     #h = turan_graph(xx, xx)#, seed=1,cutoff=0.3)
 
     h = circular_ladder_graph(xx)#, xx)#, seed=1,cutoff=0.3)
@@ -186,7 +185,7 @@ function raster_difference(spkd0, spkd_found)
     maxi0 = size(spkd0)[2]
     maxi1 = size(spkd_found)[2]
     mini = findmin([maxi0, maxi1])[1]
-    spkd = ones(mini)#SharedArrays.SharedArray{Float32}(mini)
+    spkd = ones(mini)
     maxi = findmax([maxi0, maxi1])[1]
 
     if maxi > 0
@@ -199,13 +198,11 @@ function raster_difference(spkd0, spkd_found)
         end
     end
     spkd = ones(mini)
-    @inbounds for (_, i) in zip(spkd, eachindex(spkd))
+    @inbounds for i in eachindex(spkd)
         if !isempty(spkd0[i]) && !isempty(spkd_found[i])
-
             maxt1 = findmax(spkd0[i])[1]
             maxt2 = findmax(spkd_found[i])[1]
             maxt = findmax([maxt1, maxt2])[1]
-
             if maxt1 > 0.0 && maxt2 > 0.0
                 t, S = SpikeSynchrony.SPIKE_distance_profile(
                     unique(sort(spkd0[i])),
@@ -213,15 +210,60 @@ function raster_difference(spkd0, spkd_found)
                     t0 = 0.0,
                     tf = maxt,
                 )
-                #b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
-                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
-
+                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1])
             end
         end
     end
-    #scatter([i for i in 1:mini],spkd)|>display
     spkd
 end
+
+#=
+using Base.Threads
+
+function raster_difference_threads(spkd0, spkd_found)
+    maxi0 = size(spkd0)[2]
+    maxi1 = size(spkd_found)[2]
+    mini = findmin([maxi0, maxi1])[1]
+    spkd = ones(mini)
+    maxi = findmax([maxi0, maxi1])[1]
+    if maxi > 0
+        if maxi0 != maxi1
+            return sum(ones(maxi))
+
+        end
+        if isempty(spkd_found[1, :])
+            return sum(ones(maxi))
+        end
+    end
+    spkd = ones(mini)
+    N = length(spkd)
+    Threads.foreach(
+        Channel(nthreads()) do chnl
+            for i in 1:N
+                val = 1.0
+                if !isempty(spkd0[i]) && !isempty(spkd_found[i])
+                    maxt1 = findmax(spkd0[i])[1]
+                    maxt2 = findmax(spkd_found[i])[1]
+                    maxt = findmax([maxt1, maxt2])[1]
+                    if maxt1 > 0.0 && maxt2 > 0.0
+                        t, S = SpikeSynchrony.SPIKE_distance_profile(
+                            unique(sort(spkd0[i])),
+                            unique(sort(spkd_found[i]));
+                            t0 = 0.0,
+                            tf = maxt,
+                        )
+                        val = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1])
+                    end
+                end
+                put!(chnl, val)
+                println("thread ", threadid(), ": ", "put ", val)
+            end
+        end
+    end
+    spkd
+end
+=#
+
 
 function loss(model)
     #σee = model[1]
@@ -230,6 +272,9 @@ function loss(model)
     #pei = model[4]
     #P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     #@show(model)
+    println("best candidate ",26)
+    println(" ")
+    #println("found ", model[1])
     P1, C1 = make_net_SNN(model[1])#,a=a)
 
     E1, I1 = P1
@@ -241,14 +286,17 @@ function loss(model)
     end
 
     spkd_found = get_trains(P1[1])
-    println("Ground Truth \n")
-    SNN.raster([E]) |> display
-    println("Best Candidate \n")
+    #println("Ground Truth \n")
+    #SNN.raster([E]) |> display
+    #println("Best Candidate \n")
 
-    SNN.raster([E1]) |> display
+    #SNN.raster([E1]) |> display
 
     error = raster_difference(spkd_ground, spkd_found)
+    error = sum(error)
     #@show(error)
+    #println("Broke here")
+
     error
 
 end
@@ -257,7 +305,10 @@ end
 
 function eval_best(params)
     xx = Int(round(params[1]))
+    @show(xx)
     P1, C1 = make_net_SNN(xx)#,a=a)
+    println("found ",xx)
+
     #σee = params[1]
     #pee = params[2]
     #σei = params[3]
@@ -317,13 +368,13 @@ end
 #lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
 #upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
 
-lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
-upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
+#lower = Int32[3]# 0.0 0.0 0.0]# 0.03 4.0]
+#upper = Int32[40]# 1.0 1.0 1.0]# 0.2 20.0]
 
 #lower = Float32[0.0 0.0 0.0 0.0]# 0.03 4.0]
 #upper = Float32[1.0 1.0 1.0 1.0]# 0.2 20.0]
-lower = vec(lower)
-upper = vec(upper)
+#lower = vec(lower)
+#upper = vec(upper)
 #using Evolutionary, MultivariateStats
 #range = Any[lower,upper]
 

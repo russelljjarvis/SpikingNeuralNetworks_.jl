@@ -81,6 +81,7 @@ sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
 
 #Flux.SGD
 #Flux.gpu
+#=
 function rmse(spkd)
     total = 0.0
     @inbounds for i = 1:size(spkd, 1)
@@ -88,11 +89,11 @@ function rmse(spkd)
     end
     return sqrt(total / size(spkd, 1))
 end
-
+=#
 global Ne = 200;
 global Ni = 50
 
-function raster_difference(spkd0, spkd_found)
+function spike_train_difference(spkd0, spkd_found)
     maxi0 = size(spkd0)[2]
     maxi1 = size(spkd_found)[2]
     mini = findmin([maxi0, maxi1])[1]

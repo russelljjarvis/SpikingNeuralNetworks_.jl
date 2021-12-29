@@ -1,6 +1,7 @@
+#=
 using UnicodePlots
 import Pkg
-using Flux
+#using Flux
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using SpikeSynchrony
@@ -10,17 +11,21 @@ using Distributed
 using SharedArrays
 using Plots
 using UnicodePlots
-sing Evolutionary
-
-SNN.@load_units
+using Evolutionary
+=#
+using SpikeNetOpt
+#SNN.@load_units
 unicodeplots()
 
 ###
 # Network 1.
 ###
-
+global E
+global spkd_ground
 global Ne = 200;
 global Ni = 50
+
+#=
 function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02)
     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = a, b = 0.2, c = -65, d = 8))
     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
@@ -33,37 +38,14 @@ function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02
     return P, C
 
 end
-function get_trains(p)
-    fire = p.records[:fire]
-    x, y = Float32[], Float32[]
-    for time in eachindex(fire)
-        for neuron_id in findall(fire[time])
-            push!(x, time)
-            push!(y, neuron_id)
-        end
-    end
-    cellsa = Array{Union{Missing,Any}}(undef, 1, Int(findmax(y)[1]))
-    nac = Int(findmax(y)[1])
-    for (inx, cell_id) in enumerate(1:nac)
-        cellsa[inx] = []
-    end
-    @inbounds for cell_id in unique(y)
-        @inbounds for (time, cell)) in collect(zip(x, y))
-            if Int(cell_id) == cell
-                append!(cellsa[Int(cell_id)], time)
+=#
 
-            end
 
-        end
-    end
-
-    cellsa
-
-end
-global E
-global spkd_ground
-
-P, C = make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
+###
+# is get_trains
+###
+#=#
+P, C = SpikeNetOpt.make_net(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8, a = 0.02)
 E, I = P #, EEA]
 EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
@@ -74,13 +56,9 @@ sim_length = 1000
     SNN.sim!(P, C, 1ms)
 
 end
-#_,_,_,spkd_ground = raster_synchp(P[1])
 spkd_ground = get_trains(P[1])
 sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
-#sggcu =[ CuArray(convert(Array{Float32,1},sg)) for sg in spkd_ground ]
 
-#Flux.SGD
-#Flux.gpu
 function rmse(spkd)
     total = 0.0
     @inbounds for i = 1:size(spkd, 1)
@@ -88,9 +66,6 @@ function rmse(spkd)
     end
     return sqrt(total / size(spkd, 1))
 end
-
-global Ne = 200;
-global Ni = 50
 
 function raster_difference(spkd0, spkd_found)
     maxi0 = size(spkd0)[2]
@@ -233,16 +208,6 @@ options = GA(
     crossover = intermediate(0.5),#xovr,
     mutation = uniform(0.5),#(.015),#domainrange(fill(1.0,ts)),#ms
 )
-# mutation = domainrange(fill(0.5,4))
-#
-#function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
-#    idx = sortperm(state.fitpop)
-#record["population"] = population
-#    state.fitpop[idx[1:5]]
-#    record["fitpop"] = state.fitpop[idx[1:5]]
-#end
-
-#Random.seed!(0);
 result = Evolutionary.optimize(
     loss,
     lower,
@@ -254,9 +219,10 @@ result = Evolutionary.optimize(
         successive_f_tol = 75,
         show_trace = true,
         store_trace = true,
-        parallelization = :thread,
     ),
 )
+#        parallelization = :thread,
+
 fitness = minimum(result)
 
 filename = string("GAsolution.jld")#, py"target_num_spikes")#,py"specimen_id)
@@ -295,13 +261,5 @@ save(filename, "trace", trace)
 #evo_population = [t.metadata[""] for t in trace]
 evo_loss = [t.value for t in trace]
 display(plot(evo_loss))
-
-#first_dim1 = [t.metadata["population"][1][1] for t in trace]
-#first_dim2 = [t.metadata["population"][1][2] for t in trace]
-#first_dim3 = [t.metadata["population"][1][3] for t in trace]
-#first_dim4 = [t.metadata["population"][1][4] for t in trace]
-
-#display(plot(first_dim1))
-#display(plot(first_dim1,first_dim2,first_dim3))
 
 run(`python-jl validate_candidate.py`)

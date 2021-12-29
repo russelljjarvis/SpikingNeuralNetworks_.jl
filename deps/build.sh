@@ -6,7 +6,7 @@ Pkg.add(Pkg.PackageSpec(;name="OrderedCollections", version="v1.4.1"))
 Pkg.add(Pkg.PackageSpec(;name="Parameters", version="v0.12.2"))
 Pkg.add(Pkg.PackageSpec(;name="Plots", version="v1.10.1"))
 Pkg.add(Pkg.PackageSpec(;name="CUDA", version="v2.4.3"))
-import Pkg; Pkg.add("ClearStacktrace")`
+
 Pkg.add(Pkg.PackageSpec(;name="PyCall v1.92.2
 Pkg.add(Pkg.PackageSpec(;name="Evolutionary v0.10.0
 
