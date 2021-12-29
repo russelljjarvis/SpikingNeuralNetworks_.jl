@@ -7,13 +7,11 @@
   <img alt="GitHub" src="https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg">
-  <img alt="GitHub" src="https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://github.com/russelljjarvis/SpikeNetOpt.jl/workflows/CI/badge.svg">
-  <img alt="GitHub" src="http://codecov.io/github/russelljjarvis/SpikeNetOpt.jl/coverage.svg?branch=main">
-
 
 </p>
 
+<!--  <img alt="GitHub" src="https://github.com/russelljjarvis/SpikeNetOpt.jl/workflows/CI/badge.svg"> -->
 
 <p align="center">
   <a href="#Description">Description</a> •
@@ -37,10 +35,14 @@ Julia has enough tools to support fitting spiking neural network models to data.
 
 This is not yet an official package, so the package would need to be added in developer mode. The short way to do this is as follows:
 ```
+import Pkg
 Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl.git")
 ```
-
-The long way:
+or 
+```
+] add https://github.com/russelljjarvis/SpikeNetOpt.jl.git
+```
+The long way invovles:
 ```
 git clone https://github.com/russelljjarvis/SpikeNetOpt.jl
 ```

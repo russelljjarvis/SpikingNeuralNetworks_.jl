@@ -53,15 +53,7 @@ jobs:
         Pkg.add("Coverage")
         using Coverage
         Codecov.submit(process_folder())'
-        Pkg.develop(PackageSpec(path=pwd()))' #  Pkg.instantiate()
        
-    - run: |
-        julia -e '
-        using Pkg
-        Pkg.build()
-        test/test_izhi_model.jl'
-        #  Pkg.instantiate()
-        # Pkg.develop(PackageSpec(path=pwd()))         
         
 
   test:
@@ -72,9 +64,8 @@ jobs:
     - uses: julia-actions/setup-julia@v1
     - run: |
         julia -e '
-        using Pkg
-        Pkg.build()
-        Pkg.test()
-        test/runtests.jl'
-# Pkg.develop(PackageSpec(path=pwd()))         
+        using Pkg;
+        Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl")
+        Pkg.precompile()
+        include("test/test_izhi_model.jl")'
         
