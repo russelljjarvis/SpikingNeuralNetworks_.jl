@@ -1,5 +1,4 @@
 using UnicodePlots
-import Pkg
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using SpikeSynchrony

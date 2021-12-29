@@ -8,14 +8,12 @@ using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 using Evolutionary
-import DataStructures
-using JLD
+using DataStructures
 using UnicodePlots
 using Statistics
 using JLD
 using Distributed
 using Plots
-using Evolutionary
 using Distributions
 using LightGraphs
 using Metaheuristics
