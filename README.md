@@ -7,6 +7,10 @@
   <img alt="GitHub" src="https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg">
+  <img alt="GitHub" src="https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg">
+  <img alt="GitHub" src="https://github.com/russelljjarvis/SpikeNetOpt.jl/workflows/CI/badge.svg">
+  <img alt="GitHub" src="http://codecov.io/github/russelljjarvis/SpikeNetOpt.jl/coverage.svg?branch=main">
+
 
 </p>
 
