@@ -59,7 +59,7 @@ jobs:
         julia -e '
         using Pkg;
         Pkg.develop(PackageSpec(path=pwd()));
-        Pkg.add("SpikingNeuralNetworks")`
+        Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl");
         include("test/test_izhi_model.jl")'
         
 
@@ -73,6 +73,6 @@ jobs:
         julia -e '
         using Pkg;
         Pkg.develop(PackageSpec(path=pwd()));
-        Pkg.add("SpikingNeuralNetworks")
+        Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl")
         include("test/test_izhi_model.jl")'
         
