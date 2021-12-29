@@ -1,14 +1,9 @@
-
-
-using SpikingNeuralNetworks
-using ClearStacktrace
-using Plots
-unicodeplots()
-SNN = SpikingNeuralNetworks
-SNN.@load_units
-#include("../current_search.jl")
 using SpikeNetOpt
 SNO = SpikeNetOpt
+using Plots
+using Tests
+unicodeplots()
+
 @testset "IZHI" begin
 
     RS = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
