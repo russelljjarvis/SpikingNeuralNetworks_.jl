@@ -50,18 +50,16 @@ jobs:
     - run: |
         julia -e '
         using Pkg
+        Pkg.develop(PackageSpec(path=pwd()))
         Pkg.add("Coverage")
         using Coverage
         Codecov.submit(process_folder())'
-        Pkg.develop(PackageSpec(path=pwd()))' #  Pkg.instantiate()
        
     - run: |
         julia -e '
         using Pkg
-        Pkg.build()
+        Pkg.develop(PackageSpec(path=pwd()))
         test/test_izhi_model.jl'
-        #  Pkg.instantiate()
-        # Pkg.develop(PackageSpec(path=pwd()))         
         
 
   test:
@@ -73,8 +71,6 @@ jobs:
     - run: |
         julia -e '
         using Pkg
-        Pkg.build()
-        Pkg.test()
+        Pkg.develop(PackageSpec(path=pwd()))
         test/runtests.jl'
-# Pkg.develop(PackageSpec(path=pwd()))         
         
