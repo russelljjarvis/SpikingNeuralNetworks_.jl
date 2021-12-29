@@ -54,12 +54,6 @@ jobs:
         using Coverage
         Codecov.submit(process_folder())'
        
-    - run: |
-        julia -e '
-        using Pkg;
-        Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl");
-        Pkg.precompile()
-        include("test/test_izhi_model.jl")'
         
 
   test:
