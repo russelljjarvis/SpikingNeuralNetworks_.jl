@@ -20,42 +20,8 @@ using Metaheuristics
 SNN.@load_units
 unicodeplots()
 
-###
-# Network 1.
-###
 
 
-global Ne = 200;
-global Ni = 50
-
-
-
-function make_net_SNeuralN()
-    weights = rand(Uniform(-2,1),25,25)
-    pop = Population(weights; cell = () -> LIF(τᵣ, vᵣ),
-                              synapse = Synapse.Alpha,
-                              threshold = () -> Threshold.Ideal(vth))
-    # create input currents
-    low = ConstantRate(0.14)
-    high = ConstantRate(0.1499)
-    switch(t; dt = 1) = (t < Int(T/2)) ? low(t; dt = dt) : high(t; dt = dt)
-    n1synapse = QueuedSynapse(Synapse.Alpha())
-    n2synapse = QueuedSynapse(Synapse.Alpha())
-    excite!(n1synapse, filter(x -> x != 0, [low(t) for t = 1:T]))
-    excite!(n2synapse, filter(x -> x != 0, [switch(t) for t = 1:T]))
-    voltage_array_size = size(weights)[1]
-    voltages = Dict([(i, Float64[]) for i in 1:voltage_array_size])
-    cb = () -> begin
-        for id in 1:size(pop)
-            push!(voltages[id], getvoltage(pop[id]))
-        end
-    end
-    input1 = [ (t; dt) -> 0 for i in 1:voltage_array_size/3]
-    input2 = [ n2synapse for i in voltage_array_size/3+1:2*voltage_array_size/3]
-    input3 = [ (t; dt) -> 0 for i in 2*voltage_array_size/3:voltage_array_size]
-    input = vcat(input2, input1, input3)
-    return input,cb,voltages
-end
     #outputs = simulate!(pop, T; cb = cb, inputs=input)
 
 global Ne = 200;
@@ -68,11 +34,11 @@ global pei = 0.5
 function make_net_from_graph_structure(xx)#;
 
     xx = Int(round(xx))
-    @show(xx)
+    #@show(xx)
     #h = turan_graph(xx, xx)#, seed=1,cutoff=0.3)
 
     h = circular_ladder_graph(xx)#, xx)#, seed=1,cutoff=0.3)
-    hi = circular_ladder_graph(xx)#, seed=1,cutoff=0.3)
+    #hi = circular_ladder_graph(xx)#, seed=1,cutoff=0.3)
     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
     #EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = 1.0)

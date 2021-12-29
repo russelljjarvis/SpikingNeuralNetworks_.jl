@@ -3,7 +3,7 @@ on:
   - push
   - pull_request
 jobs:
-  test:
+  julia:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -39,16 +39,42 @@ jobs:
       - uses: julia-actions/julia-buildpkg@latest
       - uses: julia-actions/julia-runtest@latest
         continue-on-error: ${{ matrix.version == 'nightly' || matrix.arch == 'x86' }}
-  docs:
-    name: Documentation
+  package:
+    name: Aftersuccess
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
-        with:
-          version: '1'
-      - run: |
-          julia --project=docs -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
+    - uses: actions/checkout@v2
+    - uses: julia-actions/setup-julia@v1
+      with:
+        version: '1'
+    - run: |
+        julia -e '
+        using Pkg
+        Pkg.add("Coverage")
+        using Coverage
+        Codecov.submit(process_folder())'
+        Pkg.develop(PackageSpec(path=pwd()))' #  Pkg.instantiate()
+       
+    - run: |
+        julia -e '
+        using Pkg
+        Pkg.build()
+        test/test_izhi_model.jl'
+        #  Pkg.instantiate()
+        # Pkg.develop(PackageSpec(path=pwd()))         
+        
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: julia-actions/setup-julia@v1
+    - run: |
+        julia -e '
+        using Pkg
+        Pkg.build()
+        Pkg.test()
+        test/runtests.jl'
+# Pkg.develop(PackageSpec(path=pwd()))         
+        

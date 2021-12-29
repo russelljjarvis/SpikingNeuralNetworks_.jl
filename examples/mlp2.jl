@@ -40,3 +40,9 @@ evalcb = Flux.throttle(() -> @show(loss(data, model), accuracy(data, model)), 5)
 for i in 1:500
     Flux.train!(loss(model), params(model), data, opt, cb = evalcb)
 end
+f_nn = (x1,x2) -> Tracker.data(mod([x1;x2]))[1]
+#
+plot(x1,x2,f_nn,seriestype=:surface,color=:blues)
+plot!(X[1,:],X[2,:],Y',seriestype=:scatter,markersize=MS1,marker=M1,markercolor=MC1,label="data")
+plot!(xlabel="Weight [kg]", ylabel="Age [years]", zlabel="Blood fat content")
+plot!(title="Humans: blood fat vs. weight, age",camera=(-60,20))
