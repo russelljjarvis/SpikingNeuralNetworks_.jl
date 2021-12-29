@@ -1,18 +1,7 @@
 ENV["PYTHON_JL_RUNTIME_PYTHON"] = Sys.which("python")
-#using Pkg
-#using PyCall
-#using OrderedCollections
-#using LinearAlgebra
-#using SpikeSynchrony
-#using SpikingNeuralNetworks
-#SNN = SpikingNeuralNetworks
-#SNN.@load_units
-
-#include("../opt_single_cell_utils.jl")
 using SpikeNetOpt
-
-import DataStructures
-using JLD
+#import DataStructures
+import JLD
 
 const ngt_spikes
 const opt_vec
