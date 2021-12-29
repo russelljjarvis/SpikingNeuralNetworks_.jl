@@ -1,4 +1,5 @@
-using Pkg
+import Pkg
+Pkg.add("Pkg")
 Pkg.add("TOML")
 using TOML
 
