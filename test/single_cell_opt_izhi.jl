@@ -1,32 +1,32 @@
 ENV["PYTHON_JL_RUNTIME_PYTHON"] = Sys.which("python")
-using Pkg
-using PyCall
-using OrderedCollections
-using LinearAlgebra
-using SpikeSynchrony
-using SpikingNeuralNetworks
-SNN = SpikingNeuralNetworks
-SNN.@load_units
+#using Pkg
+#using PyCall
+#using OrderedCollections
+#using LinearAlgebra
+#using SpikeSynchrony
+#using SpikingNeuralNetworks
+#SNN = SpikingNeuralNetworks
+#SNN.@load_units
 
 #include("../opt_single_cell_utils.jl")
-
+using SpikeNetOpt
 
 import DataStructures
 using JLD
 
-global ngt_spikes
-global opt_vec
-global extremum
-global extremum_param
-global ngt_spikes
-global fitness
+const ngt_spikes
+const opt_vec
+const extremum
+const extremum_param
+const ngt_spikes
+const fitness
 
 using Plots
 unicodeplots()
 
 
 ###
-global cell_type = "ADEXP"
+const cell_type = "ADEXP"
 global vecp = false
 ###
 using SpikeNetOpt
