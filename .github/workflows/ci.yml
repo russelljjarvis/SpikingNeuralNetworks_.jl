@@ -59,6 +59,7 @@ jobs:
         julia -e '
         using Pkg;
         Pkg.develop(PackageSpec(path=pwd()));
+        Pkg.add("SpikingNeuralNetworks")`
         include("test/test_izhi_model.jl")'
         
 
@@ -72,5 +73,6 @@ jobs:
         julia -e '
         using Pkg;
         Pkg.develop(PackageSpec(path=pwd()));
+        Pkg.add("SpikingNeuralNetworks")
         include("test/test_izhi_model.jl")'
         
