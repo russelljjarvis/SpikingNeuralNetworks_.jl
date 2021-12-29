@@ -1,5 +1,5 @@
 module SpikeNetOpt
 
-greet() = print("Hello SNOpt")
+greet() = print("Hello World!")
 
 end # module

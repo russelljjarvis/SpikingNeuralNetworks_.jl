@@ -33,7 +33,7 @@ adparam = SNN.ADEXParameter(;a = 6.050246708405076, b = 7.308480222357973,
     v_thresh=-39.232165554444265,
     delta_T=6.37124632135508,
     v_reset = -59.18792270568965,
-    spike_delta = 16.33506432689027)
+    spike_height = 16.33506432689027)
 
 E = SNN.AD(;N = 1, param=adparam)
 E.I = [795.57128906]
@@ -72,7 +72,8 @@ SNN.sim!([E],[0],dt = 1ms, simulation_duration = 3000ms, delay = 500ms,stimulus_
 #SNN.vecplot(E, :v) |> display
 
 
-if isfile("ground_truth.jld")
+if false
+    isfile("ground_truth.jld")
     vmgtv = load("ground_truth.jld","vmgtv")
     ngt_spikes = load("ground_truth.jld","ngt_spikes")
     gt_spikes = load("ground_truth.jld","gt_spikes")

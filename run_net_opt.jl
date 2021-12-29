@@ -2,8 +2,8 @@ using Distributed
 using ClearStacktrace
 
 #using UnicodePlots
-using Plots
-unicodeplots()
+#using Plots
+#unicodeplots()
 
 #if nprocs()==1
 #	addprocs(8)
@@ -67,13 +67,15 @@ b = view(bounds, 1, 2)
 #@show(b)
 #@show(a)
 #@show(method)
-information = Information(f_optimum = 0.0)
-options = Options( seed = 1, iterations=10, f_calls_limit =10)
+#options = Options( seed = 1, iterations=10, f_calls_limit =10)
 #N = 50, n_samples=500,
 #method = NSGA2(options=options, f_calls_limit =100)#, information = information)
-#method = ECA(options=options, information = information)
+@show(bounds)
+@show(loss)
 
-result = optimize(loss, bounds)#, method)
+information = Information(f_optimum = 0.0)
+method = ECA(options=options, information = information)
+result = optimize(loss, bounds, method)
 @show(result)
 #Approximate the optimum using the function optimize.
 
