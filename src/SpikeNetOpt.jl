@@ -6,7 +6,6 @@ using LinearAlgebra
 using SpikeSynchrony
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
-# SNN.@load_units
 using Evolutionary
 using DataStructures
 using UnicodePlots
@@ -17,6 +16,7 @@ using Distributions
 using LightGraphs
 # using Metaheuristics
 # using SignalAnalysis
+# using Distributed
 include("current_search.jl")
 include("utils.jl")
 include("sdo_network.jl")
