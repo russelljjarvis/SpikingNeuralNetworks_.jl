@@ -42,15 +42,3 @@ jobs:
 
 
 
-
-  test:
-    name: Unit tests
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: julia-actions/setup-julia@v1
-    - run: |
-        julia --project --color=yes --check-bounds=yes -e 'using Pkg;
-        Pkg.add(url="https://github.com/russelljjarvis/SpikeSynchrony.jl");
-        Pkg.precompile()
-        include("test/test_izhi_model.jl")'
