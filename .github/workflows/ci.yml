@@ -39,22 +39,9 @@ jobs:
       - uses: julia-actions/julia-buildpkg@latest
       - uses: julia-actions/julia-runtest@latest
         continue-on-error: ${{ matrix.version == 'nightly' || matrix.arch == 'x86' }}
-  package:
-    name: Aftersuccess
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: julia-actions/setup-julia@v1
-      with:
-        version: '1'
-    - run: |
-        julia -e '
-        using Pkg
-        Pkg.add("Coverage")
-        using Coverage
-        Codecov.submit(process_folder())'
 
 
+        
 
   test:
     name: Unit tests
@@ -69,3 +56,4 @@ jobs:
         Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl")
         Pkg.precompile()
         include("test/test_izhi_model.jl")'
+        

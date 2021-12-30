@@ -2,6 +2,8 @@ import Pkg
 Pkg.add("Pkg")
 Pkg.add("TOML")
 using TOML
+# tml = TOML.tryparsefile("../Project.toml")
+
 
 Pkg.add("PyPlot")
 Pkg.add(url = "https://github.com/russelljjarvis/SpikeSynchrony.jl")
@@ -10,6 +12,7 @@ Pkg.add("Conda")
 Pkg.add("PyCall")
 Pkg.add("SharedArrays")
 Pkg.add("Requires")
+Pkg.add("SpikingNeuralNetworks")
 Pkg.add("UnPack")
 Pkg.add("LightGraphs")
 Pkg.add("OrderedCollections")
@@ -23,6 +26,5 @@ Pkg.add("Unitful")
 Pkg.add("Evolutionary")
 Pkg.add("DataStructures")
 Pkg.add("JLD")
-tml = TOML.tryparsefile("../Project.toml")
 
 

@@ -1,14 +1,9 @@
-
-
-using SpikingNeuralNetworks
-using ClearStacktrace
-using Plots
-unicodeplots()
-SNN = SpikingNeuralNetworks
-SNN.@load_units
-#include("../current_search.jl")
 using SpikeNetOpt
 SNO = SpikeNetOpt
+using Plots
+using Tests
+unicodeplots()
+
 @testset "IZHI" begin
 
     RS = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
@@ -33,17 +28,11 @@ SNO = SpikeNetOpt
         TC2.I = [(t < 0.2T) ? -30mV : 0mV]
         RZ.I = [(0.5T < t < 0.6T) ? 10mV : 0mV]
         SNN.sim!(P, [], 0.1ms)
-
-        #test_result(nspk, ngt_spikes, 1e-1)
-
-        #v = vecplot(E, :v)
-        #@show(v)
     end
     for p in P
         spikes = SNO.get_spikes(p)
         spikes = [s * ms for s in spikes]
         nspk = size(spikes)[1]
-
         v = SNN.vecplot(p, :v)
         v |> display
         @test nspk >= 1
