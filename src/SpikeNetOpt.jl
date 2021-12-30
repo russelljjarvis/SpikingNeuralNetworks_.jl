@@ -6,7 +6,6 @@ using LinearAlgebra
 using SpikeSynchrony
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
-SNN.@load_units
 using Evolutionary
 using DataStructures
 using UnicodePlots
