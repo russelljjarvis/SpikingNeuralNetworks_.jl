@@ -53,8 +53,8 @@ jobs:
         Pkg.add("Coverage")
         using Coverage
         Codecov.submit(process_folder())'
-       
-        
+
+
 
   test:
     name: Unit tests
@@ -62,10 +62,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: julia-actions/setup-julia@v1
+    - run: | julia --project --color=yes --check-bounds=yes -e 'using Pkg;  Pkg.add(url="https://github.com/russelljjarvis/SpikeSynchrony.jl");'
     - run: |
-        julia -e '
+        julia --project --color=yes --check-bounds=yes -e '
         using Pkg;
         Pkg.add(url="https://github.com/russelljjarvis/SpikeNetOpt.jl")
         Pkg.precompile()
         include("test/test_izhi_model.jl")'
-        
