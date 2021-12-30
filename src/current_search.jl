@@ -1,7 +1,7 @@
-using SpikingNeuralNetworks
-SNN = SpikingNeuralNetworks
-SNN.@load_units
-using SignalAnalysis
+#using SpikingNeuralNetworks
+#SNN = SpikingNeuralNetworks
+#SNN.@load_units
+#using SignalAnalysis
 
 function get_spikes(p)
     fire = p.records[:fire]

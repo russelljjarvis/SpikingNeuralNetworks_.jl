@@ -1,10 +1,9 @@
-include("current_search.jl")
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using Evolutionary, Test, Random
 using Distributed
 using SharedArrays
-using SignalAnalysis
+#using SignalAnalysis
 
 function get_trains(p)
     fire = p.records[:fire]

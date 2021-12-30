@@ -17,8 +17,8 @@ using Plots
 using Distributions
 using LightGraphs
 using Metaheuristics
-using SignalAnalysis
-
+# using SignalAnalysis
+include("current_search.jl")
 include("utils.jl")
 include("sdo_network.jl")
 
