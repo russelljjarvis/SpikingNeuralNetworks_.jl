@@ -1,7 +1,7 @@
 import Pkg
 Pkg.add("Pkg")
-Pkg.add("TOML")
-using TOML
+#Pkg.add("TOML")
+#using TOML
 # tml = TOML.tryparsefile("../Project.toml")
 
 
@@ -17,7 +17,7 @@ Pkg.add("UnPack")
 Pkg.add("LightGraphs")
 Pkg.add("OrderedCollections")
 Pkg.add("Metaheuristics")
-Pkg.add("Evolutionary")
+#Pkg.add("Evolutionary")
 Pkg.add("JLD")
 Pkg.add("DataStructures")
 Pkg.add("Distributions")
@@ -26,5 +26,3 @@ Pkg.add("Unitful")
 Pkg.add("Evolutionary")
 Pkg.add("DataStructures")
 Pkg.add("JLD")
-
-
