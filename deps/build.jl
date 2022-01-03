@@ -1,17 +1,18 @@
 import Pkg
 Pkg.add("Pkg")
-Pkg.add("TOML")
-using TOML
+#Pkg.add("TOML")
+#using TOML
 # tml = TOML.tryparsefile("../Project.toml")
 
 
-Pkg.add("PyPlot")
+#Pkg.add("PyPlot")
 #Pkg.add(url = "https://github.com/russelljjarvis/SpikeSynchrony.jl")
 #Pkg.add(url = "https://github.com/paulmthompson/SpikeSorting.jl.git")
 Pkg.add("Conda")
 Pkg.add("PyCall")
-Pkg.add("SharedArrays")
-Pkg.add("Requires")
+Pkg.add("SpikeSynchrony")
+#Pkg.add("SharedArrays")
+#Pkg.add("Requires")
 Pkg.add("SpikingNeuralNetworks")
 Pkg.add("UnPack")
 Pkg.add("LightGraphs")
