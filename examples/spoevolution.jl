@@ -13,7 +13,6 @@ using UnicodePlots
 sing Evolutionary
 
 SNN.@load_units
-unicodeplots()
 
 ###
 # Network 1.

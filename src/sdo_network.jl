@@ -12,8 +12,6 @@ using Random
 
 # Override to function to include a state.
 ##
-#SNN.@load_units
-unicodeplots()
 
 
 const Ne = 200;
