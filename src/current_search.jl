@@ -1,8 +1,3 @@
-#using SpikingNeuralNetworks
-#SNN = SpikingNeuralNetworks
-#SNN.@load_units
-#using SignalAnalysis
-
 function get_spikes(p)
     fire = p.records[:fire]
     spikes = Float32[]
@@ -62,8 +57,6 @@ function test_current(cell_type, param, current, ngt_spikes)
     delta = abs(nspk - ngt_spikes)
     return nspk
 end
-
-#current_dict = test_c(check_values,param,ngt_spikes,current_dict,cell_type)
 
 function test_c(check_values, param, ngt_spikes, current_dict, cell_type)
     nspk = -1.0

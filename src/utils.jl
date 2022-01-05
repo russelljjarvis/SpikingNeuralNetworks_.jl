@@ -1,9 +1,6 @@
 using SpikingNeuralNetworks
 SNN = SpikingNeuralNetworks
 using Evolutionary, Test, Random
-using Distributed
-using SharedArrays
-#using SignalAnalysis
 
 function get_trains(p)
     fire = p.records[:fire]
@@ -23,12 +20,9 @@ function get_trains(p)
         @inbounds for (time, cell) in collect(zip(x, y))
             if Int(cell_id) == cell
                 append!(cellsa[Int(cell_id)], time)
-
             end
-
         end
     end
-
     cellsa
 
 end
@@ -45,16 +39,17 @@ function Evolutionary.trace!(
     options,
 )
     idx = sortperm(state.fitpop)
-    record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]
+    record["fitpop"] = state.fitpop[:]
     record["pop"] = population[:]
 end
 
 
-###
-# Code appropriated from:
-# https://github.com/JuliaML/MLPlots.jl/blob/master/src/optional/onlineai.jl
-###
+
 function get_ranges(ranges)
+    ###
+    # Code appropriated from:
+    # https://github.com/JuliaML/MLPlots.jl/blob/master/src/optional/onlineai.jl
+    ###
 
     lower = Float32[]
     upper = Float32[]
@@ -66,7 +61,7 @@ function get_ranges(ranges)
 end
 
 function init_b(lower, upper)
-    gene = []#Float32
+    gene = [] # TODO: should be a typed list one day
     for (i, (l, u)) in enumerate(zip(lower, upper))
         p1 = rand(l:u, 1)
         append!(gene, p1)
@@ -75,7 +70,7 @@ function init_b(lower, upper)
 end
 
 function initf(n)
-    genesb = []#Float32[]
+    genesb = []  # TODO: should be a typed list one day
     for i = 1:n
         genes = init_b(lower, upper)
         append!(genesb, [genes])
@@ -147,7 +142,7 @@ function checkmodel(param, cell_type, ngt_spikes)
     ALLEN_DURATION = 2000 * ms
     ALLEN_DELAY = 1000 * ms
     current = current_search(cell_type, param, ngt_spikes)
-    E.I = [current * nA]#_search(param,ngt_spikes)*nA]
+    E.I = [current * nA]
 
     SNN.monitor(E, [:v])
     SNN.monitor(E, [:fire])
@@ -167,10 +162,7 @@ function checkmodel(param, cell_type, ngt_spikes)
     spikes = get_spikes(E)
     spikes = [s / 1000.0 for s in spikes]
     vm = get_vm(E, simulation_duration)
-    #vm = E.records[:v]
-    #vm = [i[1] for i in vm]
-
-    return (vm, spikes)
+    (vm, spikes)
 end
 function Evolutionary.value!(
     ::Val{:multiproc},
@@ -182,7 +174,6 @@ function Evolutionary.value!(
     @time @sync @distributed for i = 1:length(population)
         fitness[i] = value(objfun, population[i])
     end
-    #@show(fitness)
     fitness
 end
 function Evolutionary.value!(
@@ -196,9 +187,8 @@ function Evolutionary.value!(
     end
 end
 function get_data()
-    #print(pwd())
     file = "../JLD/ground_truth.jld"
-    if false#isfile(file)
+    if file
         vmgtv = load(file, "vmgtv")
         ngt_spikes = load(file, "ngt_spikes")
         gt_spikes = load(file, "gt_spikes")
@@ -210,6 +200,8 @@ function get_data()
         plot(plot(vmgtv, vmgtt, w = 1))
 
     else
+        # if the file doesn't exist complete the expensive operation of making the file.
+        # using Python
         py"""
         from neo import AnalogSignal
         from neuronunit.allenapi import make_allen_tests_from_id
@@ -235,15 +227,10 @@ function get_data()
         """
         gt_spikes = py"spike_times"
         ground_spikes = gt_spikes
-
         ngt_spikes = size(gt_spikes)[1]
         vmgtv = py"vmm.magnitude"
         vmgtt = py"vmm.times"
-
-        #s_a = signal(opt_vec, length(opt_vec)/3.5)
         julia_version_vm = signal(vmgtv, length(vmgtt) / last(vmgtt))
-
-
         plot(plot(vmgtv, vmgtt, w = 1))
 
         save(
@@ -259,11 +246,6 @@ function get_data()
             "julia_version_vm",
             julia_version_vm,
         )
-        #filename = string("ground_truth: ", py"target_num_spikes")#,py"specimen_id)
-        #filename = string(filename,py"specimen_id")
-        #filename = string(filename,".jld")
-        #save(filename, "vmgtv", vmgtv,"vmgtt",vmgtt, "ngt_spikes", ngt_spikes,"gt_spikes",gt_spikes)
-
     end
 
     vmgtv = load("ground_truth.jld", "vmgtv")
@@ -282,16 +264,7 @@ function get_izhi_ranges()
     lower, upper = get_ranges(ranges_izhi)
     return lower, upper
 end
-#=
-function initd()
-    population = initf(50)
-    garray = zeros((length(population)[1], length(population[1])))
-    for (i,p) in enumerate(population)
-        garray[i,:] = p
-    end
-    garray[1,:]
-end
-=#
+
 function get_adexp_ranges()
     ranges_adexp = DataStructures.OrderedDict{String,Tuple{Float32,Float32}}()
     ranges_adexp[:"a"] = (2.0, 10)
@@ -322,52 +295,19 @@ function vecplot(P::Array, sym)
 end
 
 function spike_train_difference(spkd_ground, spkd_found)
-    #@show(spkd_ground)
-    #@show(spkd_found)
     if length(spkd_found) == 0
         return sum(ones(Int(length(spkd_ground))))
     end
     if length(spkd_found) > 0
         maxi0 = findmax(spkd_ground[:, :])[1]
-        #@show(maxi0)
         maxi1 = findmax(spkd_found[:, :])[1]
-        #@show([maxi0, maxi1])
         maxi1 = maxi1[1]
         maxi0 = maxi0[1]
-        #@show(maxi1)
-        #@show(maxi0)
-
         mini = findmin([maxi0, maxi1])[1]
-        #@show(mini)
-        #spkd = ones(Int(mini)#SharedArrays.SharedArray{Float32}(mini)
-        #maxi = findmax([maxi0, maxi1])[1]
         l0 = length(spkd_ground)
         l1 = length(spkd_found)
-        #@show(spkd_ground)
-        #s0 = sum(spkd_ground[1][:,:])
-        #s1 = sum(spkd_found[1][:,:])
-        #@show(s0)
-
         maxi = findmin([l0, l1])[1]
         spkd = zeros(Int(maxi))
-        #@show(spkd)
-        #@show(maxi)
-        #=
-        		if maxi > 0
-        			if maxi0 != maxi1
-        				println("gets here a")
-        				return sum(ones(Int(mini)))
-        			end
-        			if isempty(spkd_found[1, :])
-        				println("gets here b")
-
-        				return sum(ones(Int(mini)))
-        			end
-        		end
-        		=#
-        #println(length(spkd))
-        #println(length(spkd_ground))
-        #println(length(spkd_found))
         @inbounds for (_, i) in zip(spkd, eachindex(spkd))
             if !isempty(spkd_ground[i]) && !isempty(spkd_found[i])
 
@@ -382,26 +322,15 @@ function spike_train_difference(spkd_ground, spkd_found)
                         t0 = 0.0,
                         tf = maxt,
                     )
-                    #b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
                     spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
 
                 end
-                #end
             else
                 spkd[i] = 0.0
-                #spkd = ones(Int(mini))
-                #println("gets here c")
-
             end
         end
         scatter([i for i = 1:mini], spkd) |> display
-        #e1=abs(l0-l1)
-        #e2=abs(s0-s1)
-        #@show(e1)
-        #@show(e2)
-        #@show(spkd)
-
-        error = sum(spkd)#+abs(l0-l1)+abs(s0-s1)#+ sum(spkd)
+        error = sum(spkd)
     end
 end
 
