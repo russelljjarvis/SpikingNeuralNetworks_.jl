@@ -26,3 +26,28 @@ UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [compat]
 julia = "1.5.3 - 1.6.2"
+Conda = "1.6.0"
+DataStructures = "0.18.11"
+SpikingNeuralNetworks = "0.1.0"
+Metaheuristics = "3.1.1"
+LightGraphs = "1.3.5"
+JLD = "0.10.0"
+Distributions = "0.25.37"
+OrderedCollections = "0.12.3"
+PyCall =
+
+
+#utoMerge/guidelines.jl:134
+#┌ Error: Dependency "DataStructures" does not have a compat entry that has an upper bound
+#└ @ RegistryCI.AutoMerge ~/.julia/packages/RegistryCI/Nj1Mv/src/AutoMerge/guidelines.jl:134
+#┌ Error: Dependency "UnPack" does not have a compat entry that has an upper bound
+#└ @ RegistryCI.AutoMerge ~/.julia/packages/RegistryCI/Nj1Mv/src/AutoMerge/guidelines.jl:134
+#┌ Error: Dependency "Parameters" does not have a compat entry that has an upper bound
+#└ @ RegistryCI.AutoMerge ~/.julia/packages/RegistryCI/Nj1Mv/src/AutoMerge/guidelines.jl:134
+#┌ Error: Dependency "UnicodePlots" does not have a compat entry that has an upper bound
+#└ @ RegistryCI.AutoMerge ~/.julia/packages/RegistryCI/Nj1Mv/src/AutoMerge/guidelines.jl:134
+#┌ Error: Dependency "Evolutionary" does not have a compat entry that has an upper bound
+#└ @ RegistryCI.AutoMerge ~/.julia/packages/RegistryCI/Nj1Mv/src/AutoMerge/guidelines.jl:134
+#┌ Error: Dependency "SpikeSynchrony" does not have a compat entry that has an upper bound
+# @ RegistryCI.AutoMerge ~/.julia/packages/RegistryCI/Nj1Mv/src/AutoMerge/guidelines.jl:134
+#┌ Error: Dependency "SpikingNeuralNetworks" does not have a compat entry that has an upper bound

@@ -1,3 +1,5 @@
+# Optimize a network derived from a cicular ladder shaped connectome.
+
 using Plots
 using SpikeNetOpt
 SNO = SpikeNetOpt
@@ -5,8 +7,8 @@ using SpikingNeuralNetworks
 using Evolutionary
 SNN = SpikingNeuralNetworks
 using Metaheuristics
-using DrWatson
-using Pkg
+#using DrWatson
+#using Pkg
 SNN.@load_units
 
 
@@ -27,14 +29,13 @@ const spkd_ground
 const GT = 26
 
 g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
-
 P, C = SpikeNetOpt.make_net_SNN(Ne, Ni, σee = 0.5, pee = 0.8, σei = 0.5, pei = 0.8)
 E, I = P
 EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
 sim_length = 1000
 @inbounds for t = 1:sim_length*ms
-    E.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
+    E.I = vec([11.5 for i = 1:sim_length])
     SNN.sim!(P, C, 1ms)
 
 end
@@ -44,9 +45,9 @@ SNN.raster(P[1]) |> display
 META_HEUR_OPT = true
 
 function loss(model)
-    @show(Ne,Ni)
-    @show(model)
-
+    """
+    A loss function for calculating errors in machine learning.
+    """
     σee = model[1]
     pee = model[2]
     σei = model[3]
