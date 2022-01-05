@@ -22,7 +22,7 @@ unicodeplots()
 
 
 
-    #outputs = simulate!(pop, T; cb = cb, inputs=input)
+#outputs = simulate!(pop, T; cb = cb, inputs=input)
 
 global Ne = 200;
 global Ni = 50
@@ -53,21 +53,21 @@ function make_net_from_graph_structure(xx)#;
     #    SNN.connect!(EE, n, n + 1, 50)
     #end
     #for (i,j) in enumerate(h.fadjlist) println(i,j) end
-    EE = SNN.SpikingSynapse(E, E, :v; σ=0.5, p=0.8)
+    EE = SNN.SpikingSynapse(E, E, :v; σ = 0.5, p = 0.8)
 
-    @inbounds for (i,j) in enumerate(h.fadjlist)
+    @inbounds for (i, j) in enumerate(h.fadjlist)
         @inbounds for k in j
-            SNN.connect!(EE,i, k, 10)
+            SNN.connect!(EE, i, k, 10)
         end
     end
 
-    @inbounds for (i,j) in enumerate(hi.fadjlist)
+    @inbounds for (i, j) in enumerate(hi.fadjlist)
         @inbounds for k in j
-            if i<Ni && k<Ni
+            if i < Ni && k < Ni
 
-                SNN.connect!(EI,i, k, 10)
-                SNN.connect!(IE,i, k, 10)
-                SNN.connect!(II,i, k, 10)
+                SNN.connect!(EI, i, k, 10)
+                SNN.connect!(IE, i, k, 10)
+                SNN.connect!(II, i, k, 10)
             end
         end
     end
@@ -85,18 +85,18 @@ end
 
 
 function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5)
-     Ne = 200;
-     Ni = 50
+    Ne = 200
+    Ni = 50
 
-     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
-     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
-     EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = pee)
-     EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = pei)
-     IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 0.5)
-     II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
-     P = [E, I]#, EEA]
-     C = [EE, EI, IE, II]#, EEA]
-     return P, C
+    E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
+    I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
+    EE = SNN.SpikingSynapse(E, E, :v; σ = σee, p = pee)
+    EI = SNN.SpikingSynapse(E, I, :v; σ = σei, p = pei)
+    IE = SNN.SpikingSynapse(I, E, :v; σ = -1.0, p = 0.5)
+    II = SNN.SpikingSynapse(I, I, :v; σ = -1.0, p = 0.5)
+    P = [E, I]#, EEA]
+    C = [EE, EI, IE, II]#, EEA]
+    return P, C
 end
 function get_trains(p)
     fire = p.records[:fire]
@@ -135,7 +135,7 @@ global spkd_ground
 #Flux.gpu
 
 function rmse(spkd)
-    error = Losses(mean(spkd),spkd;agg=mean)
+    error = Losses(mean(spkd), spkd; agg = mean)
 end
 
 function rmse_depr(spkd)
@@ -238,7 +238,7 @@ function loss(model)
     #pei = model[4]
     #P1, C1 = make_net(Ne, Ni, σee = σee, pee = pee, σei = σei, pei = pei)#,a=a)
     #@show(model)
-    println("best candidate ",26)
+    println("best candidate ", 26)
     println(" ")
     #println("found ", model[1])
     P1, C1 = make_net_SNN(model[1])#,a=a)
@@ -273,7 +273,7 @@ function eval_best(params)
     xx = Int(round(params[1]))
     @show(xx)
     P1, C1 = make_net_SNN(xx)#,a=a)
-    println("found ",xx)
+    println("found ", xx)
 
     #σee = params[1]
     #pee = params[2]
@@ -329,7 +329,14 @@ function initd()
     end
     garray[1, :]
 end
-function Evolutionary.trace!(record::Dict{String,Any}, objfun, state, population, method::GA, options)
+function Evolutionary.trace!(
+    record::Dict{String,Any},
+    objfun,
+    state,
+    population,
+    method::GA,
+    options,
+)
     idx = sortperm(state.fitpop)
     record["fitpop"] = state.fitpop[:]#idx[1:last(idx)]]
     record["pop"] = population[:]
