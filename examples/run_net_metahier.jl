@@ -1,3 +1,8 @@
+
+"""
+Demonstrates optimizing a network with the Metaheuristics package. Other possibilities include using the package: Evolutionary, evolutionary algorithm package.
+
+"""
 using Plots
 using SpikeNetOpt
 SNO = SpikeNetOpt
@@ -21,13 +26,9 @@ MU = 10
 
 const E
 const spkd_ground
-const META_HEUR_OPT = true
-
-
-
 
 ##
-# The memorize decorator caches big data values.
+# The memorize macro/decorator caches big data values.
 ##
 @memoize function get_constant_gw()
     ##
@@ -90,32 +91,29 @@ function loss(weight_gain_factor)
     error
 end
 
-if META_HEUR_OPT
-    D = 10
-    bounds = [3ones(D) 40ones(D)]'
-    a = view(bounds, 1, 1)
-    b = view(bounds, 1, 2)
-    information = Information(f_optimum = 0.0)
-    options = Options( seed = 1, iterations=10, f_calls_limit =10)
+D = 10
+bounds = [3ones(D) 40ones(D)]'
+a = view(bounds, 1, 1)
+b = view(bounds, 1, 2)
+information = Information(f_optimum = 0.0)
+options = Options( seed = 1, iterations=10, f_calls_limit =10)
 
-    D = size(bounds, 2)
-    nobjectives=1
+D = size(bounds, 2)
+nobjectives=1
 
-    options = Options( seed = 1, iterations=10000, f_calls_limit = 25000)
-    npartitions = nobjectives == 2 ? 100 : 12
+options = Options( seed = 1, iterations=10000, f_calls_limit = 25000)
+npartitions = nobjectives == 2 ? 100 : 12
 
-    methods = [
-            SMS_EMOA(N = 5, n_samples=5, options=options),
-            NSGA2(options=options)
-            ]
+methods = [
+        SMS_EMOA(N = 5, n_samples=5, options=options),
+        NSGA2(options=options)
+        ]
 
 
-    for method in methods
-        f_calls = 0
-        result = optimize(SpikeNetOpt.loss, bounds, method)
-        #result = optimize(SpikeNetOpt.loss, bounds)#, method)
-        @show(result)
-
-    end
+for method in methods
+    f_calls = 0
+    result = optimize(SpikeNetOpt.loss, bounds, method)
+    #result = optimize(SpikeNetOpt.loss, bounds)#, method)
+    @show(result)
 
 end

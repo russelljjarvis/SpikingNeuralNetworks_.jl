@@ -1,4 +1,5 @@
-using UnicodePlots
+
+#using UnicodePlots
 import Pkg
 using Flux
 using SpikingNeuralNetworks
