@@ -1,5 +1,30 @@
+
+"""
+Use deep multilayered perceptrons to optimize the output of Genetic Algorithms.
+
+ToDO use this more concise approach from below
+
+using Pkg
+using Flux, Zygote, Optim, FluxOptTools, Statistics
+using Plots
+m      = Chain(Dense(1,3,tanh) , Dense(3,1))
+x      = LinRange(-pi,pi,100)'
+y      = sin.(x)
+loss() = mean(abs2, m(x) .- y)
+Zygote.refresh()
+pars   = Flux.params(m)
+lossfun, gradfun, fg!, p0 = optfuns(loss, pars)
+res = Optim.optimize(Optim.only_fg!(fg!), p0, Optim.Options(iterations=1000, store_trace=true))
+plot(loss, pars, l=0.1, npoints=50) |> display
+plot(loss, pars, l=0.5, npoints=50, seriestype=:contour) |> display
+valuetrace(r) = getfield.(r.trace, :value)
+valuetraces = valuetrace.(res)
+
+"""
+
+
+
 # https://github.com/joshday/OnlineStats.jl/blob/master/notebooks/animations.jl
-#using UnicodePlots
 using Flux
 using Printf
 using Plots
@@ -55,20 +80,13 @@ for f in refitpop
 end
 y = singlify.(y)
 data = Flux.Data.DataLoader((x,y), batchsize=4)#,shuffle=true);
-#data = Flux.Data.DataLoader((x,y), batchsize=4,shuffle=true); # automatic batching convenience
-X1, Y1 = data#first(data);
-@show size(X1) size(Y1)
-#X2, Y2 = data
-#@show size(X1) size(Y1)
-
+X1, Y1 = data@show size(X1) size(Y1)
 Nx = size(X1, 1)
 Ny = size(Y1, 1)
 model = Chain(Dense(Nx, Nx, sigmoid), Dense(Nx, Ny, sigmoid), Dense(Ny, Ny, identity));
-#gs = gradient(() -> sum(model(X1)), params(model))
-# Loss/cost function
 loss(x, y) = Flux.mse(model(x), y)
 loss(X1,Y1)
-# Parameters of the model
+# Parameters of the model (perceptron ML model)
 para = Flux.params(model);
 trnloss = [];
 opt = ADAM()
@@ -97,11 +115,6 @@ ALLEN_DELAY = 1000 * ms
 function nloss(E,ngt_spikes,ground_spikes)
     spikes = get_spikes(E)
     spikes = [s/1000.0 for s in spikes]
-
-	#opt_vec = [i[1] for i in opt_vec]
-	#s_a = signal(opt_vec, length(opt_vec)/last(vmgtt))
-	#s_b = signal(vmgtv, length(vmgtt)/last(vmgtt))
-
 	maxt = findmax(sort!(unique(vcat(spikes,ground_spikes))))[1]
     if size(spikes)[1]>1
         t, S = SPIKE_distance_profile(spikes, ground_spikes;t0=0,tf = maxt)
@@ -110,12 +123,8 @@ function nloss(E,ngt_spikes,ground_spikes)
         spkdistance = 10.0
     end
 	if length(spikes)>1
-
 		custom_raster2(spikes,ground_spikes)
 		custom_raster(spikes,ground_spikes)
-
-		#savefig(crp, "aligned_VMs_adexp.png")
-		#display(crp)
 	end
 	spkdistance*=spkdistance
 
