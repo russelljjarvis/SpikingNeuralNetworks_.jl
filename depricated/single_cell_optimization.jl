@@ -27,16 +27,6 @@ global spkd_ground
 const Ne = 200;
 const Ni = 50
 
-
-lower = Float32[0.0 0.0 0.0 0.0]
-upper = Float32[1.0 1.0 1.0 1.0]
-lower = vec(lower)
-upper = vec(upper)
-
-MU = 10
-ɛ = MU / 2
-
-
 function make_net(Ne, Ni; σee = 1.0, pee = 0.5, σei = 1.0, pei = 0.5, a = 0.02)
     E = SNN.IZ(; N = Ne, param = SNN.IZParameter(; a = a, b = 0.2, c = -65, d = 8))
     I = SNN.IZ(; N = Ni, param = SNN.IZParameter(; a = 0.1, b = 0.2, c = -65, d = 2))
@@ -83,7 +73,7 @@ EE, EI, IE, II = C
 SNN.monitor([E, I], [:fire])
 
 @inbounds for t = 1:sim_length
-    E.I = vec([11.5 for i = 1:sim_length])
+    E.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
     SNN.sim!(P, C, 1ms)
 
 end
@@ -94,7 +84,7 @@ function spike_train_difference(spkd0, spkd_found)
     maxi0 = size(spkd0)[2]
     maxi1 = size(spkd_found)[2]
     mini = findmin([maxi0, maxi1])[1]
-    spkd = ones(mini)
+    spkd = ones(mini)#SharedArrays.SharedArray{Float32}(mini)
     maxi = findmax([maxi0, maxi1])[1]
 
     if maxi > 0
@@ -121,8 +111,8 @@ function spike_train_difference(spkd0, spkd_found)
                     t0 = 0.0,
                     tf = maxt,
                 )
-                b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1])
-                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1])
+                b = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
+                spkd[i] = SpikeSynchrony.trapezoid_integral(t, S) / (t[end] - t[1]) # == SPIKE_distance(y1, y2)
 
             end
         end
@@ -140,7 +130,7 @@ function loss(params)
     SNN.monitor([E1, I1], [:fire])
     sim_length = 1000
     @inbounds for t = 1:sim_length*ms
-        E1.I = vec([11.5 for i = 1:sim_length])
+        E1.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
         SNN.sim!(P1, C1, 1ms)
     end
 
@@ -165,7 +155,7 @@ function eval_best(params)
     SNN.monitor([E1, I1], [:fire])
     sim_length = 1000
     @inbounds for t = 1:sim_length
-        E1.I = vec([11.5 for i = 1:sim_length])
+        E1.I = vec([11.5 for i = 1:sim_length])#vec(E_stim[t,:])#[i]#3randn(Ne)
         SNN.sim!(P1, C1, 1ms)
     end
 
@@ -208,6 +198,14 @@ function initd()
     end
     garray[1, :]
 end
+
+lower = Float32[0.0 0.0 0.0 0.0]
+upper = Float32[1.0 1.0 1.0 1.0]
+lower = vec(lower)
+upper = vec(upper)
+
+MU = 10
+ɛ = MU / 2#0.125
 options = GA(
     populationSize = MU,
     ɛ = 4,
@@ -253,6 +251,7 @@ println("best result")
 loss(result.minimizer)
 println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
 
+#println("σee = 0.45,  pee= 0.8,σei = 0.4,  pei= 0.9)")
 @show(result.minimizer)
 
 @show(fitness)
@@ -262,8 +261,8 @@ println("σee = 0.5,  pee= 0.8,σei = 0.5,  pei= 0.8")
 trace = result.trace
 dir(x) = fieldnames(typeof(x))
 dir(trace[1, 1, 1])
-trace[1, 1, 1].metadata
-filename = string("PopulationScatter.jld")
+trace[1, 1, 1].metadata#["population"]
+filename = string("PopulationScatter.jld")#, py"target_num_spikes")#,py"specimen_id)
 save(filename, "trace", trace)
 evo_loss = [t.value for t in trace]
 display(plot(evo_loss))

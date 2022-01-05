@@ -1,6 +1,5 @@
 ENV["PYTHON_JL_RUNTIME_PYTHON"] = Sys.which("python")
 using SpikeNetOpt
-#import DataStructures
 import JLD
 
 const ngt_spikes
@@ -11,9 +10,6 @@ const ngt_spikes
 const fitness
 
 using Plots
-unicodeplots()
-
-
 ###
 const cell_type = "ADEXP"
 global vecp = false
@@ -24,8 +20,6 @@ SNO = SpikeNetOpt
 (vmgtv, vmgtt, ngt_spikes, ground_spikes) = SNO.get_data()
 println("Ground Truth")
 plot(vmgtt[:], vmgtv[:]) |> display
-
-#lower,upper=get_izhi_ranges()
 
 lower, upper = get_adexp_ranges()
 ALLEN_DURATION = 2000 * ms
@@ -160,9 +154,9 @@ end
 options = GA(
     populationSize = 20,
     ɛ = ɛ,
-    selection = ranklinear(1.5),#ss,
-    crossover = intermediate(1.0),#line(1.0),#xovr,
-    mutation = uniform(1.0),#domainrange(fill(1.0,ts)),#ms
+    selection = ranklinear(1.5),
+    crossover = intermediate(1.0),
+    mutation = uniform(1.0),
 )
 @time result = Evolutionary.optimize(
     zz_,
@@ -178,18 +172,10 @@ options = GA(
     ),
 )
 fitness = minimum(result)
-println("GA: ɛ=$ɛ) => F: $(minimum(result))")# C: $(Evolutionary.iterations(result))")
+println("GA: ɛ=$ɛ) => F: $(minimum(result))")
 extremum_param = Evolutionary.minimizer(result)
 opt_vec = checkmodel(extremum_param)
 println("probably jumbled extremum param")
 println(extremum_param)
 plot(opt_vec) |> display
 plot(vmgtt[:], vmgtv[:]) |> display
-#, label = "randData", ylabel = "Y axis",color = :red, legend = :topleft, grid = :off, xlabel = "Numbers Rand")
-#p = twiny()
-#plot!(p,vec, label = "log(x)", legend = :topright, box = :on, grid = :off, xlabel = "Log values") |> display
-#return fitness
-#end
-#end
-#break
-#end

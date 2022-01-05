@@ -2,7 +2,6 @@
 using Test
 using SpikingNeuralNetworks
 using Plots
-unicodeplots()
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 

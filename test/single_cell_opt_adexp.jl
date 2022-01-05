@@ -15,14 +15,13 @@ import DataStructures
 using JLD
 using Metaheuristics
 using Plots
-unicodeplots()
 
-global ngt_spikes
-global opt_vec
-global extremum
-global extremum_param
-global ngt_spikes
-global fitness
+const ngt_spikes
+const opt_vec
+const extremum
+const extremum_param
+const ngt_spikes
+const fitness
 
 
 
@@ -50,17 +49,16 @@ end
 
 
 ###
-global cell_type = "ADEXP"
-global vecp = false
+const cell_type = "ADEXP"
+const vecp = false
 ###
 
 (vmgtv, vmgtt, ngt_spikes, ground_spikes, julia_version_vm) = get_data()
-global simdur = last(vmgtt) * 1000
+const simdur = last(vmgtt) * 1000
 
 println("Ground Truth")
 plot(vmgtt[:], vmgtv[:]) |> display
 
-#lower,upper=get_izhi_ranges()
 
 lower, upper = get_adexp_ranges()
 ALLEN_DURATION = 2000 * ms
@@ -70,9 +68,6 @@ function loss(E, ngt_spikes, ground_spikes)
     spikes = get_spikes(E)
     spikes = [s / 1000.0 for s in spikes]
 
-    #opt_vec = [i[1] for i in opt_vec]
-    #s_a = signal(opt_vec, length(opt_vec)/last(vmgtt))
-    #s_b = signal(vmgtv, length(vmgtt)/last(vmgtt))
 
     maxt = findmax(sort!(unique(vcat(spikes, ground_spikes))))[1]
     if size(spikes)[1] > 1
@@ -82,12 +77,8 @@ function loss(E, ngt_spikes, ground_spikes)
         spkdistance = 10.0
     end
     if length(spikes) > 1
-
         custom_raster2(spikes, ground_spikes)
         custom_raster(spikes, ground_spikes)
-
-        #savefig(crp, "aligned_VMs_adexp.png")
-        #display(crp)
     end
     spkdistance *= spkdistance
 
@@ -141,20 +132,14 @@ function loss(param)
 
     error
 end
-#=
-function Evolutionary.value!(::Val{:serial}, fitness, objfun, population::AbstractVector{IT}) where {IT}
-	Threads.@threads for i in 1:length(population)
-		fitness[i] = value(objfun, population[i])
-	end
-end
-=#
+
 ɛ = 0.125
 options = GA(
     populationSize = 10,
     ɛ = ɛ,
-    selection = ranklinear(1.5),#ss,
-    crossover = intermediate(1.0),#line(1.0),#xovr,
-    mutation = uniform(1.0),#domainrange(fill(1.0,ts)),#ms
+    selection = ranklinear(1.5),
+    crossover = intermediate(1.0),
+    mutation = uniform(1.0),
 )
 @time result = Evolutionary.optimize(
     loss,
@@ -169,11 +154,9 @@ options = GA(
         store_trace = true,
     ),#,parallelisation=:thread)
 )
-import Plots
-gr()
 
 fitness = minimum(result)
-println("GA: ɛ=$ɛ) => F: $(minimum(result))")# C: $(Evolutionary.iterations(result))")
+println("GA: ɛ=$ɛ) => F: $(minimum(result))")
 extremum_param = Evolutionary.minimizer(result)
 
 using SignalAnalysis
@@ -222,49 +205,5 @@ crp = custom_raster(opt_spikes, ground_spikes)
 savefig(crp, "../imgs/aligned_VMs_adexp.png")
 display(crp)
 
-#display(plot(s_a))
-#display(plot(s_b))
-
 @show(result.minimizer)
 @show(fitness)
-
-#plot(opt_vec)|> display
-#plot(vmgtt[:],vmgtv[:])|> display
-
-#=
-D = 10
-bounds = [3ones(D) 40ones(D)]'
-
-bounds = [lower upper]'
-a = view(bounds, 1, 1)
-b = view(bounds, 1, 2)
-
-information = Information(f_optimum = 0.0)
-options = Options( seed = 1, iterations=10, f_calls_limit =10)
-
-D = size(bounds, 2)
-nobjectives=1
-methods = [
-        SMS_EMOA(N = 20, n_samples=20, options=options),
-        NSGA2(options=options),
-        #MOEAD_DE(gen_ref_dirs(1, 1), options=Options( seed = 1, iterations = 5)),
-        #NSGA3(options=options),
-      ]
-
-#for method in [methods[1]]
-    #f_calls = 0
-result = ( optimize(loss, bounds, NSGA2(options=options)) )
-show(IOBuffer(), "text/html", result)
-show(IOBuffer(), "text/plain", result.population)
-show(IOBuffer(), "text/html", result.population)
-show(IOBuffer(), result.population[1])
-#end
-#, label = "randData", ylabel = "Y axis",color = :red, legend = :topleft, grid = :off, xlabel = "Numbers Rand")
-#p = twiny()
-#plot!(p,vec, label = "log(x)", legend = :topright, box = :on, grid = :off, xlabel = "Log values") |> display
-#return fitness
-#end
-#end
-#break
-#end
-=#

@@ -18,7 +18,7 @@ using Metaheuristics
 # Override to function to include a state.
 ##
 SNN.@load_units
-unicodeplots()
+#unicodeplots()
 
 
 

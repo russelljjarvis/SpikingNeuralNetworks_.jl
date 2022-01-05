@@ -2,7 +2,6 @@ using SpikeNetOpt
 SNO = SpikeNetOpt
 using Plots
 using Tests
-unicodeplots()
 
 @testset "IZHI" begin
 

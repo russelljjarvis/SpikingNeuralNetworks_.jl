@@ -1,13 +1,10 @@
 using SpikingNeuralNetworks
-#using ClearStacktrace
 SNN = SpikingNeuralNetworks
 SNN.@load_units
 using SpikeNetOpt
 SNO = SpikeNetOpt
 
-#include("../current_search.jl")
 using Plots
-unicodeplots()
 RS = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
 IB = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -55, d = 4))
 CH = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -50, d = 2))
@@ -28,9 +25,6 @@ for t = 0:T
     TC2.I = [(t < 0.2T) ? -30mV : 0mV]
     RZ.I = [(0.5T < t < 0.6T) ? 10mV : 0mV]
     SNN.sim!(P, [], 0.1ms)
-
-    #v = vecplot(E, :v)
-    #@show(v)
 end
 for p in P
     v = SNN.vecplot(p, :v)
@@ -38,8 +32,6 @@ for p in P
 end
 cell_type = "IZHI"
 ngt_spikes = 10
-#for p in [P[1]]
-#@show(p.param)
 current_ = SNO.current_search(cell_type, P[1], ngt_spikes)
 P[1].I = [current_ * nA]
 @show(current_)
@@ -58,13 +50,8 @@ SNN.sim!(
 
 v = SNN.vecplot(P[1], :v)
 v |> display
-#println("fail")
-#
-#end
 cell_type = "ADEXP"
 ngt_spikes = 10
-#for p in [P[1]]
-#@show(p.param)
 current_ = SNO.current_search(cell_type, P[1], ngt_spikes)
 P[1].I = [current_ * nA]
 @show(current_)

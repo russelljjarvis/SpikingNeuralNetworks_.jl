@@ -8,24 +8,23 @@ using Metaheuristics
 using DrWatson
 using Pkg
 SNN.@load_units
-unicodeplots()
 
 
 ##
 # Ground truths
 ##
-global Ne = 200;
-global Ni = 50
-global σee = 1.0
-global pee = 0.5
-global σei = 1.0
-global pei = 0.5
+const Ne = 200;
+const Ni = 50
+const σee = 1.0
+const pee = 0.5
+const σei = 1.0
+const pei = 0.5
 MU = 10
 
 
-global E
-global spkd_ground
-global GT = 26
+const E
+const spkd_ground
+const GT = 26
 
 g, Cg = SpikeNetOpt.make_net_from_graph_structure(GT)
 
@@ -39,24 +38,9 @@ sim_length = 1000
     SNN.sim!(P, C, 1ms)
 
 end
-#spkd_ground = SpikeNetOpt.get(P[1])
 spkd_ground = SpikeNetOpt.get_trains(P[1])
-#@show(spkd_ground)
 display(SNN.raster(P[1]))
 SNN.raster(P[1]) |> display
-
-#sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
-P
-#P, C = SpikeNetOpt.make_net(GT)
-##
-# Ground truth for optimization
-##
-#spkd_ground = get_trains(Pg[1])
-##
-# Not really necessary
-##
-#sgg = [convert(Array{Float32,1}, sg) for sg in spkd_ground]
-
 META_HEUR_OPT = true
 
 function loss(model)
@@ -109,13 +93,6 @@ methods = [
 for method in methods
     f_calls = 0
     result = optimize(SpikeNetOpt.loss, bounds, method)
-    #result = optimize(SpikeNetOpt.loss, bounds)#, method)
     @show(result)
 
 end
-
-
-
-# ## Visualize the result
-
-#contour(0:.1:1, 0:.1:1, (x, y) -> model([x,y])[].data, fill=true)
