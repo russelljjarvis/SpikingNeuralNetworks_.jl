@@ -14,8 +14,8 @@ using JLD
 using Plots
 using Distributions
 using LightGraphs
-# using Metaheuristics
-# using SignalAnalysis
+using Metaheuristics
+#using SignalAnalysis
 # using Distributed
 include("current_search.jl")
 include("utils.jl")

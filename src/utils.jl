@@ -164,6 +164,8 @@ function checkmodel(param, cell_type, ngt_spikes)
     vm = get_vm(E, simulation_duration)
     (vm, spikes)
 end
+
+#=
 function Evolutionary.value!(
     ::Val{:multiproc},
     fitness,
@@ -176,6 +178,7 @@ function Evolutionary.value!(
     end
     fitness
 end
+=#
 function Evolutionary.value!(
     ::Val{:serial},
     fitness,

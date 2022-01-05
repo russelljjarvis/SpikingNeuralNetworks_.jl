@@ -8,13 +8,11 @@ using Plots
 using UnicodePlots
 using Evolutionary
 using Random
-#using SparseArrays
-using Revise
 ##
 
 # Override to function to include a state.
 ##
-SNN.@load_units
+#SNN.@load_units
 unicodeplots()
 
 
@@ -37,7 +35,7 @@ global spkd_ground
 
 
 
-function make_net_from_graph_structure(Int::arbitrary_int)
+function make_net_from_graph_structure(arbitrary_int::Int)
     """
     # Circular ladder simulation
     Input integers affect the number of network nodes (neurons) in the circular ladder network.
