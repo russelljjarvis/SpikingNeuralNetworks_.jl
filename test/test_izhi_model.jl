@@ -3,6 +3,11 @@ SNO = SpikeNetOpt
 using Plots
 using Tests
 
+##
+# smoke tests code mostly borrowed from 
+# https://github.com/AStupidBear/SpikingNeuralNetworks.jl/blob/master/test/iz_neuron.jl
+##
+
 @testset "IZHI" begin
 
     RS = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
