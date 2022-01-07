@@ -4,6 +4,11 @@ SNN.@load_units
 using SpikeNetOpt
 SNO = SpikeNetOpt
 
+
+##
+# smoke tests code mostly borrowed from 
+# https://github.com/AStupidBear/SpikingNeuralNetworks.jl/blob/master/test/iz_neuron.jl
+##
 using Plots
 RS = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -65, d = 8))
 IB = SNN.IZ(; N = 1, param = SNN.IZParameter(; a = 0.02, b = 0.2, c = -55, d = 4))
