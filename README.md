@@ -19,7 +19,8 @@
   <a href="#Motivation">Motivation</a> •
   <a href="#Install-the-Julia-module">Install</a> •
   <a href="#Development-Plans">Plans</a> •
-  <a href="#Current-Design-Flow-Chart">Flow Chart</a> 	
+  <a href="#Current-Design-Flow-Chart">Flow Chart</a> •
+  <a href="#Why-Not-Optimize-Small-SNNs-With-Bigger-SNNs?">Why Not Optimize Small SNNs With Bigger SNNs?</a>
 </p>
 
 <p align="center">
@@ -163,6 +164,12 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 - [ ] NeuroEvolution
 - [ ] ADAM-Opt predictions using evolved population.
 - [ ] Read in and optimize against FPGA Event Stream Data AEDAT
+
+
+#### Why Not Optimize Small SNNs With Bigger SNNs?
+This is the long term intended approach, to use a recurrent Inhibitory population + Excitatory population
+Network to optimize smaller networks.
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
