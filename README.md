@@ -20,7 +20,7 @@
   <a href="#Install-the-Julia-module">Install</a> •
   <a href="#Development-Plans">Plans</a> •
   <a href="#Current-Design-Flow-Chart">Flow Chart</a> •
-  <a href="#Why-Not-Optimize-Small-SNNs-With-Bigger-SNNs?">Why Not Optimize Small SNNs With Bigger SNNs?</a>
+  <a href="#Why-Not-Optimize-Small-SNNs-With-Bigger-SNNs">Why Not Optimize Small SNNs With Bigger SNNs</a>
 </p>
 
 <p align="center">
