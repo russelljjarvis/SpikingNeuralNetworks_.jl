@@ -158,10 +158,10 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 - [x] Used spike distance and genetic algorithms to optimize network spike raster activity.
 - [x] Used pythons NetworkUnit to validate results and t-tests of results
 - [x] Created single cell model fitting to Allen Brain Observatory Spike Train Data.
-- [x] Ability to toggle between simulator backends (AStupid bear vs https://github.com/darsnack/SpikingNN.jl,SpikingNN.jl)
+- [x] Ability to toggle between simulator backends (https://github.com/AStupidBear/SpikingNeuralNetworks.jl vs https://github.com/darsnack/SpikingNN.jl)
 
 #### TODO
-- [ ] Use large SNNs to optimize smaller SNNS themselves, as this would be parsimonious.
+- [ ] Use large SNNs to optimize smaller SNNs themselves, as this would be parsimonious.
 - [ ] Implemented multi-processing of feature extraction/spike distance (sort of)
 - [ ] Animation of Genetic Algorithm Convergence (sort of metaheuristics does this with minimal effort)
 - [ ] ADAM-Opt predictions using evolved population see file mwe.jl.
