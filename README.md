@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <img alt="GitHub" src="https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square">
+  <img alt="GitHub" src="https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square">
   <img alt="GitHub" src="https://img.shields.io/github/issues/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/issues-closed/russelljjarvis/SpikeNetOpt.jl.svg">
   <img alt="GitHub" src="https://img.shields.io/github/commit-activity/m/russelljjarvis/SpikeNetOpt.jl.svg">
