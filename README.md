@@ -27,6 +27,10 @@
 Julia has enough tools to support fitting spiking neural network models to data. Python speed necessitates external simulators to do network simulation. As much as possible it would be nice to do fast, efficient data fitting of spike trains to network models in one language, lets try to do that here.
 </p>
 
+
+:Authors:
+Russell Jarvis
+
 ### Due to Dependency Issues, 
 this project is split into two repositories: [GreenerML](https://github.com/russelljjarvis/GreenerML.jl) and this one.
 GreenerML uses SpikingNN.jl as the Network simulator backend, and Evolutionary.jl to optimize. This one uses SpikingNeuralNetworks.jl as the backend, and Metahieristics.jl to optimize.
