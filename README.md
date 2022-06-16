@@ -154,7 +154,7 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 </p>
 
 <p align="center">
-	!<img src="https://user-images.githubusercontent.com/7786645/173999747-00a00c8c-2880-4212-8963-457c4878794e.jpg" width="250" height="200">
+	<img src="https://user-images.githubusercontent.com/7786645/173999747-00a00c8c-2880-4212-8963-457c4878794e.jpg" width="250" height="200">
 </p>
 
 </p>
@@ -170,11 +170,14 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 - [x] Ability to toggle between simulator backends (https://github.com/AStupidBear/SpikingNeuralNetworks.jl vs https://github.com/darsnack/SpikingNN.jl)
 
 #### TODO
-- [ ] Use large SNNs to optimize smaller SNNs themselves, as this would be parsimonious.
+- [ ] Learning 2 learn
 - [ ] Implemented multi-processing of feature extraction/spike distance (sort of)
 - [ ] Animation of Genetic Algorithm Convergence (sort of metaheuristics does this with minimal effort)
 - [ ] ADAM-Opt predictions using evolved population see file mwe.jl.
 - [ ] Read in and optimize against FPGA Event Stream Data AEDAT
+
+#### DONT DO
+- [ ] Use large SNNs to optimize smaller SNNs themselves, as this would be parsimonious.
 
 
 #### Why Not Optimize Small SNNs With Bigger SNNs?
