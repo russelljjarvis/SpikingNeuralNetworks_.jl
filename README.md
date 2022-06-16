@@ -153,6 +153,9 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 	<img src="https://github.com/russelljjarvis/SpikeNetOpt.jl/blob/main/img/second_flow_diagram.png" width="250" height="200">
 </p>
 
+<p align="center">
+	![Uploading Flowchart (1).jpg…]()
+</p>
 
 
 	
