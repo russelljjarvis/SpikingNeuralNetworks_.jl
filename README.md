@@ -154,7 +154,7 @@ Output from a Network Spike Time optimization (note that Unicode backend is the 
 </p>
 
 <p align="center">
-	![Uploading Flowchart (1).jpg…]()
+	![Flowchart (1)](https://user-images.githubusercontent.com/7786645/173999747-00a00c8c-2880-4212-8963-457c4878794e.jpg)
 </p>
 
 
