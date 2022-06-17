@@ -28,12 +28,7 @@ Julia has enough tools to support fitting spiking neural network models to data.
 </p>
 
 
-:Authors:
-Russell Jarvis
-
-### Due to Dependency Issues, 
-this project is split into two repositories: [GreenerML](https://github.com/russelljjarvis/GreenerML.jl) and this one.
-GreenerML uses SpikingNN.jl as the Network simulator backend, and Evolutionary.jl to optimize. This one uses SpikingNeuralNetworks.jl as the backend, and Metahieristics.jl to optimize.
+This one uses BindsNet.py as the backend, and Metahieristics.jl to optimize.
 
 
 ### Getting Started
