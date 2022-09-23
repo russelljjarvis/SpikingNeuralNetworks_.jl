@@ -55,15 +55,12 @@ Try to build within the Docker container, hyperlinked in the README.md
 
 ## Community
 
-Discussions about the Science Accessibilty Project take place on this repository's [Issues](https://github.com/russelljjarvis/ScienceAccessibility/issues).
-
 Although public conversation is good as it means everybody can benefit and learn from the conversation. All communication is merited, including private communication.
 
 References:
-This project is built on top of heaps of FOS Software. Chief among those are [text-stat](https://github.com/shivam5992/textstat), NLTK, and GoogleScrape.
+This project is built on top of heaps of FOS Software.
 
-Which employs algorithms like:
-Kincaid, J. Peter, et al. "Derivation of new readability formulas (automated readability index, fog count and flesch reading ease formula) for navy enlisted personnel." (1975).
+
 
 ## Other Relevant Links:
 https://www.copyright.gov/fair-use/more-info.html
