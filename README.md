@@ -24,6 +24,8 @@
 </p>
 
 <p align="center">
+
+A reduced Spiking neuronal model optimization package directly derived from https://github.com/AStupidBear/SpikingNeuralNetworks.jl
 Julia has enough tools to support fitting spiking neural network models to data. Python speed necessitates external simulators to do network simulation. As much as possible it would be nice to do fast, efficient data fitting of spike trains to network models in one language, lets try to do that here.
 </p>
 
